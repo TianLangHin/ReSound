@@ -1,8 +1,15 @@
-# Playing spatial audio in visionOS
+# ReSound
 
-This sample demonstrates how to load and play an audio file in a SwiftUI window in a visionOS app 
-with the `SpatialAudioComponent`.
+A practical, portable, and accessible spatial hearing test application built for the Apple Vision Pro,
+bringing realistic, immersive, and self-directed testing directly to the patient.
+This solution is made for this emerging need of [National Acoustic Laboratories](https://www.nal.gov.au) (NAL)
+in the UTS subject **40006 iOS Industry Studio**.
 
-For more information about the app and how it works, see [Playing spatial audio in visionOS][link-to-sample] in the developer documentation.
+## Student Team
 
-[link-to-sample]: https://developer.apple.com/documentation/realitykit/playing-spatial-audio-in-visionos
+* Tian Lang Hin (Team Lead)
+* Isabella Watt (Testing Lead)
+* Duong Anh Tran (Backend Lead)
+* Jessie Rachman (Design Lead)
+* Chloe Truong (Assets Lead)
+* Yu-Han Chang (Human Interface Guidelines Lead)
