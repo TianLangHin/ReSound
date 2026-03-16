@@ -1,0 +1,44 @@
+//
+//  HearingTest.swift
+//  ReSound
+//
+//  Created by Tian Lang Hin on 16/3/2026.
+//  Copyright © 2026 Apple. All rights reserved.
+//
+
+import Foundation
+
+/// This structure assumes a hearing test has a name of its own,
+/// a list of audio sources which are customised,
+/// and an ordered list of audio sources to be highlighted in each question.
+
+struct HearingTest {
+    var name: String
+    var audioSources: [TestAudioSource]
+    var questionLocations: [UUID]
+
+    /// After any adjustment to the hearing test, this will ensure that all
+    /// references to audio sources are valid and do not crash the program.
+    mutating func fixQuestionLocations() {
+        self.questionLocations = self.questionLocations.filter({ audioSourceID in
+            return audioSources.contains(where: { $0.id == audioSourceID })
+        })
+    }
+}
+
+/// Each audio source in a hearing test environment is uniquely identifiable,
+/// has a particular 3D location, and is associated with an asset for representing it visually.
+struct TestAudioSource: Identifiable {
+    let id = UUID()
+    var location: SIMD3<Float>
+    var visualResourceLink: String
+}
+
+/// This represents a particular question about a certain audio clip,
+/// the corresponding multiple choice answers for the question, and the correct answer.
+struct AudioQuestion {
+    let audioResourceLink: String
+    let question: String
+    let answers: [String]
+    let correctAnswer: Int
+}

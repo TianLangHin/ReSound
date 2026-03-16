@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -30,6 +30,10 @@
 		DF02DEC22BEC38F9008047B2 /* AxisVisualizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AxisVisualizer.swift; sourceTree = "<group>"; };
 		F5527B1E2C4EF5680054C698 /* SpatialAudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialAudioView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		242A02422F67846B00F55E83 /* Models */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Models; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		DF02DEA12BEC1DDD008047B2 /* Frameworks */ = {
@@ -72,6 +76,7 @@
 		DF02DEA62BEC1DDD008047B2 /* ReSound */ = {
 			isa = PBXGroup;
 			children = (
+				242A02422F67846B00F55E83 /* Models */,
 				F5527B1D2C4EF5360054C698 /* Views */,
 				F5527B202C4EF5790054C698 /* Resources */,
 				F5527B212C4EF58D0054C698 /* Visualizer */,
@@ -139,6 +144,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				242A02422F67846B00F55E83 /* Models */,
 			);
 			name = ReSound;
 			productName = SpatialAudio;
