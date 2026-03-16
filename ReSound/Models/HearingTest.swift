@@ -16,6 +16,8 @@ struct HearingTest {
     var name: String
     var audioSources: [TestAudioSource]
     var questionLocations: [UUID]
+    // For now, the background of a hearing test is assumed to be an image.
+    var backgroundResourceLink: String
 
     /// After any adjustment to the hearing test, this will ensure that all
     /// references to audio sources are valid and do not crash the program.
@@ -36,6 +38,8 @@ struct TestAudioSource: Identifiable {
 
 /// This represents a particular question about a certain audio clip,
 /// the corresponding multiple choice answers for the question, and the correct answer.
+/// Multiple `AudioQuestion` instances can exist for a single audio clip,
+/// allowing the creation of more than one question for one reusable piece of audio.
 struct AudioQuestion {
     let audioResourceLink: String
     let question: String
