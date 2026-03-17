@@ -2,48 +2,52 @@
 //  Presets.swift
 //  ReSound
 //
-//  Created by Tian Lang Hin on 16/3/2026.
+//  Created by Tian Lang Hin on 17/3/2026.
 //  Copyright © 2026 Apple. All rights reserved.
 //
 
-/// This class defines all the preset resources for hearing tests,
-/// audio clips and associated multiple-choice questions.
 class Presets {
-    /// The `audioSources` variable is private since it exists only as a way
-    /// for the instances in `hearingTests` to cotnain the correct UUID values
-    /// in the `questionLocations` field, and is not intended for use outside this file.
-    private static let audioSources = [
-        TestAudioSource(location: .init(x: 0.0, y: 1.0, z: -1.5), visualResourceLink: .presetBox),
-        TestAudioSource(location: .init(x: 2.0, y: 1.0, z: -1.5), visualResourceLink: .presetBox),
-        TestAudioSource(location: .init(x: -2.0, y: 1.0, z: -1.5), visualResourceLink: .presetBox),
+    private static var audioSources: [AudioSource] = [
+        AudioSource(type: .ambient, location: .init(x: 0.0, y: 1.0, z: -1.5), visualResourceLink: .presetBox),
+        AudioSource(type: .ambient, location: .init(x: 3.0, y: 1.0, z: 0.0), visualResourceLink: .presetBox),
+        AudioSource(type: .ambient, location: .init(x: -3.0, y: 1.0, z: 0.0), visualResourceLink: .presetBox),
     ]
 
-    /// Will be filled with a set of preset hearing test environments.
-    static let hearingTests = [
+    static var hearingTests: [HearingTest] = [
         HearingTest(name: "Preset 1",
                     audioSources: [
-                        audioSources[0],
-                        audioSources[1],
-                        audioSources[2],
+                        Presets.audioSources[0],
+                        Presets.audioSources[1],
+                        Presets.audioSources[2],
                     ],
-                    focusLocations: [
-                        audioSources[0].id,
-                        audioSources[1].id,
+                    questions: [
+                        AudioQuestion(focus: Presets.audioSources[0].id,
+                                      chosenQuestion: Presets.possibleQuestions[0],
+                                      duration: .seconds(10)),
+                        AudioQuestion(focus: Presets.audioSources[1].id,
+                                      chosenQuestion: Presets.possibleQuestions[0],
+                                      duration: .seconds(10)),
                     ],
-                    backgroundResourceLink: "DefaultBackground"),
+                    backgroundResourceLink: "DefaultBackground")
     ]
 
-    /// Will be filled with the set of all possible questions for any audio source in the project.
-    static let audioQuestions = [
-        AudioQuestion(audioResourceLink: "FunkySynth.m4a",
-                      question: "Test Question 1?",
-                      answers: [
-                          "Incorrect 1",
-                          "Incorrect 2",
-                          "Correct 1",
-                          "Incorret 3",
-                      ],
-                      correctAnswer: 2,
-                      duration: .seconds(10)),
+    static var possibleQuestions: [PossibleQuestion] = [
+        PossibleQuestion(audioResourceLink: "Police.mp3",
+                         question: "Test Question 1?",
+                         answers: [
+                            "Incorrect 1",
+                            "Incorrect 2",
+                            "Correct 3",
+                            "Incorrect 4",
+                         ],
+                         correctAnswer: 2),
+    ]
+
+    static var conversationAudioClips: [String] = [
+        "Police.mp3",
+    ]
+
+    static var ambientAudioClips: [String] = [
+        "FunkySynth.m4a",
     ]
 }

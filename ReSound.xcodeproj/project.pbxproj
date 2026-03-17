@@ -7,16 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		249912872F696B4500ECA9DE /* AudioSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 249912862F696B4000ECA9DE /* AudioSourceView.swift */; };
+		2499128D2F6989BB00ECA9DE /* Police.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2499128C2F6989BB00ECA9DE /* Police.mp3 */; };
 		DF02DEAC2BEC1DDD008047B2 /* EntryPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF02DEAB2BEC1DDD008047B2 /* EntryPoint.swift */; };
 		DF02DEB22BEC1DE2008047B2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DF02DEB12BEC1DE2008047B2 /* Assets.xcassets */; };
 		DF02DEB52BEC1DE2008047B2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DF02DEB42BEC1DE2008047B2 /* Preview Assets.xcassets */; };
 		DF02DEBF2BEC2544008047B2 /* FunkySynth.m4a in Resources */ = {isa = PBXBuildFile; fileRef = DF02DEBE2BEC2543008047B2 /* FunkySynth.m4a */; };
 		DF02DEC12BEC3486008047B2 /* DecibelSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF02DEC02BEC3486008047B2 /* DecibelSlider.swift */; };
 		DF02DEC32BEC38F9008047B2 /* AxisVisualizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF02DEC22BEC38F9008047B2 /* AxisVisualizer.swift */; };
-		F5527B1F2C4EF5680054C698 /* SpatialAudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5527B1E2C4EF5680054C698 /* SpatialAudioView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		249912862F696B4000ECA9DE /* AudioSourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSourceView.swift; sourceTree = "<group>"; };
+		2499128C2F6989BB00ECA9DE /* Police.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Police.mp3; sourceTree = "<group>"; };
 		426E76349D97A181D8FA61E0 /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		68F42DE3A7DF4126C4C25FBE /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 		A1B988F6D3A2520F964FC288 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -28,7 +31,6 @@
 		DF02DEBE2BEC2543008047B2 /* FunkySynth.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = FunkySynth.m4a; sourceTree = "<group>"; };
 		DF02DEC02BEC3486008047B2 /* DecibelSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecibelSlider.swift; sourceTree = "<group>"; };
 		DF02DEC22BEC38F9008047B2 /* AxisVisualizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AxisVisualizer.swift; sourceTree = "<group>"; };
-		F5527B1E2C4EF5680054C698 /* SpatialAudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialAudioView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -97,8 +99,8 @@
 		F5527B1D2C4EF5360054C698 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				F5527B1E2C4EF5680054C698 /* SpatialAudioView.swift */,
 				DF02DEC02BEC3486008047B2 /* DecibelSlider.swift */,
+				249912862F696B4000ECA9DE /* AudioSourceView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -107,6 +109,7 @@
 			isa = PBXGroup;
 			children = (
 				DF02DEBE2BEC2543008047B2 /* FunkySynth.m4a */,
+				2499128C2F6989BB00ECA9DE /* Police.mp3 */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -192,6 +195,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2499128D2F6989BB00ECA9DE /* Police.mp3 in Resources */,
 				DF02DEB52BEC1DE2008047B2 /* Preview Assets.xcassets in Resources */,
 				DF02DEB22BEC1DE2008047B2 /* Assets.xcassets in Resources */,
 				DF02DEBF2BEC2544008047B2 /* FunkySynth.m4a in Resources */,
@@ -206,8 +210,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				DF02DEC32BEC38F9008047B2 /* AxisVisualizer.swift in Sources */,
-				F5527B1F2C4EF5680054C698 /* SpatialAudioView.swift in Sources */,
 				DF02DEC12BEC3486008047B2 /* DecibelSlider.swift in Sources */,
+				249912872F696B4500ECA9DE /* AudioSourceView.swift in Sources */,
 				DF02DEAC2BEC1DDD008047B2 /* EntryPoint.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

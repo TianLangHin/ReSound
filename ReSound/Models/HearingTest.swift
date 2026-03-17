@@ -2,56 +2,68 @@
 //  HearingTest.swift
 //  ReSound
 //
-//  Created by Tian Lang Hin on 16/3/2026.
+//  Created by Tian Lang Hin on 17/3/2026.
 //  Copyright © 2026 Apple. All rights reserved.
 //
 
 import Foundation
 
-/// This structure assumes a hearing test has a name of its own,
-/// a list of audio sources which are customised,
-/// and an ordered list of audio sources to be highlighted in each question.
-
+/// Every `HearingTest` instance represents a series of questions asked on
+/// an environment consisting of a fixed set of audio sources
+/// laid around the user's surroundings.
 struct HearingTest {
+    // Each one can be identified by a user-defined name.
     var name: String
-    var audioSources: [TestAudioSource]
-    // The `focusLocations` property tells which audio sources will be focused on
-    // during the hearing test (and the order in which that happens).
-    var focusLocations: [UUID]
+    // These `AudioSource` instances are not to be shared with another `HearingTest` instance.
+    var audioSources: [AudioSource]
+    // Every `AudioQuestion` instance is also not to be shared with another `HearingTest` instance.
+    // There are preset question types with pairing audio clips,
+    // but those are represented by `PossibleQuestion` instances.
+    var questions: [AudioQuestion]
     // For now, the background of a hearing test is assumed to be an image.
     var backgroundResourceLink: String
-
-    /// After any adjustment to the hearing test, this will ensure that all
-    /// references to audio sources are valid and do not crash the program.
-    mutating func fixFocusLocations() {
-        self.focusLocations = self.focusLocations.filter({ audioSourceID in
-            return audioSources.contains(where: { $0.id == audioSourceID })
-        })
-    }
 }
 
-/// Each audio source in a hearing test environment is uniquely identifiable,
-/// has a particular 3D location, and is associated with an asset for representing it visually.
-struct TestAudioSource: Identifiable {
+/// The model representing a visual element that emits an audio clip within a hearing test environment.
+struct AudioSource: Equatable, Hashable {
+    // This `id` attribute allows other structures to easily reference a particular audio source.
     let id = UUID()
+    // This will allow customisation by the clinician to adjust the difficulty of the hearing tests.
+    // It affects which list of audio files it will take from.
+    let type: AudioSourceType
+    // Location relative to the user.
     var location: SIMD3<Float>
+    // Ideally, this will be an enum of choices between various preset assets.
     var visualResourceLink: VisualResourceType
 
-    enum VisualResourceType {
+    enum VisualResourceType: Equatable, Hashable {
         case presetBox
         case asset(String)
     }
+
+    enum AudioSourceType: Equatable, Hashable {
+        case conversation
+        case ambient
+    }
 }
 
-/// This represents a particular question about a certain audio clip,
-/// the corresponding multiple choice answers for the question, and the correct answer.
-/// Multiple `AudioQuestion` instances can exist for a single audio clip,
-/// allowing the creation of more than one question for one reusable piece of audio.
-/// It also provides the specification of a duration so an entire clip does not have to be used.
+/// This represents a particular instance of a `PossibleQuestion` being applied to a `HearingTest`.
+/// This carries the specific information about a question directly applicable to a specific hearing test,
+/// with the "template" information being available via `chosenQuestion` instead.
 struct AudioQuestion: Equatable {
+    let focus: UUID
+    let chosenQuestion: PossibleQuestion
+    let duration: Duration
+}
+
+/// This is the "template" for any `AudioQuestion`.
+/// It represents a preset question with a set of answers (and the correct one) referring to a particular audio file.
+/// There can be multiple possible questions for one audio file, hence there is no uniqueness constraint on
+/// the `audioResourceLink` property.
+struct PossibleQuestion: Equatable {
     let audioResourceLink: String
     let question: String
     let answers: [String]
     let correctAnswer: Int
-    let duration: Duration
 }
+
