@@ -13,9 +13,9 @@ class Presets {
     /// for the instances in `hearingTests` to cotnain the correct UUID values
     /// in the `questionLocations` field, and is not intended for use outside this file.
     private static let audioSources = [
-        TestAudioSource(location: .init(x: 0.0, y: 2.0, z: -1.0), visualResourceLink: "Circle"),
-        TestAudioSource(location: .init(x: 1.0, y: 2.0, z: -1.0), visualResourceLink: "Circle"),
-        TestAudioSource(location: .init(x: -1.0, y: 2.0, z: -1.0), visualResourceLink: "Circle"),
+        TestAudioSource(location: .init(x: 0.0, y: 1.0, z: -1.5), visualResourceLink: .presetBox),
+        TestAudioSource(location: .init(x: 2.0, y: 1.0, z: -1.5), visualResourceLink: .presetBox),
+        TestAudioSource(location: .init(x: -2.0, y: 1.0, z: -1.5), visualResourceLink: .presetBox),
     ]
 
     /// Will be filled with a set of preset hearing test environments.
@@ -26,7 +26,7 @@ class Presets {
                         audioSources[1],
                         audioSources[2],
                     ],
-                    questionLocations: [
+                    focusLocations: [
                         audioSources[0].id,
                         audioSources[1].id,
                     ],
@@ -38,11 +38,12 @@ class Presets {
         AudioQuestion(audioResourceLink: "FunkySynth.m4a",
                       question: "Test Question 1?",
                       answers: [
-                        "Incorrect 1",
-                        "Incorrect 2",
-                        "Correct 1",
-                        "Incorret 3",
+                          "Incorrect 1",
+                          "Incorrect 2",
+                          "Correct 1",
+                          "Incorret 3",
                       ],
-                      correctAnswer: 2),
+                      correctAnswer: 2,
+                      duration: .seconds(10)),
     ]
 }

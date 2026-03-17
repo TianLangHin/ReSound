@@ -15,14 +15,16 @@ import Foundation
 struct HearingTest {
     var name: String
     var audioSources: [TestAudioSource]
-    var questionLocations: [UUID]
+    // The `focusLocations` property tells which audio sources will be focused on
+    // during the hearing test (and the order in which that happens).
+    var focusLocations: [UUID]
     // For now, the background of a hearing test is assumed to be an image.
     var backgroundResourceLink: String
 
     /// After any adjustment to the hearing test, this will ensure that all
     /// references to audio sources are valid and do not crash the program.
-    mutating func fixQuestionLocations() {
-        self.questionLocations = self.questionLocations.filter({ audioSourceID in
+    mutating func fixFocusLocations() {
+        self.focusLocations = self.focusLocations.filter({ audioSourceID in
             return audioSources.contains(where: { $0.id == audioSourceID })
         })
     }
@@ -33,16 +35,23 @@ struct HearingTest {
 struct TestAudioSource: Identifiable {
     let id = UUID()
     var location: SIMD3<Float>
-    var visualResourceLink: String
+    var visualResourceLink: VisualResourceType
+
+    enum VisualResourceType {
+        case presetBox
+        case asset(String)
+    }
 }
 
 /// This represents a particular question about a certain audio clip,
 /// the corresponding multiple choice answers for the question, and the correct answer.
 /// Multiple `AudioQuestion` instances can exist for a single audio clip,
 /// allowing the creation of more than one question for one reusable piece of audio.
-struct AudioQuestion {
+/// It also provides the specification of a duration so an entire clip does not have to be used.
+struct AudioQuestion: Equatable {
     let audioResourceLink: String
     let question: String
     let answers: [String]
     let correctAnswer: Int
+    let duration: Duration
 }

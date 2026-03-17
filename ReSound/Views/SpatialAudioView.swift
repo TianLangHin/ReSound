@@ -10,30 +10,28 @@ import RealityKit
 
 /// A view that plays spatial audio that responds to changes in rotation translation of both the source and the listener.
 struct SpatialAudioView: View {
+    /// The arguments to this view are the `TestAudioSource` instance used as a template to build it.
+    /// and a binding boolean indicator of whether it is focused or not so it can be adjusted without reconstruction.
+    let testAudioSource: TestAudioSource
+    @Binding var isFocused: Bool
+    @Binding var question: AudioQuestion?
+
     /// The entity to contain the audio sample.
     let entity = Entity()
 
-    /// The gain value of the audio source.
-    @State private var gain: Audio.Decibel = .zero
+    @State var audioController: AudioPlaybackController? = nil
 
-    /// The direct signal that emits from the audio source.
-    @State private var directLevel: Audio.Decibel = .zero
-
-    /// The reverb of the audio source.
-    @State private var reverbLevel: Audio.Decibel = .zero
-
-    /// The main body view that includes three child views: the audio source, the description, and the configuration.
+    /// The main body view that includes the audio source only and potentially a visual indicator.
     var body: some View {
         HStack {
             audioSource
-
-            VStack {
-                description
-                Spacer()
-                configuration
+        }
+        .onChange(of: question) { _, newValue in
+            if newValue != nil {
+                startQuestion(question: newValue!)
+            } else {
+                stopQuestion()
             }
-            .padding(30)
-            .frame(width: 350)
         }
     }
 
@@ -42,80 +40,62 @@ struct SpatialAudioView: View {
         RealityView { content in
             // Add the entity to the `RealityView`.
             content.add(entity)
+            // Set the location.
+            entity.transform = Transform(translation: testAudioSource.location)
 
-            /// The name of the audio source.
-            let audioName: String = "FunkySynth.m4a"
-
-            /// The configuration to loop the audio file continously.
-            let configuration = AudioFileResource.Configuration(shouldLoop: true)
-
-            // Load the audio source and set its configuration.
-            guard let audio = try? AudioFileResource.load(
-                named: audioName,
-                configuration: configuration
-            ) else {
-                // Handle the error if the audio file fails to load.
-                print("Failed to load audio file.")
-                return
+            // We construct the visual representation here.
+            switch testAudioSource.visualResourceLink {
+            case .presetBox:
+                // Making a simple box entity of colour red.
+                let mesh = MeshResource.generateBox(size: [0.3, 0.3, 0.3])
+                let material = UnlitMaterial(color: .systemRed)
+                let boxEntity = ModelEntity(mesh: mesh, materials: [material])
+                entity.addChild(boxEntity)
+            case .asset:
+                // Just a stub function for now. This should load a model from the Assets.
+                entity.addChild(AxisVisualizer.make())
             }
 
-            /// The focus for the directivity of the spatial audio.
-            let focus: Double = 0.5
-
-            // Add a spatial component to the entity that emits in the forward direction.
-            entity.spatialAudio = SpatialAudioComponent(directivity: .beam(focus: focus))
-
-            // Set the entity to play audio.
-            entity.playAudio(audio)
-        }
-        // Create an axis representation and add it as a child.
-        .onAppear { entity.addChild(AxisVisualizer.make()) }
-
-        // Enable the view to change the gain parameter.
-        .onChange(of: gain) { entity.spatialAudio?.gain = gain }
-
-        // Enable the view to change the direct level parameter.
-        .onChange(of: directLevel) { entity.spatialAudio?.directLevel = directLevel }
-
-        // Enable the view to change the reverb parameter.
-        .onChange(of: reverbLevel) { entity.spatialAudio?.reverbLevel = reverbLevel }
-    }
-
-    /// A view that guides people through a series of steps to experience the ambient audio.
-    var description: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Spatial Audio")
-                .font(.title)
-
-            Text("Push the app away from you, then bring it closer to you")
-            Text("Notice how the sound gets quieter and louder as it moves")
-                .foregroundStyle(.secondary)
-
-            Text("Move the app around you")
-            Text("Notice how the sound emanates around you as it moves")
-                .foregroundStyle(.secondary)
-
-            Text("Rotate your head")
-            Text("Notice how the sound radiates from the app's location")
-                .foregroundStyle(.secondary)
-
-            Text("Move your head towards the red axis")
-            Text("Notice how the sound gets louder as you move towards the emitter")
-                .foregroundStyle(.secondary)
+            // After that, if the entity is being visually focused, add another visual indicator.
+            if isFocused {
+                let mesh = MeshResource.generateSphere(radius: 0.1)
+                let material = UnlitMaterial(color: .systemYellow)
+                let indicatorEntity = ModelEntity(mesh: mesh, materials: [material])
+                // Attach the child `indicatorEntity` to be slightly above the object to be focused.
+                indicatorEntity.position = [0, 0.2, 0]
+                entity.addChild(indicatorEntity)
+            }
         }
     }
 
-    /// A view that uses the `DecibelSlider` to control the gain value of the audio source.
-    var configuration: some View {
-        VStack {
-            /// The slider to control the gain value.
-            DecibelSlider(name: "Gain", value: $gain)
-
-            /// The slider to control the direct level value.
-            DecibelSlider(name: "Direct Level", value: $directLevel)
-
-            /// The slider to control the reverb level.
-            DecibelSlider(name: "Reverb Level", value: $reverbLevel)
+    /// This function is to be called immediately upon the start of a question,
+    /// allowing a single `SpatialAudioView` to be created once and reused for the entire test.
+    public func startQuestion(question: AudioQuestion) {
+        // Load the audio clip.
+        guard let audio = try? AudioFileResource.load(
+            named: question.audioResourceLink,
+            configuration: AudioFileResource.Configuration(shouldLoop: true)) else {
+            // Handle the error if the audio file fails to load. Stub for now.
+            print("Failed to load audio file.")
+            return
         }
+
+        // If any previous audio source is running, stop it.
+        self.audioController?.stop()
+
+        // Set the spatial audio settings of the entity, attach it to the entity, and play the audio.
+        entity.spatialAudio = SpatialAudioComponent(directivity: .beam(focus: 1.0))
+        self.audioController = entity.playAudio(audio)
+
+        // Set the clip to stop playing after the question's duration times out.
+        Task {
+            try? await Task.sleep(for: question.duration)
+            self.audioController?.stop()
+            // Loading the question view after this will be the next task.
+        }
+    }
+
+    func stopQuestion() {
+        self.audioController?.stop()
     }
 }
