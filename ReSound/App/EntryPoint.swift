@@ -29,6 +29,11 @@ struct EntryPoint: App {
                 }
                 Button("Start Question") {
                     question = Presets.audioQuestions[0]
+                    // Resets the question status after it ends.
+                    Task {
+                        try? await Task.sleep(for: question!.duration)
+                        question = nil
+                    }
                 }
                 Button("Stop Question") {
                     question = nil
