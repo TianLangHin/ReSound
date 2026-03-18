@@ -23,9 +23,6 @@ struct AudioSourceView: View {
     // The visual indicator if required.
     @State var indicatorEntity: Entity
 
-    // This internal state is used to control automatic stopping of the audio clip after a certain duration.
-    @State var audioController: AudioPlaybackController? = nil
-
     var body: some View {
         RealityView { content in
             // First, the entity is loaded at the predefined distance from the user.
@@ -55,6 +52,9 @@ struct AudioSourceView: View {
                 entity.addChild(self.indicatorEntity)
             }
         } update: { content in
+            /// All updates occur here.
+
+            /// Step 1: Determine whether we need to display the visual indicator or not.
             let newQuestion = hearingTest.questions[questionNumber]
             let isFocused = newQuestion.focus == audioSource.id
             if isFocused {
@@ -62,53 +62,39 @@ struct AudioSourceView: View {
             } else {
                 content.entities[0].removeChild(self.indicatorEntity)
             }
-        }
-        .onChange(of: isPlayingAudio) { _, newValue in
-            // The audio will begin to play when the `isPlayingAudio` value binding is set to true.
-            if newValue {
-                let currentQuestion = hearingTest.questions[questionNumber]
-                playAudio(audioLink: currentQuestion.chosenQuestion.audioResourceLink)
+
+            /// Step 2: Determing whether we need to play the audio.
+            if isPlayingAudio {
+                // Find the audio resource to load.
+                let audioLink = if newQuestion.focus == audioSource.id {
+                    newQuestion.chosenQuestion.audioResourceLink
+                } else {
+                    switch audioSource.type {
+                    case .conversation:
+                        Presets.conversationAudioClips[0]
+                    case .ambient:
+                        Presets.ambientAudioClips[0]
+                    }
+                }
+                // Load the audio clip.
+                guard let audio = try? AudioFileResource.load(
+                    named: audioLink,
+                    configuration: AudioFileResource.Configuration(shouldLoop: true)) else {
+                    // Handle the error if the audio file fails to load. Stub for now.
+                    print("Failed to load audio file.")
+                    return
+                }
+                print("we are here.")
+                // Set the spatial audio settings of the entity, attach it to the entity, and play the audio.
+                content.entities[0].spatialAudio = SpatialAudioComponent(directivity: .beam(focus: 1.0))
+                let audioController = content.entities[0].playAudio(audio)
+
+                // Set the clip to stop playing after the question's duration times out.
+                Task {
+                    try? await Task.sleep(for: newQuestion.duration)
+                    audioController.stop()
+                }
             }
-        }
-    }
-
-    /// This function handles the initiation of playing audio,
-    /// providing the information of the resource link in the call.
-    func playAudio(audioLink: String) {
-        let currentQuestion = hearingTest.questions[questionNumber]
-        let audioLink = if currentQuestion.focus == audioSource.id {
-            currentQuestion.chosenQuestion.audioResourceLink
-        } else {
-            // For now, this just takes the first possible preset conversation/ambient clip.
-            switch audioSource.type {
-            case .conversation:
-                Presets.conversationAudioClips[0]
-            case .ambient:
-                Presets.ambientAudioClips[0]
-            }
-        }
-        // Load the audio clip.
-        guard let audio = try? AudioFileResource.load(
-            named: audioLink,
-            configuration: AudioFileResource.Configuration(shouldLoop: true)) else {
-            // Handle the error if the audio file fails to load. Stub for now.
-            print("Failed to load audio file.")
-            return
-        }
-
-        // If any previous audio source is running, stop it.
-        self.audioController?.stop()
-
-        // Set the spatial audio settings of the entity, attach it to the entity, and play the audio.
-        entity.spatialAudio = SpatialAudioComponent(directivity: .beam(focus: 1.0))
-        self.audioController = entity.playAudio(audio)
-
-        // Set the clip to stop playing after the question's duration times out.
-        Task {
-            let currentQuestion = hearingTest.questions[questionNumber]
-            try? await Task.sleep(for: currentQuestion.duration)
-            self.audioController?.stop()
-            // Loading the question view after this will be the next task.
         }
     }
 }

@@ -23,8 +23,10 @@ struct EntryPoint: App {
     // This state is just to control some temporary buttons for exploring the prototype.
     @State var questionAdvanceText = "Next Question"
 
+    // This should be a loaded asset, but for now is just a yellow sphere to indicate focus.
     let indicatorEntity = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.1),
                                       materials: [UnlitMaterial(color: .systemYellow)])
+
     var body: some SwiftUI.Scene {
         WindowGroup {
             HStack {
@@ -44,7 +46,9 @@ struct EntryPoint: App {
                 .padding()
                 // Plays the hearing test question.
                 Button("Play") {
-                    isPlaying = true
+                    if !isPlaying {
+                        isPlaying = true
+                    }
                     Task {
                         let duration = Presets.hearingTests[hearingTestIndex].questions[questionNumber].duration
                         try? await Task.sleep(for: duration)
@@ -53,12 +57,12 @@ struct EntryPoint: App {
                     }
                 }
                 .padding()
+                Text("\(isPlaying)")
                 // Resets and returns back to the first question.
                 Button {
                     if questionNumber < Presets.hearingTests[hearingTestIndex].questions.count - 1 {
                         // Loads the next question and increments the question number while that is valid.
                         questionNumber += 1
-                        loadNextQuestion()
                     } else {
                         questionAdvanceText = "Last Question Reached"
                     }
@@ -73,9 +77,10 @@ struct EntryPoint: App {
                 .padding()
                 // Resets the question number back to 0.
                 Button {
-                    questionNumber = 0
-                    questionAdvanceText = "Next Question"
-                    loadNextQuestion()
+                    if !isPlaying {
+                        questionNumber = 0
+                        questionAdvanceText = "Next Question"
+                    }
                 } label: {
                     Text("Reset")
                         .font(.largeTitle)
@@ -96,16 +101,6 @@ struct EntryPoint: App {
                                 indicatorEntity: indicatorEntity)
             }
         }
-        .immersionStyle(selection: .constant(.mixed), in: .mixed)
-    }
-
-    /// Uses the dismissing and opening of the immersive space to force the entity updates.
-    func loadNextQuestion() {
-        /*
-        Task {
-            await dismissImmersiveSpace()
-            await openImmersiveSpace(id: "test1")
-        }
-         */
+        .immersionStyle(selection: .constant(.full), in: .full)
     }
 }
