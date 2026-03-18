@@ -25,7 +25,7 @@ class Presets {
                                       chosenQuestion: Presets.possibleQuestions[0],
                                       duration: .seconds(10)),
                         AudioQuestion(focus: Presets.audioSources[1].id,
-                                      chosenQuestion: Presets.possibleQuestions[0],
+                                      chosenQuestion: Presets.possibleQuestions[1],
                                       duration: .seconds(10)),
                     ],
                     backgroundResourceLink: "DefaultBackground")
@@ -41,6 +41,15 @@ class Presets {
                             "Incorrect 4",
                          ],
                          correctAnswer: 2),
+        PossibleQuestion(audioResourceLink: "Police.mp3",
+                         question: "Test Question 2?",
+                         answers: [
+                            "Correct 1",
+                            "Incorrect 2",
+                            "Incorrect 3",
+                            "Incorrect 4"
+                         ],
+                         correctAnswer: 0),
     ]
 
     static var conversationAudioClips: [String] = [

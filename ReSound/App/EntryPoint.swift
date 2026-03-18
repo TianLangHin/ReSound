@@ -30,60 +30,77 @@ struct EntryPoint: App {
     var body: some SwiftUI.Scene {
         WindowGroup {
             HStack {
-                // Opens the immersive space.
-                Button("Open") {
-                    Task {
-                        await openImmersiveSpace(id: "test1")
+                VStack {
+                    // Opens the immersive space.
+                    Button("Open") {
+                        Task {
+                            await openImmersiveSpace(id: "test1")
+                        }
                     }
-                }
-                .padding()
-                // Closes the immersive space.
-                Button("Close") {
-                    Task {
-                        await dismissImmersiveSpace()
+                    .padding()
+                    // Closes the immersive space.
+                    Button("Close") {
+                        Task {
+                            await dismissImmersiveSpace()
+                        }
                     }
-                }
-                .padding()
-                // Plays the hearing test question.
-                Button("Play") {
-                    if !isPlaying {
-                        isPlaying = true
+                    .padding()
+                    // Plays the hearing test question.
+                    Button("Play") {
+                        if !isPlaying {
+                            isPlaying = true
+                        }
+                        Task {
+                            let duration = Presets.hearingTests[hearingTestIndex].questions[questionNumber].duration
+                            try? await Task.sleep(for: duration)
+                            isPlaying = false
+                            // The logic for window pop ups and further navigation can occur here.
+                        }
                     }
-                    Task {
-                        let duration = Presets.hearingTests[hearingTestIndex].questions[questionNumber].duration
-                        try? await Task.sleep(for: duration)
-                        isPlaying = false
-                        // The logic for window pop ups and further navigation can occur here.
+                    .padding()
+                    Text("\(isPlaying)")
+                    // Resets and returns back to the first question.
+                    Button {
+                        if questionNumber < Presets.hearingTests[hearingTestIndex].questions.count - 1 {
+                            // Loads the next question and increments the question number while that is valid.
+                            questionNumber += 1
+                        } else {
+                            questionAdvanceText = "Last Question Reached"
+                        }
+                    } label: {
+                        HStack {
+                            Text(questionAdvanceText)
+                                .font(.largeTitle)
+                                .padding()
+                            Text("\(questionNumber)")
+                        }
                     }
-                }
-                .padding()
-                Text("\(isPlaying)")
-                // Resets and returns back to the first question.
-                Button {
-                    if questionNumber < Presets.hearingTests[hearingTestIndex].questions.count - 1 {
-                        // Loads the next question and increments the question number while that is valid.
-                        questionNumber += 1
-                    } else {
-                        questionAdvanceText = "Last Question Reached"
-                    }
-                } label: {
-                    HStack {
-                        Text(questionAdvanceText)
+                    .padding()
+                    // Resets the question number back to 0.
+                    Button {
+                        if !isPlaying {
+                            questionNumber = 0
+                            questionAdvanceText = "Next Question"
+                        }
+                    } label: {
+                        Text("Reset")
                             .font(.largeTitle)
-                            .padding()
-                        Text("\(questionNumber)")
                     }
+                    .padding()
                 }
-                .padding()
-                // Resets the question number back to 0.
-                Button {
-                    if !isPlaying {
-                        questionNumber = 0
-                        questionAdvanceText = "Next Question"
-                    }
-                } label: {
-                    Text("Reset")
+                /// This is where the questions will show up.
+                /// During the playing sound phase, it could be empty or a placeholder.
+                VStack {
+                    let currentQuestion = Presets.hearingTests[hearingTestIndex].questions[questionNumber].chosenQuestion
+                    Text("Question: \(currentQuestion.question)")
                         .font(.largeTitle)
+                    List {
+                        ForEach(Array(currentQuestion.answers.enumerated()), id: \.offset) { index, answer in
+                            Text("\(index + 1). \(answer)")
+                                .font(.largeTitle)
+                                .foregroundColor(index == currentQuestion.correctAnswer ? .green : .red)
+                        }
+                    }
                 }
                 .padding()
             }
