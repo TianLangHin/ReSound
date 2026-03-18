@@ -84,7 +84,6 @@ struct AudioSourceView: View {
                     print("Failed to load audio file.")
                     return
                 }
-                print("we are here.")
                 // Set the spatial audio settings of the entity, attach it to the entity, and play the audio.
                 content.entities[0].spatialAudio = SpatialAudioComponent(directivity: .beam(focus: 1.0))
                 let audioController = content.entities[0].playAudio(audio)
@@ -93,6 +92,8 @@ struct AudioSourceView: View {
                 Task {
                     try? await Task.sleep(for: newQuestion.duration)
                     audioController.stop()
+                    // This feeds the status of stopping audio back to the outer scenes.
+                    isPlayingAudio = false
                 }
             }
         }

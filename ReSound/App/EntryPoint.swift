@@ -20,6 +20,9 @@ struct EntryPoint: App {
     @State var hearingTestIndex = 0
     @State var questionNumber = 0
 
+    @State var isDisplayingImmersive = false
+    @State var score = 0
+
     // This state is just to control some temporary buttons for exploring the prototype.
     @State var questionAdvanceText = "Next Question"
 
@@ -33,15 +36,21 @@ struct EntryPoint: App {
                 VStack {
                     // Opens the immersive space.
                     Button("Open") {
-                        Task {
-                            await openImmersiveSpace(id: "test1")
+                        if !isDisplayingImmersive {
+                            isDisplayingImmersive = true
+                            Task {
+                                await openImmersiveSpace(id: "test1")
+                            }
                         }
                     }
                     .padding()
                     // Closes the immersive space.
                     Button("Close") {
-                        Task {
-                            await dismissImmersiveSpace()
+                        if isDisplayingImmersive {
+                            isDisplayingImmersive = false
+                            Task {
+                                await dismissImmersiveSpace()
+                            }
                         }
                     }
                     .padding()
@@ -81,6 +90,7 @@ struct EntryPoint: App {
                         if !isPlaying {
                             questionNumber = 0
                             questionAdvanceText = "Next Question"
+                            score = 0
                         }
                     } label: {
                         Text("Reset")
@@ -92,13 +102,43 @@ struct EntryPoint: App {
                 /// During the playing sound phase, it could be empty or a placeholder.
                 VStack {
                     let currentQuestion = Presets.hearingTests[hearingTestIndex].questions[questionNumber].chosenQuestion
-                    Text("Question: \(currentQuestion.question)")
-                        .font(.largeTitle)
-                    List {
-                        ForEach(Array(currentQuestion.answers.enumerated()), id: \.offset) { index, answer in
-                            Text("\(index + 1). \(answer)")
+                    Text("Score: \(score)")
+                        .font(.title)
+                    if isDisplayingImmersive {
+                        if isPlaying {
+                            Text("Now playing audio for Question \(questionNumber + 1).")
                                 .font(.largeTitle)
-                                .foregroundColor(index == currentQuestion.correctAnswer ? .green : .red)
+                        } else {
+                            // This is where the question text and the corresponding answers can be displayed.
+                            Text("Question: \(currentQuestion.question)")
+                                .font(.largeTitle)
+                            List {
+                                ForEach(Array(currentQuestion.answers.enumerated()), id: \.offset) { index, answer in
+                                    Button {
+                                        let lastQuestion = Presets.hearingTests[hearingTestIndex].questions.count - 1
+                                        // This logic should be tidied up/wrapped in a function later.
+                                        // This handles whether to advance to a next question or not.
+                                        if questionNumber <= lastQuestion {
+                                            if questionNumber < lastQuestion {
+                                                questionNumber += 1
+                                                if currentQuestion.correctAnswer == index {
+                                                    score += 1
+                                                }
+                                                isPlaying = true
+                                            } else {
+                                                questionAdvanceText = "Last Question Reached"
+                                            }
+                                        } else {
+                                            questionAdvanceText = "Last Question Reached"
+                                        }
+                                    } label: {
+                                        // The answers should not actually be colour-coded, but this is just a demonstration.
+                                        Text("\(index + 1). \(answer)")
+                                            .font(.largeTitle)
+                                            .foregroundColor(index == currentQuestion.correctAnswer ? .green : .red)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
