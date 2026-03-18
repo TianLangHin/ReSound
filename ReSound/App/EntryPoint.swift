@@ -6,6 +6,7 @@ The app's main entry point.
 */
 
 import SwiftUI
+import RealityKit
 
 @main
 struct EntryPoint: App {
@@ -22,7 +23,9 @@ struct EntryPoint: App {
     // This state is just to control some temporary buttons for exploring the prototype.
     @State var questionAdvanceText = "Next Question"
 
-    var body: some Scene {
+    let indicatorEntity = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.1),
+                                      materials: [UnlitMaterial(color: .systemYellow)])
+    var body: some SwiftUI.Scene {
         WindowGroup {
             HStack {
                 // Opens the immersive space.
@@ -89,7 +92,8 @@ struct EntryPoint: App {
                 AudioSourceView(audioSource: audioSource,
                                 hearingTest: hearingTest,
                                 questionNumber: $questionNumber,
-                                isPlayingAudio: $isPlaying)
+                                isPlayingAudio: $isPlaying,
+                                indicatorEntity: indicatorEntity)
             }
         }
         .immersionStyle(selection: .constant(.mixed), in: .mixed)
@@ -97,9 +101,11 @@ struct EntryPoint: App {
 
     /// Uses the dismissing and opening of the immersive space to force the entity updates.
     func loadNextQuestion() {
+        /*
         Task {
             await dismissImmersiveSpace()
             await openImmersiveSpace(id: "test1")
         }
+         */
     }
 }

@@ -21,7 +21,7 @@ struct AudioSourceView: View {
     // The main entity displaying the audio source.
     let entity = Entity()
     // The visual indicator if required.
-    @State var indicatorEntity: Entity? = nil
+    @State var indicatorEntity: Entity
 
     // This internal state is used to control automatic stopping of the audio clip after a certain duration.
     @State var audioController: AudioPlaybackController? = nil
@@ -49,14 +49,18 @@ struct AudioSourceView: View {
             let currentQuestion = hearingTest.questions[questionNumber]
             let isFocused = currentQuestion.focus == audioSource.id
 
-            // After that, if the entity is being visually focused, add another visual indicator.
+            // Attach the child `indicatorEntity` to be slightly above the object to be focused.
+            self.indicatorEntity.position = [0, 0.3, 0]
             if isFocused {
-                let mesh = MeshResource.generateSphere(radius: 0.1)
-                let material = UnlitMaterial(color: .systemYellow)
-                self.indicatorEntity = ModelEntity(mesh: mesh, materials: [material])
-                // Attach the child `indicatorEntity` to be slightly above the object to be focused.
-                self.indicatorEntity?.position = [0, 0.3, 0]
-                entity.addChild(self.indicatorEntity!)
+                entity.addChild(self.indicatorEntity)
+            }
+        } update: { content in
+            let newQuestion = hearingTest.questions[questionNumber]
+            let isFocused = newQuestion.focus == audioSource.id
+            if isFocused {
+                content.entities[0].addChild(self.indicatorEntity)
+            } else {
+                content.entities[0].removeChild(self.indicatorEntity)
             }
         }
         .onChange(of: isPlayingAudio) { _, newValue in
@@ -64,22 +68,6 @@ struct AudioSourceView: View {
             if newValue {
                 let currentQuestion = hearingTest.questions[questionNumber]
                 playAudio(audioLink: currentQuestion.chosenQuestion.audioResourceLink)
-            }
-        }
-        .onChange(of: questionNumber) { _, newValue in
-            // The question number changing also requires a separate check of whether it is being focused on.
-            let newQuestion = hearingTest.questions[newValue]
-            let isFocused = newQuestion.focus == audioSource.id
-            if isFocused {
-                let mesh = MeshResource.generateSphere(radius: 0.1)
-                let material = UnlitMaterial(color: .systemYellow)
-                self.indicatorEntity = ModelEntity(mesh: mesh, materials: [material])
-                // Attach the child `indicatorEntity` to be slightly above the object to be focused.
-                self.indicatorEntity?.position = [0, 0.2, 0]
-            } else {
-                if let indicatorEntity = self.indicatorEntity {
-                    entity.removeChild(indicatorEntity)
-                }
             }
         }
     }
