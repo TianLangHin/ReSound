@@ -35,6 +35,8 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		242A02422F67846B00F55E83 /* Models */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Models; sourceTree = "<group>"; };
+		8918050A2F6B8FEB003BF333 /* Audio Samples */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Audio Samples"; sourceTree = "<group>"; };
+		8918050C2F6B91AC003BF333 /* Background Noise */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Background Noise"; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +56,15 @@
 				68F42DE3A7DF4126C4C25FBE /* SampleCode.xcconfig */,
 			);
 			name = Configuration;
+			sourceTree = "<group>";
+		};
+		8918050B2F6B91A3003BF333 /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				DF02DEBE2BEC2543008047B2 /* FunkySynth.m4a */,
+				2499128C2F6989BB00ECA9DE /* Police.mp3 */,
+			);
+			path = Other;
 			sourceTree = "<group>";
 		};
 		DF02DE9B2BEC1DDD008047B2 = {
@@ -108,8 +119,9 @@
 		F5527B202C4EF5790054C698 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				DF02DEBE2BEC2543008047B2 /* FunkySynth.m4a */,
-				2499128C2F6989BB00ECA9DE /* Police.mp3 */,
+				8918050A2F6B8FEB003BF333 /* Audio Samples */,
+				8918050C2F6B91AC003BF333 /* Background Noise */,
+				8918050B2F6B91A3003BF333 /* Other */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -150,6 +162,8 @@
 			);
 			fileSystemSynchronizedGroups = (
 				242A02422F67846B00F55E83 /* Models */,
+				8918050A2F6B8FEB003BF333 /* Audio Samples */,
+				8918050C2F6B91AC003BF333 /* Background Noise */,
 			);
 			name = ReSound;
 			productName = SpatialAudio;
