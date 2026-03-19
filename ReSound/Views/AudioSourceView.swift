@@ -28,6 +28,7 @@ struct AudioSourceView: View {
             // First, the entity is loaded at the predefined distance from the user.
             content.add(entity)
             entity.transform = Transform(translation: audioSource.location)
+            entity.components.set(BillboardComponent())
 
             // We construct the visual representation here.
             switch audioSource.visualResourceLink {
@@ -85,7 +86,7 @@ struct AudioSourceView: View {
                     return
                 }
                 // Set the spatial audio settings of the entity, attach it to the entity, and play the audio.
-                content.entities[0].spatialAudio = SpatialAudioComponent(directivity: .beam(focus: 1.0))
+                content.entities[0].spatialAudio = SpatialAudioComponent(directivity: .beam(focus: 0.2))
                 let audioController = content.entities[0].playAudio(audio)
 
                 // Set the clip to stop playing after the question's duration times out.
