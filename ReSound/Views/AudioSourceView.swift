@@ -71,7 +71,8 @@ struct AudioSourceView: View {
             }
 
             /// Step 2: Determing whether we need to play the audio.
-            if isPlayingAudio {
+            /// Added logic here to ensure the mechanism preventing double sound works correctly.
+            if isPlayingAudio && !isAudioLoaded {
                 
                 // Avoid double sound (Benchmark purpose)
                 Task { @MainActor in
