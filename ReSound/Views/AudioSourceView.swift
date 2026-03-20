@@ -15,8 +15,14 @@ import RealityKit
 struct AudioSourceView: View {
     let audioSource: AudioSource
     let hearingTest: HearingTest
+    let speechRec: SpeechRec
     @Binding var questionNumber: Int
     @Binding var isPlayingAudio: Bool
+    
+    @State private var recogniseQuesNum: Int? = nil
+    
+    /// Check if the audio already loaded (Benchmark purpose)
+    @State private var isAudioLoaded = false
 
     // The main entity displaying the audio source.
     let entity = Entity()
@@ -66,6 +72,12 @@ struct AudioSourceView: View {
 
             /// Step 2: Determing whether we need to play the audio.
             if isPlayingAudio {
+                
+                // Avoid double sound (Benchmark purpose)
+                Task { @MainActor in
+                    isAudioLoaded = true
+                }
+                
                 // Find the audio resource to load.
                 let audioLink = if newQuestion.focus == audioSource.id {
                     newQuestion.chosenQuestion.audioResourceLink
@@ -96,7 +108,85 @@ struct AudioSourceView: View {
                     // This feeds the status of stopping audio back to the outer scenes.
                     isPlayingAudio = false
                 }
+                
+                /// Benchmarking dw about it
+                Task {
+                    try? await Task.sleep(for: newQuestion.duration)
+                    audioController.stop()
+                    isPlayingAudio = false
+                    Task { @MainActor in
+                        isAudioLoaded = false
+                    }
+                }
+            }
+            
+            
+            
+            /// I put them in task for now to avoid these bindings/states to be modified and cooked mid process (aka avoid undefined behaviour :<)
+            if isFocused {
+                if !isPlayingAudio && recogniseQuesNum != questionNumber {
+                    /// Start recognise
+                    Task { @MainActor in
+                        recogniseQuesNum = questionNumber
+                        try? speechRec.startRec()
+                    }
+                } else if isPlayingAudio && speechRec.isRecording {
+                    /// Stop and reinitialise for next time
+                    Task { @MainActor in
+                        speechRec.stopRec()
+                        recogniseQuesNum = nil
+                    }
+                }
+            }
+        }
+        .onChange(of: speechRec.speechContent) { _, newContent in
+            let newQuestion = hearingTest.questions[questionNumber]
+            guard newQuestion.focus == audioSource.id, !isPlayingAudio else { return }
+
+            validateSpeechContent(newContent, question: newQuestion.chosenQuestion)
+        }
+        // Stop record when play is clicked (to avoid progress during sound) - benchmarkibng
+        .onChange(of: isPlayingAudio) { _, newValue in
+            if newValue && speechRec.isRecording {
+                speechRec.stopRec()
+                Task { @MainActor in
+                    recogniseQuesNum = nil
+                }
+            }
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    /// Function to validate the content of the speech
+    private func validateSpeechContent(_ content: String, question: PossibleQuestion) {
+        let normalisedContent = content.lowercased()
+        for (index, answer) in question.answers.enumerated() {
+            
+            /// Substring match to see if the user mentioned the answer
+            if normalisedContent.contains(answer.lowercased()) {
+                speechRec.stopRec()
+                
+                /// Advance into the next question exactly like a button tap would.
+                let lastQuestion = Presets.hearingTests[0].questions.count - 1
+                if questionNumber < lastQuestion {
+                    if index == question.correctAnswer {
+                        /// Manage scroe here or sth
+                    }
+                    questionNumber += 1
+                    isPlayingAudio = true
+                }
+                break
             }
         }
     }
 }
+
+
+
+

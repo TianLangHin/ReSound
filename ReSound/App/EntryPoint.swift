@@ -10,6 +10,9 @@ import RealityKit
 
 @main
 struct EntryPoint: App {
+    /// State for speech rec
+    @State var speechRec = SpeechRec()
+    
     @Environment(\.openImmersiveSpace) private var openImmersiveSpace
     @Environment(\.dismissImmersiveSpace) private var dismissImmersiveSpace
 
@@ -68,6 +71,9 @@ struct EntryPoint: App {
                     }
                     .padding()
                     Text("\(isPlaying)")
+                    Text(speechRec.isRecording ? "Speak louder bro" : "No Mic in VC")
+                        .foregroundColor(speechRec.isRecording ? .green : .red)
+                        .font(.title)
                     // Resets and returns back to the first question.
                     Button {
                         if questionNumber < Presets.hearingTests[hearingTestIndex].questions.count - 1 {
@@ -144,6 +150,11 @@ struct EntryPoint: App {
                 }
                 .padding()
             }
+            
+            /// Testing for speech recog
+            .task {
+                await speechRec.authoriseRequest()
+            }
         }
         /// Displays the immersive space in a mixed style so that the reset
         /// of the immersion does not cause lag or drastic visual changes.
@@ -153,7 +164,7 @@ struct EntryPoint: App {
             ForEach(hearingTest.audioSources, id: \.self) { audioSource in
                 AudioSourceView(audioSource: audioSource,
                                 hearingTest: hearingTest,
-                                questionNumber: $questionNumber,
+                                speechRec: speechRec, questionNumber: $questionNumber,
                                 isPlayingAudio: $isPlaying,
                                 indicatorEntity: indicatorEntity)
             }
