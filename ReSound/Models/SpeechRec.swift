@@ -45,7 +45,7 @@ class SpeechRec {
         simulatorTask = Task {
             try? await Task.sleep(for: .seconds(5))
             guard !Task.isCancelled else { return }
-            speechContent = "Correct 3"
+            speechContent = "three"
         }
         return
         #endif // targetEnvironment(simulator)

@@ -167,24 +167,46 @@ struct AudioSourceView: View {
     /// Function to validate the content of the speech
     private func validateSpeechContent(_ content: String, question: PossibleQuestion) {
         let normalisedContent = content.lowercased()
-        for (index, answer) in question.answers.enumerated() {
-            
-            /// Substring match to see if the user mentioned the answer
-            if normalisedContent.contains(answer.lowercased()) {
-                speechRec.stopRec()
-                
-                /// Advance into the next question exactly like a button tap would.
-                let lastQuestion = Presets.hearingTests[0].questions.count - 1
-                if questionNumber < lastQuestion {
-                    if index == question.correctAnswer {
-                        /// Manage scroe here or sth
-                    }
-                    questionNumber += 1
-                    isPlayingAudio = true
-                }
-                break
+        let triggerWords = ["one", "two", "three", "four"]
+        let answersDictionary = ["one": 0, "two": 1, "three": 2, "four": 3]
+        
+        // Search for the first trigger word + match it with the index
+        guard let matchedWord = triggerWords.first(where: { normalisedContent.contains($0) }),
+              let index = answersDictionary[matchedWord] else { return }
+        
+        speechRec.stopRec()
+        
+        let lastQuestion = Presets.hearingTests[0].questions.count - 1
+        if questionNumber < lastQuestion {
+            if index == question.correctAnswer {
+                // manage score here (where do you manage score again????)
             }
+            questionNumber += 1
+            isPlayingAudio = true
+            print("Answer chosen is \(question.answers[index])")
+            print("Score + 1")
         }
+        
+        
+        
+//        for (index, answer) in question.answers.enumerated() {
+//            
+//            /// Substring match to see if the user mentioned the answer
+//            if normalisedContent.contains("one two three four") {
+//                speechRec.stopRec()
+//                
+//                /// Advance into the next question exactly like a button tap would.
+//                let lastQuestion = Presets.hearingTests[0].questions.count - 1
+//                if questionNumber < lastQuestion {
+//                    if index == question.correctAnswer {
+//                        /// Manage scroe here or sth
+//                    }
+//                    questionNumber += 1
+//                    isPlayingAudio = true
+//                }
+//                break
+//            }
+//        }
     }
 }
 
