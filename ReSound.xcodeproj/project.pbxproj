@@ -34,6 +34,8 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		068434EE2F6E51A00064A64B /* HDRI Backgrounds */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "HDRI Backgrounds"; sourceTree = "<group>"; };
+		068434EF2F6E51AF0064A64B /* 3D Models */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "3D Models"; sourceTree = "<group>"; };
 		242A02422F67846B00F55E83 /* Models */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Models; sourceTree = "<group>"; };
 		8918050A2F6B8FEB003BF333 /* Audio Samples */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Audio Samples"; sourceTree = "<group>"; };
 		8918050C2F6B91AC003BF333 /* Background Noise */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Background Noise"; sourceTree = "<group>"; };
@@ -119,6 +121,8 @@
 		F5527B202C4EF5790054C698 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				068434EF2F6E51AF0064A64B /* 3D Models */,
+				068434EE2F6E51A00064A64B /* HDRI Backgrounds */,
 				8918050A2F6B8FEB003BF333 /* Audio Samples */,
 				8918050C2F6B91AC003BF333 /* Background Noise */,
 				8918050B2F6B91A3003BF333 /* Other */,
@@ -161,6 +165,8 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				068434EE2F6E51A00064A64B /* HDRI Backgrounds */,
+				068434EF2F6E51AF0064A64B /* 3D Models */,
 				242A02422F67846B00F55E83 /* Models */,
 				8918050A2F6B8FEB003BF333 /* Audio Samples */,
 				8918050C2F6B91AC003BF333 /* Background Noise */,
