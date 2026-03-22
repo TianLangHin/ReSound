@@ -12,163 +12,45 @@ import RealityKit
 struct EntryPoint: App {
     /// State for speech rec
     @State var speechRec = SpeechRec()
-    
-    @Environment(\.openImmersiveSpace) private var openImmersiveSpace
-    @Environment(\.dismissImmersiveSpace) private var dismissImmersiveSpace
 
-    /// States to control whether the audio questions are playing,
-    /// which hearing test is being used,
-    /// and which question within that hearing test is playing.
-    @State var isPlaying = false
-    @State var hearingTestIndex = 0
-    @State var questionNumber = 0
+    @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismissWindow) private var dismissWindow
 
-    @State var isDisplayingImmersive = false
-    @State var score = 0
-
-    // This state is just to control some temporary buttons for exploring the prototype.
-    @State var questionAdvanceText = "Next Question"
-
-    // This should be a loaded asset, but for now is just a yellow sphere to indicate focus.
-    let indicatorEntity = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.1),
-                                      materials: [UnlitMaterial(color: .systemYellow)])
+    @State var hearingTest = Presets.hearingTests[0]
+    @State var hearingTestNumber = 0
+    @State var isHearingTestOpened = false
 
     var body: some SwiftUI.Scene {
-        WindowGroup {
-            HStack {
+        WindowGroup(id: "main-window") {
+            if !isHearingTestOpened {
                 VStack {
-                    // Opens the immersive space.
-                    Button("Open") {
-                        if !isDisplayingImmersive {
-                            isDisplayingImmersive = true
-                            Task {
-                                await openImmersiveSpace(id: "test1")
-                            }
-                        }
-                    }
-                    .padding()
-                    // Closes the immersive space.
-                    Button("Close") {
-                        if isDisplayingImmersive {
-                            isDisplayingImmersive = false
-                            Task {
-                                await dismissImmersiveSpace()
-                            }
-                        }
-                    }
-                    .padding()
-                    // Plays the hearing test question.
-                    Button("Play") {
-                        if !isPlaying {
-                            isPlaying = true
-                        }
-                        Task {
-                            let duration = Presets.hearingTests[hearingTestIndex].questions[questionNumber].duration
-                            try? await Task.sleep(for: duration)
-                            isPlaying = false
-                            // The logic for window pop ups and further navigation can occur here.
-                        }
-                    }
-                    .padding()
-                    Text("\(isPlaying)")
-                    Text(speechRec.isRecording ? "Speak louder bro" : "No Mic in VC")
-                        .foregroundColor(speechRec.isRecording ? .green : .red)
-                        .font(.title)
-                    // Resets and returns back to the first question.
-                    Button {
-                        if questionNumber < Presets.hearingTests[hearingTestIndex].questions.count - 1 {
-                            // Loads the next question and increments the question number while that is valid.
-                            questionNumber += 1
-                        } else {
-                            questionAdvanceText = "Last Question Reached"
-                        }
-                    } label: {
-                        HStack {
-                            Text(questionAdvanceText)
-                                .font(.largeTitle)
+                    Picker(selection: $hearingTest) {
+                        ForEach(Presets.hearingTests, id: \.self) { item in
+                            Text(item.name)
+                                .font(.title2)
                                 .padding()
-                            Text("\(questionNumber)")
-                        }
-                    }
-                    .padding()
-                    // Resets the question number back to 0.
-                    Button {
-                        if !isPlaying {
-                            questionNumber = 0
-                            questionAdvanceText = "Next Question"
-                            score = 0
+                                .tag(item)
                         }
                     } label: {
-                        Text("Reset")
-                            .font(.largeTitle)
+                        Text("Select test environment.")
+                            .font(.title2)
+                    }
+                    .padding()
+                    Button {
+                        isHearingTestOpened = true
+                        openWindow(id: "hearing-test-window")
+                    } label: {
+                        Text("Patient View")
+                            .font(.title3)
                     }
                     .padding()
                 }
-                /// This is where the questions will show up.
-                /// During the playing sound phase, it could be empty or a placeholder.
-                VStack {
-                    let currentQuestion = Presets.hearingTests[hearingTestIndex].questions[questionNumber].chosenQuestion
-                    Text("Score: \(score)")
-                        .font(.title)
-                    if isDisplayingImmersive {
-                        if isPlaying {
-                            Text("Now playing audio for Question \(questionNumber + 1).")
-                                .font(.largeTitle)
-                        } else {
-                            // This is where the question text and the corresponding answers can be displayed.
-                            Text("Question: \(currentQuestion.question)")
-                                .font(.largeTitle)
-                            List {
-                                ForEach(Array(currentQuestion.answers.enumerated()), id: \.offset) { index, answer in
-                                    Button {
-                                        let lastQuestion = Presets.hearingTests[hearingTestIndex].questions.count - 1
-                                        // This logic should be tidied up/wrapped in a function later.
-                                        // This handles whether to advance to a next question or not.
-                                        if questionNumber <= lastQuestion {
-                                            if questionNumber < lastQuestion {
-                                                questionNumber += 1
-                                                if currentQuestion.correctAnswer == index {
-                                                    score += 1
-                                                }
-                                                isPlaying = true
-                                            } else {
-                                                questionAdvanceText = "Last Question Reached"
-                                            }
-                                        } else {
-                                            questionAdvanceText = "Last Question Reached"
-                                        }
-                                    } label: {
-                                        // The answers should not actually be colour-coded, but this is just a demonstration.
-                                        Text("\(index + 1). \(answer)")
-                                            .font(.largeTitle)
-                                            .foregroundColor(index == currentQuestion.correctAnswer ? .green : .red)
-                                    }
-                                }
-                            }
-                        }
-                    }
+                /// Testing for speech recog
+                .task {
+                    await speechRec.authoriseRequest()
                 }
-                .padding()
-            }
-            
-            /// Testing for speech recog
-            .task {
-                await speechRec.authoriseRequest()
             }
         }
-        /// Displays the immersive space in a mixed style so that the reset
-        /// of the immersion does not cause lag or drastic visual changes.
-        ImmersiveSpace(id: "test1") {
-            let hearingTest = Presets.hearingTests[hearingTestIndex]
-            // The audio sources need to be rendered by hash so that it is refreshed correctly.
-            ForEach(hearingTest.audioSources, id: \.self) { audioSource in
-                AudioSourceView(audioSource: audioSource,
-                                hearingTest: hearingTest,
-                                speechRec: speechRec, questionNumber: $questionNumber,
-                                isPlayingAudio: $isPlaying,
-                                indicatorEntity: indicatorEntity)
-            }
-        }
-        .immersionStyle(selection: .constant(.full), in: .full)
+        HearingTestScene(hearingTest: $hearingTest, isOpened: $isHearingTestOpened, speechRec: speechRec)
     }
 }

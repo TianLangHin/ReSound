@@ -29,24 +29,29 @@ struct AudioSourceView: View {
     // The visual indicator if required.
     @State var indicatorEntity: Entity
 
+    let defaultModel = ModelEntity(
+        mesh: MeshResource.generateBox(size: [0.3, 0.3, 0.4]),
+        materials: [UnlitMaterial(color: .systemBlue)])
+
     var body: some View {
         RealityView { content in
             // First, the entity is loaded at the predefined distance from the user.
             content.add(entity)
             entity.transform = Transform(translation: audioSource.location)
-            entity.components.set(BillboardComponent())
 
             // We construct the visual representation here.
             switch audioSource.visualResourceLink {
             case .presetBox:
-                // Making a simple box entity of colour blue.
-                let mesh = MeshResource.generateBox(size: [0.3, 0.3, 0.3])
-                let material = UnlitMaterial(color: .systemBlue)
-                let boxEntity = ModelEntity(mesh: mesh, materials: [material])
-                entity.addChild(boxEntity)
-            case .asset:
-                // Just a stub function for now. This should load a model from the Assets.
-                entity.addChild(AxisVisualizer.make())
+                // Making a simple box entity of colour blue (i.e., use the default).
+                entity.addChild(defaultModel)
+            case let .asset(assetName):
+                // `assetName` should be the name of a USDZ file.
+                if let entityAsset = try? await Entity(named: assetName) {
+                    entityAsset.scale *= 0.3
+                    entity.addChild(entityAsset)
+                } else {
+                    entity.addChild(defaultModel)
+                }
             }
 
             // Next, we determine whether we need to add the extra visual indicator or not.
@@ -54,7 +59,7 @@ struct AudioSourceView: View {
             let isFocused = currentQuestion.focus == audioSource.id
 
             // Attach the child `indicatorEntity` to be slightly above the object to be focused.
-            self.indicatorEntity.position = [0, 0.3, 0]
+            self.indicatorEntity.position = [0, 1.0, 0]
             if isFocused {
                 entity.addChild(self.indicatorEntity)
             }
@@ -84,10 +89,10 @@ struct AudioSourceView: View {
                     newQuestion.chosenQuestion.audioResourceLink
                 } else {
                     switch audioSource.type {
-                    case .conversation:
-                        Presets.conversationAudioClips[0]
-                    case .ambient:
-                        Presets.ambientAudioClips[0]
+                    case let .conversation(audioName):
+                        audioName ?? Presets.conversationAudioClips[0]
+                    case let .ambient(audioName):
+                        audioName ?? Presets.ambientAudioClips[0]
                     }
                 }
                 // Load the audio clip.
