@@ -53,6 +53,13 @@ struct EntryPoint: App {
                             .font(.title3)
                     }
                     .padding()
+                    Button {
+                        dismissWindow(id: "hearing-test-window")
+                    } label: {
+                        Text("Clear Everything")
+                            .font(.title2)
+                    }
+                    .padding()
                 }
                 /// Testing for speech recog
                 .task {

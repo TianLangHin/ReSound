@@ -65,10 +65,19 @@ struct HearingTestScene: SwiftUI.Scene {
                     /// so another test can be administered after this.
                     closeSpace()
                     reset()
+                    openWindow(id: "main-window")
                     isOpened = false
                     dismissWindow(id: "hearing-test-window")
                 } label: {
                     Text("Exit entirely")
+                        .padding()
+                        .font(.title2)
+                }
+                .padding()
+                Button {
+                    dismissWindow(id: "main-window")
+                } label: {
+                    Text("Close main view")
                         .padding()
                         .font(.title2)
                 }
