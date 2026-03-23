@@ -97,5 +97,6 @@ class SpeechRec {
         recognitionRequest = nil
         recognitionTask = nil
         isRecording = false
+        speechContent = ""
     }
 }

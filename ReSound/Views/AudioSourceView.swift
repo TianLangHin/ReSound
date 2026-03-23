@@ -19,6 +19,9 @@ struct AudioSourceView: View {
     @Binding var questionNumber: Int
     @Binding var isPlayingAudio: Bool
     
+    /// Binding for score
+    @Binding var score: Int
+    
     @State private var recogniseQuesNum: Int? = nil
     
     /// Check if the audio already loaded (Benchmark purpose)
@@ -185,11 +188,11 @@ struct AudioSourceView: View {
         if questionNumber < lastQuestion {
             if index == question.correctAnswer {
                 // manage score here (where do you manage score again????)
+                score += 1
             }
             questionNumber += 1
             isPlayingAudio = true
             print("Answer chosen is \(question.answers[index])")
-            print("Score + 1")
         }
         
         

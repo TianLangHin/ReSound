@@ -102,7 +102,7 @@ struct HearingTestScene: SwiftUI.Scene {
                 AudioSourceView(audioSource: audioSource,
                                 hearingTest: hearingTest,
                                 speechRec: speechRec, questionNumber: $questionNumber,
-                                isPlayingAudio: $isPlayingAudio,
+                                isPlayingAudio: $isPlayingAudio, score: $score,
                                 indicatorEntity: indicatorEntity)
             }
         }
