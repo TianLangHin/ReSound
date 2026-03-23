@@ -16,14 +16,22 @@ struct EntryPoint: App {
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismissWindow) private var dismissWindow
 
+    /// Since the HearingTestScene will always be part of this Scene's body,
+    /// we keep track of which one it is referencing through a reference
+    /// to the `HearingTest` instance (which can be managed by a Picker).
     @State var hearingTest = Presets.hearingTests[0]
-    @State var hearingTestNumber = 0
+
+    /// A binded variable to suppress the main window when a new one pops up
+    /// i.e., when the hearing test pops up.
     @State var isHearingTestOpened = false
 
     var body: some SwiftUI.Scene {
         WindowGroup(id: "main-window") {
+            /// The content of the main menu is displayed if the hearing test is not happening yet.
             if !isHearingTestOpened {
                 VStack {
+                    /// The user will get to select which hearing test environment
+                    /// they wish to take (from the presets we have).
                     Picker(selection: $hearingTest) {
                         ForEach(Presets.hearingTests, id: \.self) { item in
                             Text(item.name)
@@ -36,6 +44,7 @@ struct EntryPoint: App {
                             .font(.title2)
                     }
                     .padding()
+                    /// Goes into the patient view (i.e., spawns the hearing test window).
                     Button {
                         isHearingTestOpened = true
                         openWindow(id: "hearing-test-window")
@@ -51,6 +60,8 @@ struct EntryPoint: App {
                 }
             }
         }
+        /// The hearing test is administered through this scene,
+        /// which by default is closed since the main WindowGroup above is loaded first.
         HearingTestScene(hearingTest: $hearingTest, isOpened: $isHearingTestOpened, speechRec: speechRec)
     }
 }

@@ -15,7 +15,6 @@
 		DF02DEB22BEC1DE2008047B2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DF02DEB12BEC1DE2008047B2 /* Assets.xcassets */; };
 		DF02DEB52BEC1DE2008047B2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DF02DEB42BEC1DE2008047B2 /* Preview Assets.xcassets */; };
 		DF02DEBF2BEC2544008047B2 /* FunkySynth.m4a in Resources */ = {isa = PBXBuildFile; fileRef = DF02DEBE2BEC2543008047B2 /* FunkySynth.m4a */; };
-		DF02DEC12BEC3486008047B2 /* DecibelSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF02DEC02BEC3486008047B2 /* DecibelSlider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,7 +31,6 @@
 		DF02DEB42BEC1DE2008047B2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		DF02DEB62BEC1DE2008047B2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DF02DEBE2BEC2543008047B2 /* FunkySynth.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = FunkySynth.m4a; sourceTree = "<group>"; };
-		DF02DEC02BEC3486008047B2 /* DecibelSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecibelSlider.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -113,7 +111,6 @@
 		F5527B1D2C4EF5360054C698 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				DF02DEC02BEC3486008047B2 /* DecibelSlider.swift */,
 				249912862F696B4000ECA9DE /* AudioSourceView.swift */,
 				24A3EB4D2F6FF504001B8716 /* HearingTestScene.swift */,
 				24A3EB4F2F700214001B8716 /* SkyboxView.swift */,
@@ -225,7 +222,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				24A3EB502F700217001B8716 /* SkyboxView.swift in Sources */,
-				DF02DEC12BEC3486008047B2 /* DecibelSlider.swift in Sources */,
 				24A3EB4E2F6FF509001B8716 /* HearingTestScene.swift in Sources */,
 				249912872F696B4500ECA9DE /* AudioSourceView.swift in Sources */,
 				DF02DEAC2BEC1DDD008047B2 /* EntryPoint.swift in Sources */,
