@@ -11,7 +11,7 @@ import Foundation
 /// Every `HearingTest` instance represents a series of questions asked on
 /// an environment consisting of a fixed set of audio sources
 /// laid around the user's surroundings.
-struct HearingTest {
+struct HearingTest: Hashable {
     // Each one can be identified by a user-defined name.
     var name: String
     // These `AudioSource` instances are not to be shared with another `HearingTest` instance.
@@ -42,15 +42,15 @@ struct AudioSource: Equatable, Hashable {
     }
 
     enum AudioSourceType: Equatable, Hashable {
-        case conversation
-        case ambient
+        case conversation(String?)
+        case ambient(String?)
     }
 }
 
 /// This represents a particular instance of a `PossibleQuestion` being applied to a `HearingTest`.
 /// This carries the specific information about a question directly applicable to a specific hearing test,
 /// with the "template" information being available via `chosenQuestion` instead.
-struct AudioQuestion: Equatable {
+struct AudioQuestion: Equatable, Hashable {
     let focus: UUID
     let chosenQuestion: PossibleQuestion
     let duration: Duration
@@ -60,7 +60,7 @@ struct AudioQuestion: Equatable {
 /// It represents a preset question with a set of answers (and the correct one) referring to a particular audio file.
 /// There can be multiple possible questions for one audio file, hence there is no uniqueness constraint on
 /// the `audioResourceLink` property.
-struct PossibleQuestion: Equatable {
+struct PossibleQuestion: Equatable, Hashable {
     let audioResourceLink: String
     let question: String
     let answers: [String]
