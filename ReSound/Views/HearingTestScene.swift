@@ -117,35 +117,46 @@ struct HearingTestScene: SwiftUI.Scene {
 
     @ViewBuilder
     private func playingView() -> some View {
-        Text("Audio for Question \(questionNumber + 1) is playing.")
-            .font(.title2)
-            .padding()
+        let currentQuestion = hearingTest.questions[questionNumber].chosenQuestion
+        VStack {
+            Text("Audio for Question \(questionNumber + 1) is playing.")
+                .font(.title2)
+                .padding()
+            Text("The question is: \(currentQuestion.question)")
+                .font(.title2)
+                .padding()
+        }
     }
 
     @ViewBuilder
     private func questionChoiceView() -> some View {
         let currentQuestion = hearingTest.questions[questionNumber].chosenQuestion
-        List {
-            ForEach(Array(currentQuestion.answers.enumerated()), id: \.offset) { index, answer in
-                Button {
-                    /// This logic manages whether the test has ended or not,
-                    /// as well as advancement to the next question (if it exists).
-                    let lastQuestionNumber = hearingTest.questions.count - 1
-                    if questionNumber < lastQuestionNumber {
-                        registerAnswer(choice: index)
-                        questionNumber += 1
-                        questionState = .playing
-                        startQuestion()
-                    } else {
-                        if questionNumber == lastQuestionNumber {
+        VStack {
+            Text(currentQuestion.question)
+                .font(.title2)
+                .padding()
+            List {
+                ForEach(Array(currentQuestion.answers.enumerated()), id: \.offset) { index, answer in
+                    Button {
+                        /// This logic manages whether the test has ended or not,
+                        /// as well as advancement to the next question (if it exists).
+                        let lastQuestionNumber = hearingTest.questions.count - 1
+                        if questionNumber < lastQuestionNumber {
                             registerAnswer(choice: index)
+                            questionNumber += 1
+                            questionState = .playing
+                            startQuestion()
+                        } else {
+                            if questionNumber == lastQuestionNumber {
+                                registerAnswer(choice: index)
+                            }
+                            questionState = .ended
                         }
-                        questionState = .ended
+                    } label: {
+                        Text("\(index + 1). \(answer)")
+                            .font(.title2)
+                            .padding()
                     }
-                } label: {
-                    Text("\(index + 1). \(answer)")
-                        .font(.title2)
-                        .padding()
                 }
             }
         }
@@ -172,6 +183,7 @@ struct HearingTestScene: SwiftUI.Scene {
     private func startQuestion() {
         let questionDuration = hearingTest.questions[questionNumber].duration
         isPlayingAudio = true
+        questionState = .playing
         Task {
             try? await Task.sleep(for: questionDuration)
             isPlayingAudio = false
