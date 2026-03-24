@@ -91,10 +91,7 @@ struct HearingTestScene: SwiftUI.Scene {
         }
         /// The immersive space is where the hearing test happens via spatial audio.
         ImmersiveSpace(id: "hearing-test-immersive") {
-            // This should be a loaded asset, but for now is just a yellow sphere to indicate focus.
-            let indicatorEntity = ModelEntity(
-                mesh: MeshResource.generateSphere(radius: 0.1),
-                materials: [UnlitMaterial(color: .systemYellow)])
+            let indicatorEntity = makeIndicatorEntity()
             /// Surrounding the user will be a skybox as a sphere to project the EXR/HDR image.
             SkyboxView(resourceName: hearingTest.backgroundResourceLink)
             /// Each of the audio sources as designated by the `HearingTest` instance will be placed in the space.
@@ -107,6 +104,22 @@ struct HearingTestScene: SwiftUI.Scene {
             }
         }
         .immersionStyle(selection: .constant(.full), in: .full)
+    }
+
+    /// A separate function is needed to construct the visual entity
+    /// as it is disallowed inline in the immersive space.
+    private func makeIndicatorEntity() -> Entity {
+        if let arrowEntity = try? Entity.load(named: "Car_Arrow.usdz") {
+            // The arrow entity is big and points outward, so adjustments are made.
+            arrowEntity.scale *= 0.03
+            arrowEntity.orientation = simd_quatf(angle: 3 * .pi / 2, axis: [1, 0, 0])
+            return arrowEntity
+        } else {
+            // The default is just the yellow sphere.
+            return ModelEntity(
+                mesh: MeshResource.generateSphere(radius: 0.1),
+                materials: [UnlitMaterial(color: .systemYellow)])
+        }
     }
 
     /// Each of the next four functions are SwiftUI Views, encapsulated for neater code.
@@ -164,8 +177,8 @@ struct HearingTestScene: SwiftUI.Scene {
                     } label: {
                         Text("\(index + 1). \(answer)")
                             .font(.title2)
-                            .padding()
                     }
+                    .padding()
                 }
             }
         }
@@ -174,15 +187,16 @@ struct HearingTestScene: SwiftUI.Scene {
 
     @ViewBuilder
     private func endView() -> some View {
+        let questionCount = hearingTest.questions.count
         VStack {
-            Text("Score: \(score)")
-                .font(.title2)
+            Text("Score: \(score) out of \(questionCount)")
+                .font(.system(size: 48))
                 .padding()
             Button {
                 closeSpace()
             } label: {
                 Text("Return to main menu")
-                    .font(.title2)
+                    .font(.title3)
             }
         }
         .padding()

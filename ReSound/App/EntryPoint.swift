@@ -30,19 +30,21 @@ struct EntryPoint: App {
             /// The content of the main menu is displayed if the hearing test is not happening yet.
             if !isHearingTestOpened {
                 VStack {
+                    Text("ReSound Hearing Test")
+                        .font(.system(size: 60))
+                        .bold()
                     /// The user will get to select which hearing test environment
                     /// they wish to take (from the presets we have).
                     Picker(selection: $hearingTest) {
                         ForEach(Presets.hearingTests, id: \.self) { item in
                             Text(item.name)
-                                .font(.title2)
-                                .padding()
                                 .tag(item)
                         }
                     } label: {
                         Text("Select test environment.")
                             .font(.title2)
                     }
+                    .pickerStyle(.automatic)
                     .padding()
                     /// Goes into the patient view (i.e., spawns the hearing test window).
                     Button {
@@ -54,6 +56,7 @@ struct EntryPoint: App {
                     }
                     .padding()
                     Button {
+                        dismissWindow(id: "main-window")
                         dismissWindow(id: "hearing-test-window")
                     } label: {
                         Text("Clear Everything")
