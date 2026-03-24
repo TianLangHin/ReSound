@@ -88,6 +88,10 @@ struct HearingTestScene: SwiftUI.Scene {
                 /// Toggling the Boolean binding for tracking in the parent view.
                 isOpened = true
             }
+            .onChange(of: speechRec.speechContent) { _, newContent in
+                let currentQuestion = hearingTest.questions[questionNumber]
+                validateSpeechContent(newContent, question: currentQuestion.chosenQuestion)
+            }
         }
         /// The immersive space is where the hearing test happens via spatial audio.
         ImmersiveSpace(id: "hearing-test-immersive") {
@@ -98,12 +102,28 @@ struct HearingTestScene: SwiftUI.Scene {
             ForEach(hearingTest.audioSources, id: \.self) { audioSource in
                 AudioSourceView(audioSource: audioSource,
                                 hearingTest: hearingTest,
-                                speechRec: speechRec, questionNumber: $questionNumber,
-                                isPlayingAudio: $isPlayingAudio, score: $score,
+                                questionNumber: $questionNumber,
+                                isPlayingAudio: $isPlayingAudio,
                                 indicatorEntity: indicatorEntity)
             }
         }
         .immersionStyle(selection: .constant(.full), in: .full)
+    }
+
+    /// Function to validate the content of the speech
+    private func validateSpeechContent(_ content: String, question: PossibleQuestion) {
+        let normalisedContent = content.lowercased()
+        let triggerWords = ["one", "two", "three", "four"]
+        let answersDictionary = ["one": 0, "two": 1, "three": 2, "four": 3]
+
+        // Search for the first trigger word + match it with the index
+        guard let matchedWord = triggerWords.first(where: { normalisedContent.contains($0) }),
+              let index = answersDictionary[matchedWord] else {
+            return
+        }
+
+        print("Answer chosen is \(question.answers[index])")
+        advanceQuestion(answer: index)
     }
 
     /// A separate function is needed to construct the visual entity
@@ -160,20 +180,7 @@ struct HearingTestScene: SwiftUI.Scene {
             List {
                 ForEach(Array(currentQuestion.answers.enumerated()), id: \.offset) { index, answer in
                     Button {
-                        /// This logic manages whether the test has ended or not,
-                        /// as well as advancement to the next question (if it exists).
-                        let lastQuestionNumber = hearingTest.questions.count - 1
-                        if questionNumber < lastQuestionNumber {
-                            registerAnswer(choice: index)
-                            questionNumber += 1
-                            questionState = .playing
-                            startQuestion()
-                        } else {
-                            if questionNumber == lastQuestionNumber {
-                                registerAnswer(choice: index)
-                            }
-                            questionState = .ended
-                        }
+                        advanceQuestion(answer: index)
                     } label: {
                         Text("\(index + 1). \(answer)")
                             .font(.title2)
@@ -209,13 +216,37 @@ struct HearingTestScene: SwiftUI.Scene {
         questionState = .playing
         Task {
             try? await Task.sleep(for: questionDuration)
-            isPlayingAudio = false
-            questionState = .answering
+            stopQuestion()
         }
+    }
+
+    private func stopQuestion() {
+        isPlayingAudio = false
+        questionState = .answering
+        try? speechRec.startRec()
+    }
+
+    /// This logic manages whether the test has ended or not,
+    /// as well as advancement to the next question (if it exists).
+    private func advanceQuestion(answer: Int) {
+        let lastQuestionNumber = hearingTest.questions.count - 1
+        if questionNumber < lastQuestionNumber {
+            registerAnswer(choice: answer)
+            questionNumber += 1
+            questionState = .playing
+            startQuestion()
+        } else {
+            if questionNumber == lastQuestionNumber {
+                registerAnswer(choice: answer)
+            }
+            questionState = .ended
+        }
+        speechRec.stopRec()
     }
 
     /// Registers an answer of a particular question from the user.
     private func registerAnswer(choice: Int) {
+        speechRec.stopRec()
         let correctAnswer = hearingTest.questions[questionNumber].chosenQuestion.correctAnswer
         if choice == correctAnswer {
             score += 1
