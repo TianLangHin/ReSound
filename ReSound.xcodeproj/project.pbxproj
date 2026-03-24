@@ -366,7 +366,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "$(TARGET_NAME)/App/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = ReSound;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "The app will requires microphone for speech recognition";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "The app will requires microphone for speech recognition.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Speech Recognition is used to assist user in answering questions";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -398,7 +398,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "$(TARGET_NAME)/App/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = ReSound;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "The app will requires microphone for speech recognition";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "The app will requires microphone for speech recognition.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Speech Recognition is used to assist user in answering questions";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
