@@ -65,19 +65,17 @@ struct HearingTestScene: SwiftUI.Scene {
                     /// so another test can be administered after this.
                     closeSpace()
                     reset()
-                    openWindow(id: "main-window")
-                    isOpened = false
-                    dismissWindow(id: "hearing-test-window")
+                    /// An asynchronous task on the main queue is used to load the other window,
+                    /// wait for 100 milliseconds to ensure the system can recognise it is open,
+                    /// and then close the previous window (which is only successful if another window is open).
+                    Task { @MainActor in
+                        openWindow(id: "main-window")
+                        try? await Task.sleep(for: .milliseconds(100))
+                        isOpened = false
+                        dismissWindow(id: "hearing-test-window")
+                    }
                 } label: {
                     Text("Exit entirely")
-                        .padding()
-                        .font(.title2)
-                }
-                .padding()
-                Button {
-                    dismissWindow(id: "main-window")
-                } label: {
-                    Text("Close main view")
                         .padding()
                         .font(.title2)
                 }
