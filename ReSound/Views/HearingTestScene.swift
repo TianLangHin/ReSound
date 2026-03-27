@@ -13,6 +13,7 @@ enum QuestionState {
     case before
     case playing
     case answering
+    case waiting
     case ended
 }
 
@@ -57,23 +58,13 @@ struct HearingTestScene: SwiftUI.Scene {
                     playingView()
                 case .answering:
                     questionChoiceView()
+                case .waiting:
+                    waitingView()
                 case .ended:
                     endView()
                 }
                 Button {
-                    /// Here, the window is dismissed and the state is reset
-                    /// so another test can be administered after this.
-                    closeSpace()
-                    reset()
-                    /// An asynchronous task on the main queue is used to load the other window,
-                    /// wait for 100 milliseconds to ensure the system can recognise it is open,
-                    /// and then close the previous window (which is only successful if another window is open).
-                    Task { @MainActor in
-                        openWindow(id: "main-window")
-                        try? await Task.sleep(for: .milliseconds(100))
-                        isOpened = false
-                        dismissWindow(id: "hearing-test-window")
-                    }
+                    exitEntirely()
                 } label: {
                     Text("Exit entirely")
                         .padding()
@@ -87,8 +78,21 @@ struct HearingTestScene: SwiftUI.Scene {
                 isOpened = true
             }
             .onChange(of: speechRec.speechContent) { _, newContent in
-                let currentQuestion = hearingTest.questions[questionNumber]
-                validateSpeechContent(newContent, question: currentQuestion.chosenQuestion)
+                DispatchQueue.main.async {
+                    print("New content: \(newContent) \(questionState)")
+                    if questionState == .waiting {
+                        if newContent.lowercased().contains("next") {
+                            startQuestion()
+                        }
+                    } else if questionState == .answering {
+                        let currentQuestion = hearingTest.questions[questionNumber]
+                        validateSpeechContent(newContent, question: currentQuestion.chosenQuestion)
+                    } else if questionState == .ended {
+                        if newContent.lowercased().contains("exit") {
+                            exitEntirely()
+                        }
+                    }
+                }
             }
         }
         /// The immersive space is where the hearing test happens via spatial audio.
@@ -108,11 +112,32 @@ struct HearingTestScene: SwiftUI.Scene {
         .immersionStyle(selection: .constant(.full), in: .full)
     }
 
-    /// Function to validate the content of the speech
+    /// Function to return to the main menu (exiting the patient view).
+    private func exitEntirely() {
+        // Stops the speech recording before exiting.
+        speechRec.stopRec()
+        // Here, the window is dismissed and the state is reset
+        // so another test can be administered after this.
+        closeSpace()
+        reset()
+        /// An asynchronous task on the main queue is used to load the other window,
+        /// wait for 100 milliseconds to ensure the system can recognise it is open,
+        /// and then close the previous window (which is only successful if another window is open).
+        Task { @MainActor in
+            openWindow(id: "main-window")
+            try? await Task.sleep(for: .milliseconds(100))
+            isOpened = false
+            dismissWindow(id: "hearing-test-window")
+        }
+    }
+
+    /// Function to validate the content of the speech.
     private func validateSpeechContent(_ content: String, question: PossibleQuestion) {
         let normalisedContent = content.lowercased()
-        let triggerWords = ["one", "two", "three", "four"]
-        let answersDictionary = ["one": 0, "two": 1, "three": 2, "four": 3]
+        // Trigger words include the digit versions of the option numbers as well,
+        // to account for all possibilities of speech content detected by the speech recognition module.
+        let triggerWords = ["one", "two", "three", "four", "1", "2", "3", "4"]
+        let answersDictionary = ["one": 0, "two": 1, "three": 2, "four": 3, "1": 0, "2": 1, "3": 2, "4": 3]
 
         // Search for the first trigger word + match it with the index
         guard let matchedWord = triggerWords.first(where: { normalisedContent.contains($0) }),
@@ -146,7 +171,7 @@ struct HearingTestScene: SwiftUI.Scene {
     private func startView() -> some View {
         Button {
             openSpace()
-            startQuestion()
+            startQuestion(firstCall: true)
         } label: {
             Text("Start hearing test!")
                 .padding()
@@ -191,6 +216,17 @@ struct HearingTestScene: SwiftUI.Scene {
     }
 
     @ViewBuilder
+    private func waitingView() -> some View {
+        Button {
+            startQuestion()
+        } label: {
+            Text("Continue")
+                .font(.title3)
+                .padding()
+        }
+    }
+
+    @ViewBuilder
     private func endView() -> some View {
         let questionCount = hearingTest.questions.count
         VStack {
@@ -208,20 +244,30 @@ struct HearingTestScene: SwiftUI.Scene {
     }
 
     /// Plays an audio question and updates the state so the window group is updated too.
-    private func startQuestion() {
-        let questionDuration = hearingTest.questions[questionNumber].duration
-        isPlayingAudio = true
-        questionState = .playing
-        Task {
-            try? await Task.sleep(for: questionDuration)
-            stopQuestion()
+    /// The optional argument `firstCall` indicates whether this is the first time
+    /// `startQuestion` is being called.
+    /// That corresponds to the transition of `questionState` from `.before` to `.playing`.
+    private func startQuestion(firstCall: Bool = false) {
+        if !isPlayingAudio {
+            let questionDuration = hearingTest.questions[questionNumber].duration
+            isPlayingAudio = true
+            questionState = .playing
+            if !firstCall {
+                speechRec.stopRec()
+            }
+            Task {
+                try? await Task.sleep(for: questionDuration)
+                stopQuestion()
+            }
         }
     }
 
     private func stopQuestion() {
-        isPlayingAudio = false
-        questionState = .answering
-        try? speechRec.startRec()
+        if isPlayingAudio {
+            isPlayingAudio = false
+            questionState = .answering
+            try? speechRec.startRec()
+        }
     }
 
     /// This logic manages whether the test has ended or not,
@@ -231,20 +277,18 @@ struct HearingTestScene: SwiftUI.Scene {
         if questionNumber < lastQuestionNumber {
             registerAnswer(choice: answer)
             questionNumber += 1
-            questionState = .playing
-            startQuestion()
+            questionState = .waiting
         } else {
             if questionNumber == lastQuestionNumber {
                 registerAnswer(choice: answer)
             }
             questionState = .ended
+            try? speechRec.startRec()
         }
-        speechRec.stopRec()
     }
 
     /// Registers an answer of a particular question from the user.
     private func registerAnswer(choice: Int) {
-        speechRec.stopRec()
         let correctAnswer = hearingTest.questions[questionNumber].chosenQuestion.correctAnswer
         if choice == correctAnswer {
             score += 1
@@ -276,5 +320,6 @@ struct HearingTestScene: SwiftUI.Scene {
         isPlayingAudio = false
         score = 0
         isDisplayingImmersive = false
+        speechRec.stopRec()
     }
 }
