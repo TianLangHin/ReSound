@@ -48,19 +48,18 @@ struct EntryPoint: App {
                     .padding()
                     /// Goes into the patient view (i.e., spawns the hearing test window).
                     Button {
-                        isHearingTestOpened = true
-                        openWindow(id: "hearing-test-window")
+                        /// An asynchronous task on the main queue is used to load the other window,
+                        /// wait for 100 milliseconds to ensure the system can recognise it is open,
+                        /// and then close the previous window (which is only successful if another window is open).
+                        Task { @MainActor in
+                            isHearingTestOpened = true
+                            openWindow(id: "hearing-test-window")
+                            try? await Task.sleep(for: .milliseconds(100))
+                            dismissWindow(id: "main-window")
+                        }
                     } label: {
                         Text("Patient View")
                             .font(.title3)
-                    }
-                    .padding()
-                    Button {
-                        dismissWindow(id: "main-window")
-                        dismissWindow(id: "hearing-test-window")
-                    } label: {
-                        Text("Clear Everything")
-                            .font(.title2)
                     }
                     .padding()
                 }
@@ -68,6 +67,8 @@ struct EntryPoint: App {
                 .task {
                     await speechRec.authoriseRequest()
                 }
+            } else {
+                
             }
         }
         /// The hearing test is administered through this scene,

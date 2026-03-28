@@ -37,7 +37,10 @@ class SpeechRec {
     
     /// Recognise function:
     func startRec() throws {
-        
+        guard !isRecording else {
+            return
+        }
+
         /// For simulator testing only
         #if targetEnvironment(simulator)
         speechContent = ""
@@ -49,8 +52,7 @@ class SpeechRec {
         }
         return
         #endif // targetEnvironment(simulator)
-        
-        
+
         /// For actual implementation (Can't test on sim)
         let audioSession = AVAudioSession.sharedInstance()
         try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
@@ -84,12 +86,15 @@ class SpeechRec {
     
     /// Stop recognise:
     func stopRec() {
-        
+        guard isRecording else {
+            return
+        }
+
         #if targetEnvironment(simulator)
         simulatorTask?.cancel()
         simulatorTask = nil
         #endif
-        
+
         audioEngine.stop()
         audioEngine.inputNode.removeTap(onBus: 0)
         recognitionRequest?.endAudio()
