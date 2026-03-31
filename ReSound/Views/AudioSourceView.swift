@@ -83,7 +83,7 @@ struct AudioSourceView: View {
                 }
 
                 // Find the audio resource to load.
-                let audioLink = if newQuestion.focus == audioSource.id {
+                let possibleAudio: String? = if newQuestion.focus == audioSource.id {
                     newQuestion.chosenQuestion.audioResourceLink
                 } else {
                     switch audioSource.type {
@@ -91,7 +91,13 @@ struct AudioSourceView: View {
                         audioName ?? Presets.conversationAudioClips[0]
                     case let .ambient(audioName):
                         audioName ?? Presets.ambientAudioClips[0]
+                    case .silent:
+                        nil
                     }
+                }
+
+                guard let audioLink = possibleAudio else {
+                    return
                 }
 
                 // Load the audio clip.

@@ -44,6 +44,7 @@ struct AudioSource: Equatable, Hashable {
     enum AudioSourceType: Equatable, Hashable {
         case conversation(String?)
         case ambient(String?)
+        case silent
     }
 }
 

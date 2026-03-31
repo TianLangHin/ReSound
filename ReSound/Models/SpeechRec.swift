@@ -10,14 +10,9 @@ import AVFoundation
 
 @Observable
 class SpeechRec {
-    
-    #if targetEnvironment(simulator)
-    private var simulatorTask: Task<Void, Never>? = nil
-    #endif
-    
     var isRecording: Bool = false
     var speechContent: String = ""
-    
+
     /// Speech recognition pipeline (I saw this on google - testing)
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
@@ -34,24 +29,12 @@ class SpeechRec {
             }
         }
     }
-    
+
     /// Recognise function:
     func startRec() throws {
         guard !isRecording else {
             return
         }
-
-        /// For simulator testing only
-        #if targetEnvironment(simulator)
-        speechContent = ""
-        isRecording = true
-        simulatorTask = Task {
-            try? await Task.sleep(for: .seconds(5))
-            guard !Task.isCancelled else { return }
-            speechContent = "three"
-        }
-        return
-        #endif // targetEnvironment(simulator)
 
         /// For actual implementation (Can't test on sim)
         let audioSession = AVAudioSession.sharedInstance()
@@ -71,29 +54,22 @@ class SpeechRec {
                 self?.stopRec()
             }
         }
-        
+
         let format = inputNode.outputFormat(forBus: 0)
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in
             recognitionRequest.append(buffer)
         }
-        
-        //stopRec()
-        
+
         audioEngine.prepare()
         try audioEngine.start()
         isRecording = true
     }
-    
+
     /// Stop recognise:
     func stopRec() {
         guard isRecording else {
             return
         }
-
-        #if targetEnvironment(simulator)
-        simulatorTask?.cancel()
-        simulatorTask = nil
-        #endif
 
         audioEngine.stop()
         audioEngine.inputNode.removeTap(onBus: 0)

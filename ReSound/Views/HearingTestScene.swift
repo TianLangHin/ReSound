@@ -63,14 +63,6 @@ struct HearingTestScene: SwiftUI.Scene {
                 case .ended:
                     endView()
                 }
-                Button {
-                    exitEntirely()
-                } label: {
-                    Text("Exit entirely")
-                        .padding()
-                        .font(.title2)
-                }
-                .padding()
             }
             .padding()
             .onAppear {
@@ -79,10 +71,11 @@ struct HearingTestScene: SwiftUI.Scene {
             }
             .onChange(of: speechRec.speechContent) { _, newContent in
                 DispatchQueue.main.async {
-                    print("New content: \(newContent) \(questionState)")
+                    print("Speech content: \(newContent)")
+                    print("Question state: \(questionState)")
                     if questionState == .waiting {
                         if newContent.lowercased().contains("next") {
-                            startQuestion()
+                            moveFromWaiting()
                         }
                     } else if questionState == .answering {
                         let currentQuestion = hearingTest.questions[questionNumber]
@@ -136,12 +129,13 @@ struct HearingTestScene: SwiftUI.Scene {
         let normalisedContent = content.lowercased()
         // Trigger words include the digit versions of the option numbers as well,
         // to account for all possibilities of speech content detected by the speech recognition module.
-        let triggerWords = ["one", "two", "three", "four", "1", "2", "3", "4"]
         let answersDictionary = ["one": 0, "two": 1, "three": 2, "four": 3, "1": 0, "2": 1, "3": 2, "4": 3]
 
         // Search for the first trigger word + match it with the index
-        guard let matchedWord = triggerWords.first(where: { normalisedContent.contains($0) }),
-              let index = answersDictionary[matchedWord] else {
+        guard let matchingKey = answersDictionary.keys.first(where: { normalisedContent.contains($0) }) else {
+            return
+        }
+        guard let index = answersDictionary[matchingKey] else {
             return
         }
 
@@ -168,28 +162,32 @@ struct HearingTestScene: SwiftUI.Scene {
 
     @ViewBuilder
     private func startView() -> some View {
-        Button {
-            openSpace()
-            startQuestion(firstCall: true)
-        } label: {
-            Text("Start hearing test!")
-                .padding()
-                .font(.title2)
+        VStack {
+            Button {
+                openSpace()
+                startQuestion(firstCall: true)
+            } label: {
+                Text("Start hearing test!")
+                    .padding()
+                    .font(.title2)
+            }
+            .padding()
+            Button {
+                exitEntirely()
+            } label: {
+                Text("Exit entirely")
+                    .padding()
+                    .font(.title2)
+            }
+            .padding()
         }
-        .padding()
     }
 
     @ViewBuilder
     private func playingView() -> some View {
-        let currentQuestion = hearingTest.questions[questionNumber].chosenQuestion
-        VStack {
-            Text("Audio for Question \(questionNumber + 1) is playing.")
-                .font(.title2)
-                .padding()
-            Text("The question is: \(currentQuestion.question)")
-                .font(.title2)
-                .padding()
-        }
+        Text("Audio for Question \(questionNumber + 1) is playing.")
+            .font(.system(size: 60))
+            .padding()
     }
 
     @ViewBuilder
@@ -197,7 +195,7 @@ struct HearingTestScene: SwiftUI.Scene {
         let currentQuestion = hearingTest.questions[questionNumber].chosenQuestion
         VStack {
             Text(currentQuestion.question)
-                .font(.title2)
+                .font(.title3)
                 .padding()
             List {
                 ForEach(Array(currentQuestion.answers.enumerated()), id: \.offset) { index, answer in
@@ -216,12 +214,19 @@ struct HearingTestScene: SwiftUI.Scene {
 
     @ViewBuilder
     private func waitingView() -> some View {
-        Button {
-            startQuestion()
-        } label: {
-            Text("Continue")
-                .font(.title3)
+        VStack {
+            Text("Continue on to Question \(questionNumber + 1)?")
+                .font(.system(size: 60))
                 .padding()
+            Button {
+                // Question advancement is delayed so that the visual pointer
+                // is revealed only when the question starts.
+                moveFromWaiting()
+            } label: {
+                Text("Continue")
+                    .font(.title3)
+                    .padding()
+            }
         }
     }
 
@@ -235,11 +240,24 @@ struct HearingTestScene: SwiftUI.Scene {
             Button {
                 closeSpace()
             } label: {
-                Text("Return to main menu")
+                Text("Exit immersive space")
                     .font(.title3)
             }
+            Button {
+                exitEntirely()
+            } label: {
+                Text("Exit back to main menu")
+                    .padding()
+                    .font(.title2)
+            }
+            .padding()
         }
         .padding()
+    }
+
+    private func moveFromWaiting() {
+        questionNumber += 1
+        startQuestion()
     }
 
     /// Plays an audio question and updates the state so the window group is updated too.
@@ -275,7 +293,6 @@ struct HearingTestScene: SwiftUI.Scene {
         let lastQuestionNumber = hearingTest.questions.count - 1
         if questionNumber < lastQuestionNumber {
             registerAnswer(choice: answer)
-            questionNumber += 1
             questionState = .waiting
         } else {
             if questionNumber == lastQuestionNumber {
