@@ -20,6 +20,7 @@ struct EntryPoint: App {
     /// we keep track of which one it is referencing through a reference
     /// to the `HearingTest` instance (which can be managed by a Picker).
     @State var hearingTest = Presets.hearingTests[0]
+    @State var isSelected: Int = 1
 
     /// A binded variable to suppress the main window when a new one pops up
     /// i.e., when the hearing test pops up.
@@ -33,46 +34,147 @@ struct EntryPoint: App {
                     Text("ReSound Hearing Test")
                         .font(.system(size: 60))
                         .bold()
-                    /// The user will get to select which hearing test environment
-                    /// they wish to take (from the presets we have).
-                    Picker(selection: $hearingTest) {
-                        ForEach(Presets.hearingTests, id: \.self) { item in
-                            Text(item.name)
-                                .tag(item)
-                        }
-                    } label: {
-                        Text("Select test environment.")
-                            .font(.title2)
-                    }
-                    .pickerStyle(.automatic)
-                    .padding()
-                    /// Goes into the patient view (i.e., spawns the hearing test window).
-                    Button {
-                        /// An asynchronous task on the main queue is used to load the other window,
-                        /// wait for 100 milliseconds to ensure the system can recognise it is open,
-                        /// and then close the previous window (which is only successful if another window is open).
-                        Task { @MainActor in
+                    Text("Test your hearing using spatial audio with the Apple Vision Pro")
+                        .font(.system(size: 25))
+                    
+                    VStack {
+                        Button {
                             isHearingTestOpened = true
-                            openWindow(id: "hearing-test-window")
-                            try? await Task.sleep(for: .milliseconds(100))
-                            dismissWindow(id: "main-window")
+                        } label: {
+                            // Goes to the patient view.
+                            Text("Start Hearing Test")
+                                .font(.title3)
                         }
-                    } label: {
-                        Text("Patient View")
-                            .font(.title3)
+                        
+                        Button {
+                            // Clinician view not currently implemented.
+                        } label: {
+                            // Customising test suites.
+                            Text("Clinician View")
+                                .font(.title3)
+                        }
+                        
+                        Button {
+                            // Go to view history page which is not currently implemented.
+                        } label: {
+                            // Persistent storage which stores a list of patient scores and other related details.
+                            Text("View History")
+                                .font(.title3)
+                        }
                     }
                     .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 15)
+                            .fill(.ultraThinMaterial)
+                    )
                 }
                 /// Testing for speech recog
                 .task {
                     await speechRec.authoriseRequest()
                 }
             } else {
-                
+                chooseHearingTest()
             }
         }
         /// The hearing test is administered through this scene,
         /// which by default is closed since the main WindowGroup above is loaded first.
         HearingTestScene(hearingTest: $hearingTest, isOpened: $isHearingTestOpened, speechRec: speechRec)
+    }
+    
+    @ViewBuilder
+    private func chooseHearingTest() -> some View {
+        VStack {
+            HStack {
+                Button {
+                    isHearingTestOpened = false
+                } label: {
+                    Image(systemName: "chevron.left")
+                }
+                Spacer()
+            }
+            
+            Text("Select Environment")
+                .font(.system(size: 60))
+                .bold()
+            
+            Text("Choose your immersive testing environment")
+                .font(.system(size: 25))
+            
+            /// The user will get to select which hearing test environment
+            /// they wish to take (from the presets we have).
+            VStack {
+                HStack {
+                    Button {
+                        hearingTest = Presets.hearingTests[0]
+                        isSelected = 1
+                    } label: {
+                        Text("Preset 1")
+                            .font(.title3)
+                    }
+                    .background(
+                        RoundedRectangle(cornerRadius: 15)
+                            .fill(isSelected == 1 ? Color.green : Color.clear)
+                    )
+                    
+                    Button {
+                        hearingTest = Presets.hearingTests[1]
+                        isSelected = 2
+                    } label: {
+                        Text("Preset 2")
+                            .font(.title3)
+                    }
+                    .background(
+                        RoundedRectangle(cornerRadius: 15)
+                            .fill(isSelected == 2 ? Color.green : Color.clear)
+                    )
+                }
+                HStack {
+                    Button {
+                        // This needs to be changed to hearingTests[2]
+                        hearingTest = Presets.hearingTests[1]
+                        isSelected = 3
+                    } label: {
+                        Text("Preset 3")
+                            .font(.title3)
+                    }
+                    .background(
+                        RoundedRectangle(cornerRadius: 15)
+                            .fill(isSelected == 3 ? Color.green : Color.clear)
+                    )
+                    
+                    Button {
+                        // This needs to be changed to Int.random(in: 0...2)
+                        let shuffleTest = Int.random(in: 0...1)
+                        hearingTest = Presets.hearingTests[shuffleTest]
+                        isSelected = 4
+                    } label: {
+                        Text("Shuffle")
+                            .font(.title3)
+                    }
+                    .background(
+                        RoundedRectangle(cornerRadius: 15)
+                            .fill(isSelected == 4 ? Color.green : Color.clear)
+                    )
+                }
+            }
+            .padding()
+
+            /// Goes into the patient view (i.e., spawns the hearing test window).
+            Button {
+                /// An asynchronous task on the main queue is used to load the other window,
+                /// wait for 100 milliseconds to ensure the system can recognise it is open,
+                /// and then close the previous window (which is only successful if another window is open).
+                Task { @MainActor in
+                    isHearingTestOpened = true
+                    openWindow(id: "hearing-test-window")
+                    try? await Task.sleep(for: .milliseconds(100))
+                    dismissWindow(id: "main-window")
+                }
+            } label: {
+                Text("Next")
+                    .font(.title3)
+            }
+        }
+        .padding()
     }
 }
