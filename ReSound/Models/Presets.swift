@@ -11,7 +11,7 @@ class Presets {
         AudioSource(
             type: .ambient(nil),
             location: .init(x: 0.0, y: 0.0, z: -1.5),
-            visualResourceLink: .asset("BluePeakCharacter.usdz")),
+            visualResourceLink: .asset("BusinessMan.usdz")),
         AudioSource(
             type: .ambient(nil),
             location: .init(x: 3.0, y: 0.5, z: 0.0),
@@ -23,7 +23,7 @@ class Presets {
         AudioSource(
             type: .conversation("AudioSample1.mp3"),
             location: .init(x: 0.0, y: 0.0, z: -1.5),
-            visualResourceLink: .asset("BluePeakCharacter.usdz")),
+            visualResourceLink: .asset("BusinessMan.usdz")),
         AudioSource(
             type: .ambient("Train_Departing.mp3"),
             location: .init(x: -3.0, y: 0.5, z: -0.5),
@@ -31,7 +31,7 @@ class Presets {
         AudioSource(
             type: .ambient("Train_PeopleTalking.mp3"),
             location: .init(x: 1.5, y: 0.0, z: -0.5),
-            visualResourceLink: .asset("BluePeakCharacter.usdz")),
+            visualResourceLink: .asset("BusinessMan.usdz")),
     ]
 
     static var hearingTests: [HearingTest] = [
