@@ -152,17 +152,28 @@ struct HearingTestScene: SwiftUI.Scene {
     /// A separate function is needed to construct the visual entity
     /// as it is disallowed inline in the immersive space.
     private func makeIndicatorEntity() -> Entity {
-        if let arrowEntity = try? Entity.load(named: "Car_Arrow.usdz") {
-            // The arrow entity is big and points outward, so adjustments are made.
-            arrowEntity.scale *= 0.03
-            arrowEntity.orientation = simd_quatf(angle: 3 * .pi / 2, axis: [1, 0, 0])
-            return arrowEntity
-        } else {
-            // The default is just the yellow sphere.
-            return ModelEntity(
-                mesh: MeshResource.generateSphere(radius: 0.1),
-                materials: [UnlitMaterial(color: .systemYellow)])
-        }
+        return ModelEntity( //need to rotate by 180 degrees. And size it correctly
+            mesh: MeshResource.generateCone(height: 0.2, radius: 0.1),
+            materials: [UnlitMaterial(color: .systemYellow)])
+        
+//        if let arrowEntity = try? Entity.load(named: "YellowArrowIndicator.usdc") {
+//            // Update materials safely depending on the concrete entity type
+//            if let modelEntity = arrowEntity as? ModelEntity {
+//                modelEntity.model?.materials = [UnlitMaterial(color: .white)]
+//            } else if var modelComponent = arrowEntity.components[ModelComponent.self] {
+//                modelComponent.materials = [UnlitMaterial(color: .white)]
+//                arrowEntity.components[ModelComponent.self] = modelComponent
+//            }
+//            // The arrow entity is big and points outward, so adjustments are made.
+//            arrowEntity.scale *= 0.03
+//            arrowEntity.orientation = simd_quatf(angle: 3 * .pi / 2, axis: [1, 0, 0])
+//            return arrowEntity
+//        } else {
+//            // The default is just the yellow sphere.
+//            return ModelEntity(
+//                mesh: MeshResource.generateCone(height: 1, radius: 0.1),
+//                materials: [UnlitMaterial(color: .systemYellow)])
+//        }
     }
 
     /// Each of the next four functions are SwiftUI Views, encapsulated for neater code.
@@ -323,3 +334,4 @@ struct HearingTestScene: SwiftUI.Scene {
         speechRec.stopRec()
     }
 }
+
