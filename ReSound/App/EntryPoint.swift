@@ -20,7 +20,7 @@ struct EntryPoint: App {
     /// we keep track of which one it is referencing through a reference
     /// to the `HearingTest` instance (which can be managed by a Picker).
     @State var hearingTest = Presets.hearingTests[0]
-    @State var isSelected: Int = 1
+    @State var selectedOption: Int = -1
 
     /// A binded variable to suppress the main window when a new one pops up
     /// i.e., when the hearing test pops up.
@@ -104,57 +104,12 @@ struct EntryPoint: App {
             /// they wish to take (from the presets we have).
             VStack {
                 HStack {
-                    Button {
-                        hearingTest = Presets.hearingTests[0]
-                        isSelected = 1
-                    } label: {
-                        Text("Preset 1")
-                            .font(.title3)
-                    }
-                    .background(
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(isSelected == 1 ? Color.green : Color.clear)
-                    )
-                    
-                    Button {
-                        hearingTest = Presets.hearingTests[1]
-                        isSelected = 2
-                    } label: {
-                        Text("Preset 2")
-                            .font(.title3)
-                    }
-                    .background(
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(isSelected == 2 ? Color.green : Color.clear)
-                    )
+                    presetButton(buttonIndex: 0, title: "TEST")
+                    presetButton(buttonIndex: 1, title: "Train Station")
                 }
                 HStack {
-                    Button {
-                        // This needs to be changed to hearingTests[2]
-                        hearingTest = Presets.hearingTests[1]
-                        isSelected = 3
-                    } label: {
-                        Text("Preset 3")
-                            .font(.title3)
-                    }
-                    .background(
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(isSelected == 3 ? Color.green : Color.clear)
-                    )
-                    
-                    Button {
-                        // This needs to be changed to Int.random(in: 0...2)
-                        let shuffleTest = Int.random(in: 0...1)
-                        hearingTest = Presets.hearingTests[shuffleTest]
-                        isSelected = 4
-                    } label: {
-                        Text("Shuffle")
-                            .font(.title3)
-                    }
-                    .background(
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(isSelected == 4 ? Color.green : Color.clear)
-                    )
+                    presetButton(buttonIndex: 2, title: "Do Not Use")
+                    presetButton(buttonIndex: 3, title: "Shuffle")
                 }
             }
             .padding()
@@ -169,12 +124,34 @@ struct EntryPoint: App {
                     openWindow(id: "hearing-test-window")
                     try? await Task.sleep(for: .milliseconds(100))
                     dismissWindow(id: "main-window")
+                    selectedOption = -1
                 }
             } label: {
                 Text("Next")
                     .font(.title3)
             }
+            .disabled(selectedOption == -1)
         }
         .padding()
+    }
+    
+    @ViewBuilder
+    private func presetButton(buttonIndex: Int, title: String) -> some View {
+        Button {
+            selectedOption = buttonIndex
+            var selectedPreset = buttonIndex
+            // If the user chose the third or fourth button (3rd preset or shuffle), make the hearing test load one of the two currently loaded presets. Replace this to > 2 after the third preset is loaded in.
+            if selectedPreset > 1 {
+                selectedPreset = Int.random(in: 0...1)
+            }
+            hearingTest = Presets.hearingTests[selectedPreset]
+        } label: {
+            Text(title)
+                .font(.title3)
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 15)
+                .fill(selectedOption == buttonIndex ? Color.green : Color.clear)
+        )
     }
 }
