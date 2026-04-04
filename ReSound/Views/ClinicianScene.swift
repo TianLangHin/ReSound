@@ -48,12 +48,11 @@ struct ClinicianScene: Scene {
     }
 
     @MainActor
-    private func transitionToPracticeTest() {
+    private func transitionToPracticeTest(from: String, to: String) {
         Task { @MainActor in
-            isHearingTestOpened = true
-            openWindow(id: "practice-window")
+            openWindow(id: from)
             try? await Task.sleep(for: .milliseconds(100))
-            dismissWindow(id: "clinician-window")
+            dismissWindow(id: to)
         }
     }
 }
