@@ -55,6 +55,10 @@ struct AudioQuestion: Equatable, Hashable {
     let focus: UUID
     let chosenQuestion: PossibleQuestion
     let duration: Duration
+    // Relative audio level indicating how much to decrease the target audio volume by (compared to original).
+    // This is measured in a decibel range from negative infinity to zero (nominal),
+    // and thus cannot make an audio louder than the original.
+    var volumeLevel: Double = 0.0
 }
 
 /// This is the "template" for any `AudioQuestion`.
