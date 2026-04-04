@@ -18,7 +18,12 @@ struct ClinicianScene: Scene {
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismissWindow) private var dismissWindow
 
+    @State var speechRec: SpeechRec
+
     @State var clinicianState: ClinicianState = .begin
+    @State var customTest: CustomTest = .init()
+    @State var hearingTest: HearingTest = .init(
+        name: "", audioSources: [], questions: [], backgroundResourceLink: "")
 
     @State var isHearingTestOpened = false
 
@@ -35,6 +40,12 @@ struct ClinicianScene: Scene {
                 }
             }
         }
+        HearingTestScene(
+            hearingTest: $hearingTest,
+            isOpened: $isHearingTestOpened,
+            speechRec: speechRec,
+            hearingTestWindowId: "practice-window",
+            parentWindowId: "clinician-window")
     }
 
     @ViewBuilder
