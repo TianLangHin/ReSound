@@ -32,6 +32,9 @@ struct HearingTestScene: SwiftUI.Scene {
 
     @State var speechRec: SpeechRec
 
+    let hearingTestWindowId: String
+    let parentWindowId: String
+
     /// At the start, the user has yet to play a question, no audio is played,
     /// and the scene starts from the very first question.
     @State var questionState: QuestionState = .before
@@ -44,7 +47,7 @@ struct HearingTestScene: SwiftUI.Scene {
 
     var body: some SwiftUI.Scene {
         /// The ID of this window group is referenced in the outer parent view.
-        WindowGroup(id: "hearing-test-window") {
+        WindowGroup(id: hearingTestWindowId) {
             VStack {
                 /// The display on the window group inside the hearing test
                 /// depends on whether the user is at the start (no questions played yet),
@@ -89,7 +92,7 @@ struct HearingTestScene: SwiftUI.Scene {
             }
         }
         /// The immersive space is where the hearing test happens via spatial audio.
-        ImmersiveSpace(id: "hearing-test-immersive") {
+        ImmersiveSpace(id: hearingTestWindowId + "-immersive") {
             let indicatorEntity = makeIndicatorEntity()
             /// Surrounding the user will be a skybox as a sphere to project the EXR/HDR image.
             SkyboxView(resourceName: hearingTest.backgroundResourceLink)
@@ -117,10 +120,10 @@ struct HearingTestScene: SwiftUI.Scene {
         /// wait for 100 milliseconds to ensure the system can recognise it is open,
         /// and then close the previous window (which is only successful if another window is open).
         Task { @MainActor in
-            openWindow(id: "main-window")
+            openWindow(id: parentWindowId)
             try? await Task.sleep(for: .milliseconds(100))
             isOpened = false
-            dismissWindow(id: "hearing-test-window")
+            dismissWindow(id: hearingTestWindowId)
         }
     }
 
@@ -314,7 +317,7 @@ struct HearingTestScene: SwiftUI.Scene {
     private func openSpace() {
         if !isDisplayingImmersive {
             Task {
-                await openImmersiveSpace(id: "hearing-test-immersive")
+                await openImmersiveSpace(id: hearingTestWindowId + "-immersive")
                 isDisplayingImmersive = true
             }
         }

@@ -78,7 +78,12 @@ struct EntryPoint: App {
         }
         /// The hearing test is administered through this scene,
         /// which by default is closed since the main WindowGroup above is loaded first.
-        HearingTestScene(hearingTest: $hearingTest, isOpened: $isHearingTestOpened, speechRec: speechRec)
+        HearingTestScene(
+            hearingTest: $hearingTest,
+            isOpened: $isHearingTestOpened,
+            speechRec: speechRec,
+            hearingTestWindowId: "hearing-test-window",
+            parentWindowId: "main-window")
     }
     
     @ViewBuilder
