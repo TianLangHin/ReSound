@@ -15,7 +15,12 @@ enum ClinicianState {
 }
 
 struct ClinicianScene: Scene {
+    @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismissWindow) private var dismissWindow
+
     @State var clinicianState: ClinicianState = .begin
+
+    @State var isHearingTestOpened = false
 
     var body: some Scene {
         WindowGroup(id: "clinician-window") {
@@ -40,5 +45,15 @@ struct ClinicianScene: Scene {
     @ViewBuilder
     private func updateView() -> some View {
         
+    }
+
+    @MainActor
+    private func transitionToPracticeTest() {
+        Task { @MainActor in
+            isHearingTestOpened = true
+            openWindow(id: "practice-window")
+            try? await Task.sleep(for: .milliseconds(100))
+            dismissWindow(id: "clinician-window")
+        }
     }
 }
