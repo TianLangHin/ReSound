@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2467DFB52F7FAD0600466F85 /* ClinicianScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2467DFB42F7FAD0300466F85 /* ClinicianScene.swift */; };
 		249912872F696B4500ECA9DE /* AudioSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 249912862F696B4000ECA9DE /* AudioSourceView.swift */; };
 		24A3EB4E2F6FF509001B8716 /* HearingTestScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A3EB4D2F6FF504001B8716 /* HearingTestScene.swift */; };
 		24A3EB502F700217001B8716 /* SkyboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A3EB4F2F700214001B8716 /* SkyboxView.swift */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2467DFB42F7FAD0300466F85 /* ClinicianScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClinicianScene.swift; sourceTree = "<group>"; };
 		249912862F696B4000ECA9DE /* AudioSourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSourceView.swift; sourceTree = "<group>"; };
 		24A3EB4D2F6FF504001B8716 /* HearingTestScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HearingTestScene.swift; sourceTree = "<group>"; };
 		24A3EB4F2F700214001B8716 /* SkyboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkyboxView.swift; sourceTree = "<group>"; };
@@ -96,6 +98,7 @@
 		F5527B1D2C4EF5360054C698 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				2467DFB42F7FAD0300466F85 /* ClinicianScene.swift */,
 				249912862F696B4000ECA9DE /* AudioSourceView.swift */,
 				24A3EB4D2F6FF504001B8716 /* HearingTestScene.swift */,
 				24A3EB4F2F700214001B8716 /* SkyboxView.swift */,
@@ -203,6 +206,7 @@
 				24A3EB4E2F6FF509001B8716 /* HearingTestScene.swift in Sources */,
 				249912872F696B4500ECA9DE /* AudioSourceView.swift in Sources */,
 				DF02DEAC2BEC1DDD008047B2 /* EntryPoint.swift in Sources */,
+				2467DFB52F7FAD0600466F85 /* ClinicianScene.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

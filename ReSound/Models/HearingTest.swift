@@ -22,6 +22,10 @@ struct HearingTest: Hashable {
     var questions: [AudioQuestion]
     // For now, the background of a hearing test is assumed to be an image.
     var backgroundResourceLink: String
+
+    static func empty() -> Self {
+        return .init(name: "", audioSources: [], questions: [], backgroundResourceLink: "")
+    }
 }
 
 /// The model representing a visual element that emits an audio clip within a hearing test environment.
@@ -55,6 +59,9 @@ struct AudioQuestion: Equatable, Hashable {
     let focus: UUID
     let chosenQuestion: PossibleQuestion
     let duration: Duration
+    // Relative audio level. How much to decrease the target audio volume by when compared to original audio.
+    // This is measured in a decibel range from negative infinity to zero (nominal).
+    var volumeLevel: Double = 0.0
 }
 
 /// This is the "template" for any `AudioQuestion`.

@@ -62,6 +62,16 @@ struct EntryPoint: App {
                             .font(.title3)
                     }
                     .padding()
+                    Button {
+                        Task { @MainActor in
+                            openWindow(id: "clinician-window")
+                            try? await Task.sleep(for: .milliseconds(100))
+                            dismissWindow(id: "main-window")
+                        }
+                    } label: {
+                        Text("Clinician View")
+                            .font(.title3)
+                    }
                 }
                 /// Testing for speech recog
                 .task {
@@ -73,6 +83,12 @@ struct EntryPoint: App {
         }
         /// The hearing test is administered through this scene,
         /// which by default is closed since the main WindowGroup above is loaded first.
-        HearingTestScene(hearingTest: $hearingTest, isOpened: $isHearingTestOpened, speechRec: speechRec)
+        HearingTestScene(
+            hearingTest: $hearingTest,
+            isOpened: $isHearingTestOpened,
+            speechRec: speechRec,
+            hearingTestWindow: "hearing-test-window",
+            parentWindow: "main-window")
+        ClinicianScene(speechRec: speechRec)
     }
 }
