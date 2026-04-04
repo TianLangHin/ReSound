@@ -50,7 +50,39 @@ struct ClinicianScene: Scene {
 
     @ViewBuilder
     private func beginView() -> some View {
-        
+        VStack {
+            Text("Hearing Test Customisation")
+                .font(.system(size: 60))
+                .padding()
+            HStack {
+                Button {
+                    clinicianState = .edit(0)
+                } label: {
+                    Text("Edit Existing Test")
+                        .font(.system(size: 30))
+                        .padding()
+                }
+                .padding()
+                Button {
+                    clinicianState = .add
+                } label: {
+                    Text("Add New Hearing Test")
+                        .font(.system(size: 30))
+                        .padding()
+                }
+                .padding()
+            }
+            Button {
+                transition(from: "main-window", to: "clinician-window")
+            } label: {
+                HStack {
+                    Image(systemName: "chevron.left")
+                    Text("Back")
+                        .font(.system(size: 30))
+                }
+            }
+            .padding()
+        }
     }
 
     @ViewBuilder
@@ -59,7 +91,7 @@ struct ClinicianScene: Scene {
     }
 
     @MainActor
-    private func transitionToPracticeTest(from: String, to: String) {
+    private func transition(from: String, to: String) {
         Task { @MainActor in
             openWindow(id: from)
             try? await Task.sleep(for: .milliseconds(100))
