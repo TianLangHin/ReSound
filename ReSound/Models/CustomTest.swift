@@ -27,6 +27,10 @@ struct CustomTest {
         self.numberOfQuestions = 1
     }
 
+    func generateTest() -> HearingTest {
+        return .init(name: "", audioSources: [], questions: [], backgroundResourceLink: "")
+    }
+    
     enum Theme {
         case home
         case cafe
