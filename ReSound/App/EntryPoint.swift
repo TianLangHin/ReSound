@@ -47,7 +47,11 @@ struct EntryPoint: App {
                         }
                         
                         Button {
-                            // Clinician view not currently implemented.
+                            Task { @MainActor in
+                                openWindow(id: "clinician-window")
+                                try? await Task.sleep(for: .milliseconds(100))
+                                dismissWindow(id: "main-window")
+                            }
                         } label: {
                             // Customising test suites.
                             Text("Clinician View")
@@ -70,7 +74,7 @@ struct EntryPoint: App {
                 }
                 /// Testing for speech recog
                 .task {
-                    await speechRec.authoriseRequest()
+                    let _ = await speechRec.authoriseRequest()
                 }
             } else {
                 chooseHearingTest()
@@ -84,6 +88,7 @@ struct EntryPoint: App {
             speechRec: speechRec,
             hearingTestWindowId: "hearing-test-window",
             parentWindowId: "main-window")
+        ClinicianScene(speechRec: speechRec)
     }
     
     @ViewBuilder

@@ -43,11 +43,9 @@ class Presets {
                     ],
                     questions: [
                         AudioQuestion(focus: Presets.audioSources[0].id,
-                                      chosenQuestion: Presets.possibleQuestions[0],
-                                      duration: .seconds(10)),
+                                      chosenQuestion: Presets.possibleQuestions[0]),
                         AudioQuestion(focus: Presets.audioSources[1].id,
-                                      chosenQuestion: Presets.possibleQuestions[1],
-                                      duration: .seconds(10)),
+                                      chosenQuestion: Presets.possibleQuestions[1]),
                     ],
                     backgroundResourceLink: "blue_photo_studio_4k.hdr"),
         HearingTest(name: "Train Station",
@@ -58,11 +56,9 @@ class Presets {
                     ],
                     questions: [
                         AudioQuestion(focus: Presets.audioSources[3].id,
-                                      chosenQuestion: Presets.possibleQuestions[2],
-                                      duration: .seconds(30)),
+                                      chosenQuestion: Presets.possibleQuestions[2]),
                         AudioQuestion(focus: Presets.audioSources[5].id,
-                                      chosenQuestion: Presets.possibleQuestions[3],
-                                      duration: .seconds(30)),
+                                      chosenQuestion: Presets.possibleQuestions[3]),
                     ],
                     backgroundResourceLink: "dresden_station_night_4k.exr"),
     ]
@@ -76,7 +72,8 @@ class Presets {
                             "Correct 3",
                             "Incorrect 4",
                          ],
-                         correctAnswer: 2),
+                         correctAnswer: 2,
+                         duration: .seconds(10)),
         PossibleQuestion(audioResourceLink: "Police.mp3",
                          question: "Test Question 2?",
                          answers: [
@@ -85,7 +82,8 @@ class Presets {
                             "Incorrect 3",
                             "Incorrect 4"
                          ],
-                         correctAnswer: 0),
+                         correctAnswer: 0,
+                         duration: .seconds(10)),
         /// Created by Yu-Han Chang on 22 March.
         PossibleQuestion(audioResourceLink: "Train_Announcement.mp3",
                          question: "Which platform will the next train arrive on?",
@@ -95,7 +93,8 @@ class Presets {
                             "Platform 23",
                             "Platform 22"
                          ],
-                         correctAnswer: 2),
+                         correctAnswer: 2,
+                         duration: .seconds(11)),
         PossibleQuestion(audioResourceLink: "Train_Announcement.mp3",
                          question: "Which is the first stop of this train going to Macarthur?",
                          answers: [
@@ -104,7 +103,8 @@ class Presets {
                             "Domestic Airport",
                             "International Airport"
                          ],
-                         correctAnswer: 1),
+                         correctAnswer: 1,
+                         duration: .seconds(19)),
         PossibleQuestion(audioResourceLink: "Train_Announcement.mp3",
                          question: "Which Airport stop will come first for this train going to Macarthur?",
                          answers: [
@@ -113,7 +113,39 @@ class Presets {
                             "Sydney Airport",
                             "None of them"
                          ],
-                         correctAnswer: 1),
+                         correctAnswer: 1,
+                         duration: .seconds(31)),
+        PossibleQuestion(audioResourceLink: "Home_WeatherForecast.mp3",
+                         question: "What weather is expected in Sydney tomorrow?",
+                         answers: ["Mostly cloudy", "Stormy", "Mostly raining", "Mostly sunny"],
+                         correctAnswer: 3,
+                         duration: .seconds(23)),
+        PossibleQuestion(audioResourceLink: "Home_WeatherForecast.mp3",
+                         question: "What is the highest temperature expected in Canberra tomorrow?",
+                         answers: ["25", "30", "35", "40"],
+                         correctAnswer: 2,
+                         duration: .seconds(27)),
+        PossibleQuestion(audioResourceLink: "Home_WeatherForecast.mp3",
+                         question: "How were western areas expected to be?",
+                         answers: ["Hot to very hot", "Cold to very cold", "Rainy", "Sunny"],
+                         correctAnswer: 0,
+                         duration: .seconds(15)),
+        // Additional questions temporarily input by Tian Lang Hin on 5 April.
+        PossibleQuestion(audioResourceLink: "Cafe_Worker.mp3",
+                         question: "What sides does the sandwiches come with?",
+                         answers: ["Salad and drinks", "Chips", "A drink", "Chips or salad"],
+                         correctAnswer: 3,
+                         duration: .seconds(14)),
+        PossibleQuestion(audioResourceLink: "Cafe_Worker.mp3",
+                         question: "How much does the extra poached egg cost?",
+                         answers: ["One dollar", "Two dollars", "Three dollars", "Four dollars"],
+                         correctAnswer: 1,
+                         duration: .seconds(21)),
+        PossibleQuestion(audioResourceLink: "Cafe_Worker.mp3",
+                         question: "What is their new drink currently under promotion?",
+                         answers: ["Iced caramel latte", "Iced vanilla latte", "Chai latte", "Iced matcha"],
+                         correctAnswer: 0,
+                         duration: .seconds(30)),
     ]
 
     static var conversationAudioClips: [String] = [
