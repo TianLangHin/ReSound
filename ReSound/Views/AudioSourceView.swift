@@ -44,12 +44,13 @@ struct AudioSourceView: View {
                 entity.addChild(defaultModel)
             case let .asset(assetName):
                 // `assetName` should be the name of a USDZ file.
-                if let entityAsset = try? await Entity(named: assetName) {
-                    entityAsset.scale *= 0.3
-                    entity.addChild(entityAsset)
-                } else {
-                    entity.addChild(defaultModel)
+                if assetName != "" {
+                    if let entityAsset = try? await Entity(named: assetName) {
+                        entityAsset.scale *= 0.3
+                        entity.addChild(entityAsset)
+                    }
                 }
+                // Make it empty otherwise.
             }
 
             // Next, we determine whether we need to add the extra visual indicator or not.
@@ -118,7 +119,7 @@ struct AudioSourceView: View {
 
                 // Set the clip to stop playing after the question's duration times out.
                 Task { @MainActor in
-                    try? await Task.sleep(for: newQuestion.duration)
+                    try? await Task.sleep(for: newQuestion.chosenQuestion.duration)
                     audioController.stop()
                     // This feeds the status of stopping audio back to the outer scenes.
                     isPlayingAudio = false

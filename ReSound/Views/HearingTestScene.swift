@@ -218,7 +218,7 @@ struct HearingTestScene: SwiftUI.Scene {
     @ViewBuilder
     private func waitingView() -> some View {
         VStack {
-            Text("Continue on to Question \(questionNumber + 1)?")
+            Text("Continue on to Question \(questionNumber + 2)?")
                 .font(.system(size: 60))
                 .padding()
             Button {
@@ -269,7 +269,7 @@ struct HearingTestScene: SwiftUI.Scene {
     /// That corresponds to the transition of `questionState` from `.before` to `.playing`.
     private func startQuestion(firstCall: Bool = false) {
         if !isPlayingAudio {
-            let questionDuration = hearingTest.questions[questionNumber].duration
+            let questionDuration = hearingTest.questions[questionNumber].chosenQuestion.duration
             isPlayingAudio = true
             questionState = .playing
             if !firstCall {

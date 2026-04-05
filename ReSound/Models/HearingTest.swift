@@ -30,7 +30,7 @@ struct AudioSource: Equatable, Hashable {
     let id = UUID()
     // This will allow customisation by the clinician to adjust the difficulty of the hearing tests.
     // It affects which list of audio files it will take from.
-    let type: AudioSourceType
+    var type: AudioSourceType
     // Location relative to the user.
     var location: SIMD3<Float>
     // Ideally, this will be an enum of choices between various preset assets.
@@ -54,7 +54,6 @@ struct AudioSource: Equatable, Hashable {
 struct AudioQuestion: Equatable, Hashable {
     let focus: UUID
     let chosenQuestion: PossibleQuestion
-    let duration: Duration
     // Relative audio level indicating how much to decrease the target audio volume by (compared to original).
     // This is measured in a decibel range from negative infinity to zero (nominal),
     // and thus cannot make an audio louder than the original.
@@ -70,5 +69,6 @@ struct PossibleQuestion: Equatable, Hashable {
     let question: String
     let answers: [String]
     let correctAnswer: Int
+    let duration: Duration
 }
 
