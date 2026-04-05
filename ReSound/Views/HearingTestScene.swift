@@ -90,6 +90,9 @@ struct HearingTestScene: SwiftUI.Scene {
                     }
                 }
             }
+            .onChange(of: questionState) {
+                print("Question state: \(questionState)")
+            }
         }
         /// The immersive space is where the hearing test happens via spatial audio.
         ImmersiveSpace(id: hearingTestWindowId + "-immersive") {
@@ -275,7 +278,7 @@ struct HearingTestScene: SwiftUI.Scene {
             if !firstCall {
                 speechRec.stopRec()
             }
-            Task {
+            Task { @MainActor in
                 try? await Task.sleep(for: questionDuration)
                 stopQuestion()
             }

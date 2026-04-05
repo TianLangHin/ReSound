@@ -135,7 +135,7 @@ class Presets {
                          question: "What sides does the sandwiches come with?",
                          answers: ["Salad and drinks", "Chips", "A drink", "Chips or salad"],
                          correctAnswer: 3,
-                         duration: .seconds(14)),
+                         duration: .seconds(16)),
         PossibleQuestion(audioResourceLink: "Cafe_Worker.mp3",
                          question: "How much does the extra poached egg cost?",
                          answers: ["One dollar", "Two dollars", "Three dollars", "Four dollars"],
@@ -157,7 +157,7 @@ class Presets {
     ]
 
     static var ambientAudioClips: [String] = [
-        "FunkySynth.m4a",
+        "FunkySynth.mp3",
         "Cafe_Ambience.mp3",
         "Cafe_Music.mp3",
         "Train_Birds.mp3",

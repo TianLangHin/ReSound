@@ -111,10 +111,9 @@ struct AudioSourceView: View {
                 }
                 // Set the spatial audio settings of the entity, attach it to the entity, and play the audio.
                 content.entities[0].spatialAudio = SpatialAudioComponent(directivity: .beam(focus: 0.2))
-                // Adjusts the relative volume if this entity is the target audio.
-                if isFocused {
-                    content.entities[0].spatialAudio?.gain = newQuestion.volumeLevel
-                }
+                // Adjusts the relative volume if this entity is the target audio,
+                // and naturally lowers everything else since it is ambient sound.
+                content.entities[0].spatialAudio?.gain = isFocused ? newQuestion.volumeLevel : -5.0
                 let audioController = content.entities[0].playAudio(audio)
 
                 // Set the clip to stop playing after the question's duration times out.

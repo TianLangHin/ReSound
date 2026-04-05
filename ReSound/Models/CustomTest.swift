@@ -108,11 +108,11 @@ struct CustomTest {
             return [serverLeft, serverRight]
         case .train:
             let speakerLeft = AudioSource(
-                type: .silent,
+                type: .conversation("AudioSample1.mp3"),
                 location: .init(x: -0.5, y: 0.0, z: -1.5),
                 visualResourceLink: .asset("Train_Speaker.usdz"))
             let speakerRight = AudioSource(
-                type: .silent,
+                type: .conversation("AudioSample1.mp3"),
                 location: .init(x: 0.5, y: 0.0, z: -1.5),
                 visualResourceLink: .asset("Train_Speaker.usdz"))
             return [speakerLeft, speakerRight]
@@ -184,21 +184,18 @@ struct CustomTest {
             return [
                 // The cafe has music coming from various places, as well as a crowd of people.
                 AudioSource(type: .ambient("Cafe_Music.mp3"),
-                            location: .init(x: -4.0, y: 0.0, z: 2.0),
-                            visualResourceLink: .asset("")),
-                AudioSource(type: .ambient("Cafe_Music.mp3"),
-                            location: .init(x: 4.0, y: 0.0, z: -2.0),
+                            location: .init(x: 0.0, y: 0.0, z: 5.0),
                             visualResourceLink: .asset("")),
                 // Main "talking" ambient source.
                 AudioSource(type: .conversation("Cafe_Ambience.mp3"),
-                            location: .init(x: 0.0, y: 0.0, z: 3.0),
+                            location: .init(x: 1.0, y: 0.0, z: 4.0),
                             visualResourceLink: .asset("Man1.usdz")),
                 // Auxiliary assets to simulate a crowd.
                 AudioSource(type: .silent,
-                            location: .init(x: -0.5, y: 0.0, z: 3.0),
+                            location: .init(x: 0.5, y: 0.0, z: 4.0),
                             visualResourceLink: .asset("Man2.usdz")),
                 AudioSource(type: .silent,
-                            location: .init(x: 0.5, y: 0.0, z: 3.0),
+                            location: .init(x: 1.5, y: 0.0, z: 4.0),
                             visualResourceLink: .asset("Woman1.usdz")),
             ]
         case .train:
