@@ -19,9 +19,6 @@ struct AudioSourceView: View {
     @Binding var questionNumber: Int
     @Binding var isPlayingAudio: Bool
 
-    /// Check if the audio already loaded (Benchmark purpose)
-    @State private var isAudioLoaded = false
-
     // The main entity displaying the audio source.
     let entity = Entity()
     // The visual indicator if required.
@@ -76,12 +73,7 @@ struct AudioSourceView: View {
 
             /// Step 2: Determing whether we need to play the audio.
             /// Added logic here to ensure the mechanism preventing double sound works correctly.
-            if isPlayingAudio && !isAudioLoaded {
-
-                // Avoid double sound (Benchmark purpose)
-                Task { @MainActor in
-                    isAudioLoaded = true
-                }
+            if isPlayingAudio {
 
                 // Find the audio resource to load.
                 let possibleAudio: String? = if newQuestion.focus == audioSource.id {
@@ -122,7 +114,6 @@ struct AudioSourceView: View {
                     audioController.stop()
                     // This feeds the status of stopping audio back to the outer scenes.
                     isPlayingAudio = false
-                    isAudioLoaded = false
                 }
             }
         }
