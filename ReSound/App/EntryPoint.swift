@@ -8,6 +8,11 @@ The app's main entry point.
 import SwiftUI
 import RealityKit
 
+enum MainMenuState {
+    case main
+    case chooseTest
+}
+
 @main
 struct EntryPoint: App {
     /// State for speech rec
@@ -20,6 +25,7 @@ struct EntryPoint: App {
     /// we keep track of which one it is referencing through a reference
     /// to the `HearingTest` instance (which can be managed by a Picker).
     @State var hearingTest = Presets.hearingTests[0]
+    @State var viewingState: MainMenuState = .main
     @State var selectedOption: Int = -1
 
     /// A binded variable to suppress the main window when a new one pops up
@@ -31,53 +37,13 @@ struct EntryPoint: App {
             /// The content of the main menu is displayed if the hearing test is not happening yet.
             if !isHearingTestOpened {
                 VStack {
-                    Text("ReSound Hearing Test")
-                        .font(.system(size: 60))
-                        .bold()
-                    Text("Test your hearing using spatial audio with the Apple Vision Pro")
-                        .font(.system(size: 25))
-                    
-                    VStack {
-                        Button {
-                            isHearingTestOpened = true
-                        } label: {
-                            // Goes to the patient view.
-                            Text("Start Hearing Test")
-                                .font(.title3)
-                        }
-                        
-                        Button {
-                            Task { @MainActor in
-                                openWindow(id: "clinician-window")
-                                try? await Task.sleep(for: .milliseconds(100))
-                                dismissWindow(id: "main-window")
-                            }
-                        } label: {
-                            // Customising test suites.
-                            Text("Clinician View")
-                                .font(.title3)
-                        }
-                        
-                        Button {
-                            // Go to view history page which is not currently implemented.
-                        } label: {
-                            // Persistent storage which stores a list of patient scores and other related details.
-                            Text("View History")
-                                .font(.title3)
-                        }
+                    switch viewingState {
+                    case .main:
+                        loadMainMenu()
+                    case .chooseTest:
+                        chooseHearingTest()
                     }
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(.ultraThinMaterial)
-                    )
                 }
-                /// Testing for speech recog
-                .task {
-                    let _ = await speechRec.authoriseRequest()
-                }
-            } else {
-                chooseHearingTest()
             }
         }
         /// The hearing test is administered through this scene,
@@ -92,13 +58,77 @@ struct EntryPoint: App {
     }
     
     @ViewBuilder
+    private func loadMainMenu() -> some View {
+        VStack {
+            Text("ReSound Hearing Test")
+                .font(.system(size: 60))
+                .bold()
+            Text("Test your hearing using spatial audio with the Apple Vision Pro")
+                .font(.system(size: 30))
+            
+            Spacer()
+                .frame(height: 50)
+            
+            VStack {
+                Button {
+                    viewingState = .chooseTest
+                } label: {
+                    // Go to environment selection screen.
+                    Text("Start Hearing Test")
+                        .font(.system(size: 35))
+                        .bold()
+                        .frame(maxWidth: 500)
+                        .padding(.vertical, 25)
+                }
+                
+                Button {
+                    Task { @MainActor in
+                        openWindow(id: "clinician-window")
+                        try? await Task.sleep(for: .milliseconds(100))
+                        dismissWindow(id: "main-window")
+                    }
+                } label: {
+                    // Go to the clinician view to create customised hearing tests.
+                    Text("Clinician View")
+                        .font(.system(size: 35))
+                        .bold()
+                        .frame(maxWidth: 500)
+                        .padding(.vertical, 25)
+                }
+                
+                Button {
+                    // Go to view history page which is not currently implemented.
+                } label: {
+                    // Persistent storage which stores a list of patient scores and other related details.
+                    Text("View History")
+                        .font(.system(size: 35))
+                        .bold()
+                        .frame(maxWidth: 500)
+                        .padding(.vertical, 25)
+                }
+            }
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(.ultraThinMaterial)
+            )
+        }
+        .padding(.vertical, 25)
+        /// Testing for speech recog
+        .task {
+            let _ = await speechRec.authoriseRequest()
+        }
+    }
+    
+    @ViewBuilder
     private func chooseHearingTest() -> some View {
         VStack {
             HStack {
                 Button {
-                    isHearingTestOpened = false
+                    viewingState = .main
                 } label: {
                     Image(systemName: "chevron.left")
+                        .padding()
                 }
                 Spacer()
             }
@@ -108,7 +138,10 @@ struct EntryPoint: App {
                 .bold()
             
             Text("Choose your immersive testing environment")
-                .font(.system(size: 25))
+                .font(.system(size: 30))
+            
+            Spacer()
+                .frame(height: 50)
             
             /// The user will get to select which hearing test environment
             /// they wish to take (from the presets we have).
@@ -123,7 +156,14 @@ struct EntryPoint: App {
                 }
             }
             .padding()
-
+            .background(
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(.ultraThinMaterial)
+            )
+            
+            Spacer()
+                .frame(height: 50)
+            
             /// Goes into the patient view (i.e., spawns the hearing test window).
             Button {
                 /// An asynchronous task on the main queue is used to load the other window,
@@ -134,11 +174,15 @@ struct EntryPoint: App {
                     openWindow(id: "hearing-test-window")
                     try? await Task.sleep(for: .milliseconds(100))
                     dismissWindow(id: "main-window")
+                    viewingState = .main
                     selectedOption = -1
                 }
             } label: {
                 Text("Next")
-                    .font(.title3)
+                    .font(.system(size: 40))
+                    .bold()
+                    .frame(maxWidth: 150)
+                    .padding(.vertical, 25)
             }
             .disabled(selectedOption == -1)
         }
@@ -157,11 +201,13 @@ struct EntryPoint: App {
             hearingTest = Presets.hearingTests[selectedPreset]
         } label: {
             Text(title)
-                .font(.title3)
+                .font(.system(size: 35))
+                .bold()
+                .frame(maxWidth: 500)
+                .padding(.vertical, 25)
         }
-        .background(
-            RoundedRectangle(cornerRadius: 15)
-                .fill(selectedOption == buttonIndex ? Color.green : Color.clear)
+        .tint(
+            selectedOption == buttonIndex ? Color.green : nil
         )
     }
 }
