@@ -271,26 +271,22 @@ struct HearingTestScene: SwiftUI.Scene {
     /// `startQuestion` is being called.
     /// That corresponds to the transition of `questionState` from `.before` to `.playing`.
     private func startQuestion(firstCall: Bool = false) {
-        if !isPlayingAudio {
-            let questionDuration = hearingTest.questions[questionNumber].chosenQuestion.duration
-            isPlayingAudio = true
-            questionState = .playing
-            if !firstCall {
-                speechRec.stopRec()
-            }
-            Task { @MainActor in
-                try? await Task.sleep(for: questionDuration)
-                stopQuestion()
-            }
+        let questionDuration = hearingTest.questions[questionNumber].chosenQuestion.duration
+        isPlayingAudio = true
+        questionState = .playing
+        if !firstCall {
+            speechRec.stopRec()
+        }
+        Task { @MainActor in
+            try? await Task.sleep(for: questionDuration)
+            stopQuestion()
         }
     }
 
     private func stopQuestion() {
-        if isPlayingAudio {
-            isPlayingAudio = false
-            questionState = .answering
-            try? speechRec.startRec()
-        }
+        isPlayingAudio = false
+        questionState = .answering
+        try? speechRec.startRec()
     }
 
     /// This logic manages whether the test has ended or not,
