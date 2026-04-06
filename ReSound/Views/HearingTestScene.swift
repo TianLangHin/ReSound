@@ -169,24 +169,41 @@ struct HearingTestScene: SwiftUI.Scene {
     @ViewBuilder
     private func startView() -> some View {
         VStack {
+            Text("Start Test: \(hearingTest.name)")
+                .font(.system(size: 60))
+                .bold()
+            Text("Start the hearing test when you're ready!")
+                .font(.system(size: 30))
+            
+            Spacer()
+                .frame(height: 50)
+            
             Button {
                 openSpace()
                 startQuestion(firstCall: true)
             } label: {
                 Text("Start hearing test!")
-                    .padding()
-                    .font(.title2)
+                    .font(.system(size: 40))
+                    .bold()
+                    .frame(maxWidth: 500)
+                    .padding(.vertical, 25)
             }
-            .padding()
+            
+            Spacer()
+                .frame(height: 50)
+
             Button {
                 exitEntirely()
             } label: {
-                Text("Exit entirely")
-                    .padding()
-                    .font(.title2)
+                Text("Exit")
+                    .font(.system(size: 40))
+                    .bold()
+                    .frame(maxWidth: 150)
+                    .padding(.vertical, 25)
             }
-            .padding()
+            .tint(Color.red)
         }
+        .padding()
     }
 
     @ViewBuilder
