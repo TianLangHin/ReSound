@@ -26,6 +26,9 @@ struct ClinicianScene: Scene {
         name: "", audioSources: [], questions: [], backgroundResourceLink: "")
 
     @State var isHearingTestOpened = false
+    
+    @State var savedTests: [HearingTest] = PersistStorage.testStorage.loadTest()
+    @State var savedCustoms: [CustomTest] = PersistStorage.testStorage.loadCustom()
 
     var body: some Scene {
         WindowGroup(id: "clinician-window") {
@@ -55,6 +58,34 @@ struct ClinicianScene: Scene {
                 .font(.system(size: 60))
                 .padding()
             HStack {
+                
+                // Testing for storage showing
+                if savedTests.isEmpty {
+                    Text("No saved tests yet.")
+                        .foregroundStyle(.secondary)
+                        .padding()
+                } else {
+                    List {
+                        ForEach(savedTests, id: \.name) { test in
+                            Button(action: {
+                                if let index = savedTests.firstIndex(where: { $0.name == test.name }) {
+                                    customTest = savedCustoms[index]
+                                    clinicianState = .edit(index)
+                                }
+                            }) {
+                                Text(test.name)
+                            }
+                        }
+                        .onDelete { offsets in
+                            savedTests.remove(atOffsets: offsets)
+                            savedCustoms.remove(atOffsets: offsets)
+                            PersistStorage.testStorage.saveTest(savedTests)
+                            PersistStorage.testStorage.saveCustom(savedCustoms)
+                        }
+                    }
+                    .frame(height: 300)
+                }
+                
                 Button {
                     clinicianState = .edit(0)
                 } label: {
@@ -64,6 +95,8 @@ struct ClinicianScene: Scene {
                 }
                 .padding()
                 Button {
+                    // Set name for the new test saving because no text field
+                    customTest.name = "Custom Test \(savedTests.count + 1)"
                     clinicianState = .add
                 } label: {
                     Text("Add New Hearing Test")
@@ -173,6 +206,29 @@ struct ClinicianScene: Scene {
                     transition(from: "clinician-window", to: "practice-window")
                 } label: {
                     Text("Practice Test")
+                        .font(.system(size: 30))
+                        .padding()
+                }
+                .padding()
+                
+                // Save Button here
+                Button {
+                    let test = customTest.generateTest()
+                    switch clinicianState {
+                    case .edit(let index):
+                        savedTests[index] = test
+                        savedCustoms[index] = customTest
+                    case .add:
+                        savedTests.append(test)
+                        savedCustoms.append(customTest)
+                    case .begin:
+                        break
+                    }
+                    PersistStorage.testStorage.saveTest(savedTests)
+                    PersistStorage.testStorage.saveCustom(savedCustoms)
+                    clinicianState = .begin
+                } label: {
+                    Text("Save Test")
                         .font(.system(size: 30))
                         .padding()
                 }

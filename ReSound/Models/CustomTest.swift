@@ -12,7 +12,7 @@
 /// will care about, while abstracting away the ways in which that affects
 /// the actual attributes of the equivalent `HearingTest` instance.
 /// This also includes random question generation depending on the theme.
-struct CustomTest {
+struct CustomTest: Codable{
     var name: String
     var background: Theme
     var positioning: Positioning
@@ -27,7 +27,7 @@ struct CustomTest {
         self.numberOfQuestions = 1
     }
 
-    enum Theme {
+    enum Theme: Codable {
         case home
         case cafe
         case train
@@ -55,7 +55,7 @@ struct CustomTest {
         }
     }
 
-    enum Positioning {
+    enum Positioning: Codable {
         case easy
         case medium
         case hard
