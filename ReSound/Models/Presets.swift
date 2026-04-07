@@ -113,7 +113,7 @@ class Presets {
                             "Sydney Airport",
                             "None of them"
                          ],
-                         correctAnswer: 1,
+                         correctAnswer: 0,
                          duration: .seconds(31)),
         PossibleQuestion(audioResourceLink: "Home_WeatherForecast.mp3",
                          question: "What weather is expected in Sydney tomorrow?",
