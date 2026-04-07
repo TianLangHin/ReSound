@@ -48,26 +48,21 @@ struct HearingTestScene: SwiftUI.Scene {
     var body: some SwiftUI.Scene {
         /// The ID of this window group is referenced in the outer parent view.
         WindowGroup(id: hearingTestWindowId) {
-            VStack {
-                /// The display on the window group inside the hearing test
-                /// depends on whether the user is at the start (no questions played yet),
-                /// audio is currently playing (in which case we do not show the answers),
-                /// audio has finished playing (here we show the question/answers),
-                /// and whether the test has ended (then we show the score).
-                switch questionState {
-                case .before:
-                    startView()
-                case .playing:
-                    playingView()
-                case .answering:
-                    questionChoiceView()
-                case .waiting:
-                    waitingView()
-                case .ended:
-                    endView()
-                }
-            }
-            .padding()
+            HearingTestWindowView(
+                hearingTest: hearingTest,
+                questionState: questionState,
+                questionNumber: questionNumber,
+                score: score,
+                onStartTest: {
+                    openSpace()
+                    startQuestion(firstCall: true)
+                },
+                onExit: { exitEntirely() },
+                onAnswer: { advanceQuestion(answer: $0) },
+                onContinueWaiting: { moveFromWaiting() },
+                onExitImmersiveOnly: { closeSpace() },
+                onExitToMenu: { exitEntirely() }
+            )
             .onAppear {
                 /// Toggling the Boolean binding for tracking in the parent view.
                 isOpened = true
@@ -164,120 +159,6 @@ struct HearingTestScene: SwiftUI.Scene {
         return indicatorEntity
     }
 
-    /// Each of the next four functions are SwiftUI Views, encapsulated for neater code.
-
-    @ViewBuilder
-    private func startView() -> some View {
-        VStack {
-            Text("Start Test: \(hearingTest.name)")
-                .font(.system(size: 60))
-                .bold()
-            Text("Start the hearing test when you're ready!")
-                .font(.system(size: 30))
-            
-            Spacer()
-                .frame(height: 50)
-            
-            Button {
-                openSpace()
-                startQuestion(firstCall: true)
-            } label: {
-                Text("Start hearing test!")
-                    .font(.system(size: 40))
-                    .bold()
-                    .frame(maxWidth: 500)
-                    .padding(.vertical, 25)
-            }
-            
-            Spacer()
-                .frame(height: 50)
-
-            Button {
-                exitEntirely()
-            } label: {
-                Text("Exit")
-                    .font(.system(size: 40))
-                    .bold()
-                    .frame(maxWidth: 150)
-                    .padding(.vertical, 25)
-            }
-            .tint(Color.red)
-        }
-        .padding()
-    }
-
-    @ViewBuilder
-    private func playingView() -> some View {
-        Text("Audio for Question \(questionNumber + 1) is playing.")
-            .font(.system(size: 60))
-            .padding()
-    }
-
-    @ViewBuilder
-    private func questionChoiceView() -> some View {
-        let currentQuestion = hearingTest.questions[questionNumber].chosenQuestion
-        VStack {
-            Text(currentQuestion.question)
-                .font(.title3)
-                .padding()
-            List {
-                ForEach(Array(currentQuestion.answers.enumerated()), id: \.offset) { index, answer in
-                    Button {
-                        advanceQuestion(answer: index)
-                    } label: {
-                        Text("\(index + 1). \(answer)")
-                            .font(.title2)
-                    }
-                    .padding()
-                }
-            }
-        }
-        .padding()
-    }
-
-    @ViewBuilder
-    private func waitingView() -> some View {
-        VStack {
-            Text("Continue on to Question \(questionNumber + 2)?")
-                .font(.system(size: 60))
-                .padding()
-            Button {
-                // Question advancement is delayed so that the visual pointer
-                // is revealed only when the question starts.
-                moveFromWaiting()
-            } label: {
-                Text("Continue")
-                    .font(.title3)
-                    .padding()
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func endView() -> some View {
-        let questionCount = hearingTest.questions.count
-        VStack {
-            Text("Score: \(score) out of \(questionCount)")
-                .font(.system(size: 48))
-                .padding()
-            Button {
-                closeSpace()
-            } label: {
-                Text("Exit immersive space")
-                    .font(.title3)
-            }
-            Button {
-                exitEntirely()
-            } label: {
-                Text("Exit back to main menu")
-                    .padding()
-                    .font(.title2)
-            }
-            .padding()
-        }
-        .padding()
-    }
-
     private func moveFromWaiting() {
         questionNumber += 1
         startQuestion()
@@ -358,4 +239,3 @@ struct HearingTestScene: SwiftUI.Scene {
         speechRec.stopRec()
     }
 }
-

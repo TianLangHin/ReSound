@@ -34,3 +34,10 @@ struct SkyboxView: View {
         }
     }
 }
+
+#if DEBUG
+#Preview("Skybox") {
+    SkyboxView(resourceName: Presets.hearingTests[0].backgroundResourceLink)
+}
+#endif
+
