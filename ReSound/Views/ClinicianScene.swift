@@ -64,6 +64,7 @@ struct ClinicianScene: Scene {
                     Text("No saved tests yet.")
                         .foregroundStyle(.secondary)
                         .padding()
+                        .padding(.horizontal)
                 } else {
                     List {
                         ForEach(savedTests, id: \.name) { test in
@@ -84,16 +85,10 @@ struct ClinicianScene: Scene {
                         }
                     }
                     .frame(height: 300)
+                    .frame(width: 700)
+                    .padding(.horizontal)
                 }
                 
-                Button {
-                    clinicianState = .edit(0)
-                } label: {
-                    Text("Edit Existing Test")
-                        .font(.system(size: 30))
-                        .padding()
-                }
-                .padding()
                 Button {
                     // Set name for the new test saving because no text field
                     customTest.name = "Custom Test \(savedTests.count + 1)"
@@ -105,6 +100,8 @@ struct ClinicianScene: Scene {
                 }
                 .padding()
             }
+            .padding()
+            
             Button {
                 transition(from: "clinician-window", to: "main-window")
             } label: {
