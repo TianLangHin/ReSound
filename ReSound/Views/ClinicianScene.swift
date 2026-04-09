@@ -26,13 +26,13 @@ struct ClinicianScene: Scene {
         name: "", audioSources: [], questions: [], backgroundResourceLink: "")
 
     @State var isHearingTestOpened = false
-
+    
     @State var savedTests: [HearingTest] = PersistStorage.testStorage.loadTest()
     @State var savedCustoms: [CustomTest] = PersistStorage.testStorage.loadCustom()
 
     var body: some Scene {
         WindowGroup(id: "clinician-window") {
-            VStack(spacing: ReSoundLayout.sectionSpacing) {
+            VStack {
                 switch clinicianState {
                 case .begin:
                     beginView()
@@ -42,7 +42,6 @@ struct ClinicianScene: Scene {
                     updateView()
                 }
             }
-            .padding(ReSoundLayout.cardPadding)
         }
         HearingTestScene(
             hearingTest: $hearingTest,
@@ -54,19 +53,18 @@ struct ClinicianScene: Scene {
 
     @ViewBuilder
     private func beginView() -> some View {
-        VStack(spacing: ReSoundLayout.sectionSpacing) {
+        VStack {
             Text("Hearing Test Customisation")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .multilineTextAlignment(.center)
-
-            HStack(alignment: .top, spacing: ReSoundLayout.sectionSpacing) {
+                .font(.system(size: 60))
+                .padding()
+            HStack {
+                
                 // Testing for storage showing
                 if savedTests.isEmpty {
                     Text("No saved tests yet.")
-                        .font(.body)
                         .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, minHeight: 120, alignment: .center)
+                        .padding()
+                        .padding(.horizontal)
                 } else {
                     List {
                         ForEach(savedTests, id: \.name) { test in
@@ -77,9 +75,7 @@ struct ClinicianScene: Scene {
                                 }
                             }) {
                                 Text(test.name)
-                                    .font(.body)
                             }
-                            .accessibilityLabel("Saved test: \(test.name)")
                         }
                         .onDelete { offsets in
                             savedTests.remove(atOffsets: offsets)
@@ -90,104 +86,129 @@ struct ClinicianScene: Scene {
                     }
                     .frame(height: 300)
                     .frame(width: 700)
+                    .padding(.horizontal)
                 }
-
+                
                 Button {
                     // Set name for the new test saving because no text field
                     customTest.name = "Custom Test \(savedTests.count + 1)"
                     clinicianState = .add
                 } label: {
                     Text("Add New Hearing Test")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .padding(.vertical, 10)
+                        .font(.system(size: 30))
+                        .padding()
                 }
-                .buttonStyle(.borderedProminent)
+                .padding()
             }
-            .padding(ReSoundLayout.cardPadding)
-            .background(
-                RoundedRectangle(cornerRadius: ReSoundLayout.cardCornerRadius)
-                    .fill(.ultraThinMaterial)
-            )
-
+            .padding()
+            
             Button {
                 transition(from: "clinician-window", to: "main-window")
             } label: {
-                Label("Back", systemImage: "chevron.backward")
-                    .font(.body)
-                    .fontWeight(.medium)
+                HStack {
+                    Image(systemName: "chevron.left")
+                    Text("Back")
+                        .font(.system(size: 30))
+                }
             }
-            .buttonStyle(.bordered)
-            .accessibilityHint("Returns to the main menu window")
+            .padding()
         }
     }
 
     @ViewBuilder
     private func updateView() -> some View {
-        HStack(alignment: .top, spacing: ReSoundLayout.sectionSpacing) {
-            VStack(alignment: .leading, spacing: ReSoundLayout.stackSpacing) {
+        HStack {
+            VStack {
                 Button {
                     clinicianState = .begin
                 } label: {
-                    Label("Back", systemImage: "chevron.backward")
-                        .font(.body)
-                        .fontWeight(.medium)
+                    HStack {
+                        Image(systemName: "chevron.left")
+                        Text("Back")
+                            .font(.system(size: 30))
+                    }
                 }
-                .buttonStyle(.bordered)
-                .accessibilityHint("Returns to the saved tests list")
+                .padding()
                 Spacer()
             }
-            .frame(width: 140, alignment: .leading)
-
-            VStack(alignment: .leading, spacing: ReSoundLayout.stackSpacing) {
-                Text("Environment")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-                environmentButton(.home, title: "Home")
-                environmentButton(.cafe, title: "Café")
-                environmentButton(.train, title: "Train Station")
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            VStack(alignment: .leading, spacing: ReSoundLayout.stackSpacing) {
-                Text("Difficulty")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-                positioningButton(.easy, title: "Easy")
-                positioningButton(.medium, title: "Medium")
-                positioningButton(.hard, title: "Hard")
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Target volume")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    Slider(value: $customTest.targetVolume, in: -10.0 ... 0)
-                        .frame(width: 250)
-                        .accessibilityLabel("Target volume")
+            VStack {
+                Button {
+                    customTest.background = .home
+                } label: {
+                    Text("Home")
+                        .font(.system(size: 40))
+                        .padding()
                 }
-                .padding(.top, 4)
-                Stepper(value: $customTest.numberOfQuestions, in: 1...5, step: 1) {
-                    Text("Number of questions: \(customTest.numberOfQuestions)")
-                        .font(.body)
+                .foregroundStyle(customTest.background == .home ? .green : .red)
+                .padding()
+                Button {
+                    customTest.background = .cafe
+                } label: {
+                    Text("Café")
+                        .font(.system(size: 40))
+                        .padding()
                 }
-                .frame(width: 280)
-                .accessibilityLabel("Number of questions")
+                .foregroundStyle(customTest.background == .cafe ? .green : .red)
+                .padding()
+                Button {
+                    customTest.background = .train
+                } label: {
+                    Text("Train Station")
+                        .font(.system(size: 40))
+                        .padding()
+                }
+                .foregroundStyle(customTest.background == .train ? .green : .red)
+                .padding()
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            VStack(spacing: ReSoundLayout.stackSpacing) {
+            VStack {
+                Button {
+                    customTest.positioning = .easy
+                } label: {
+                    Text("Easy")
+                        .font(.system(size: 40))
+                        .padding()
+                }
+                .foregroundStyle(customTest.positioning == .easy ? .green : .red)
+                .padding()
+                Button {
+                    customTest.positioning = .medium
+                } label: {
+                    Text("Medium")
+                        .font(.system(size: 40))
+                        .padding()
+                }
+                .foregroundStyle(customTest.positioning == .medium ? .green : .red)
+                .padding()
+                Button {
+                    customTest.positioning = .hard
+                } label: {
+                    Text("Hard")
+                        .font(.system(size: 40))
+                        .padding()
+                }
+                .foregroundStyle(customTest.positioning == .hard ? .green : .red)
+                .padding()
+                Slider(value: $customTest.targetVolume, in: -10.0 ... 0)
+                    .frame(width: 250)
+                    .padding()
+                Stepper("Number of questions: \(customTest.numberOfQuestions)",
+                    value: $customTest.numberOfQuestions, in: 1...5, step: 1)
+                    .frame(width: 250)
+                    .padding()
+            }
+            VStack {
                 Button {
                     hearingTest = customTest.generateTest()
                     isHearingTestOpened = true
                     transition(from: "clinician-window", to: "practice-window")
                 } label: {
                     Text("Practice Test")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .padding(.vertical, 10)
+                        .font(.system(size: 30))
+                        .padding()
                 }
-                .buttonStyle(.borderedProminent)
-                .accessibilityHint("Opens a practice window with the generated test")
-
+                .padding()
+                
+                // Save Button here
                 Button {
                     let test = customTest.generateTest()
                     switch clinicianState {
@@ -205,56 +226,13 @@ struct ClinicianScene: Scene {
                     clinicianState = .begin
                 } label: {
                     Text("Save Test")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .padding(.vertical, 10)
+                        .font(.system(size: 30))
+                        .padding()
                 }
-                .buttonStyle(.bordered)
+                .padding()
                 Spacer()
             }
-            .frame(width: 200)
         }
-        .padding(ReSoundLayout.cardPadding)
-        .background(
-            RoundedRectangle(cornerRadius: ReSoundLayout.cardCornerRadius)
-                .fill(.ultraThinMaterial)
-        )
-    }
-
-    @ViewBuilder
-    private func environmentButton(_ theme: CustomTest.Theme, title: String) -> some View {
-        let isSelected = customTest.background == theme
-        Button {
-            customTest.background = theme
-        } label: {
-            Text(title)
-                .font(.title3)
-                .fontWeight(isSelected ? .semibold : .regular)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, 8)
-        }
-        .buttonStyle(.bordered)
-        .tint(isSelected ? Color.accentColor : Color.secondary)
-        .accessibilityLabel(title)
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
-    }
-
-    @ViewBuilder
-    private func positioningButton(_ positioning: CustomTest.Positioning, title: String) -> some View {
-        let isSelected = customTest.positioning == positioning
-        Button {
-            customTest.positioning = positioning
-        } label: {
-            Text(title)
-                .font(.title3)
-                .fontWeight(isSelected ? .semibold : .regular)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, 8)
-        }
-        .buttonStyle(.bordered)
-        .tint(isSelected ? Color.accentColor : Color.secondary)
-        .accessibilityLabel(title)
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     @MainActor
@@ -266,34 +244,3 @@ struct ClinicianScene: Scene {
         }
     }
 }
-
-#if DEBUG
-/// Approximates the clinician begin screen for Canvas (no `Scene` / window APIs).
-private struct ClinicianBeginPreview: View {
-    var body: some View {
-        VStack(spacing: ReSoundLayout.sectionSpacing) {
-            Text("Hearing Test Customisation")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .multilineTextAlignment(.center)
-            Text("No saved tests yet.")
-                .font(.body)
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, minHeight: 120, alignment: .center)
-                .padding(ReSoundLayout.cardPadding)
-                .background(
-                    RoundedRectangle(cornerRadius: ReSoundLayout.cardCornerRadius)
-                        .fill(.ultraThinMaterial)
-                )
-            Label("Back", systemImage: "chevron.backward")
-                .font(.body)
-                .fontWeight(.medium)
-        }
-        .padding(ReSoundLayout.cardPadding)
-    }
-}
-
-#Preview("Clinician — begin (empty)") {
-    ClinicianBeginPreview()
-}
-#endif

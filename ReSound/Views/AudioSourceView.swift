@@ -120,17 +120,3 @@ struct AudioSourceView: View {
     }
 
 }
-
-#if DEBUG
-#Preview("Audio source") {
-    let test = Presets.hearingTests[0]
-    AudioSourceView(
-        audioSource: test.audioSources[0],
-        hearingTest: test,
-        questionNumber: .constant(0),
-        isPlayingAudio: .constant(false),
-        indicatorEntity: Entity()
-    )
-}
-#endif
-
