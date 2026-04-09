@@ -54,6 +54,24 @@ struct ClinicianScene: Scene {
     @ViewBuilder
     private func beginView() -> some View {
         VStack {
+            HStack {
+                Button {
+                    transition(from: "clinician-window", to: "main-window")
+                } label: {
+                    HStack {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 30))
+                        Text("Back")
+                            .font(.system(size: 30))
+                            .bold()
+                    }
+                    .padding()
+                }
+                .tint(Color.red)
+                
+                Spacer()
+            }
+            
             Text("Hearing Test Customisation")
                 .font(.system(size: 60))
                 .bold()
@@ -92,40 +110,22 @@ struct ClinicianScene: Scene {
             }
             .padding()
             
-            HStack {
-                Button {
-                    // Set name for the new test saving because no text field
-                    customTest.name = "Custom Test \(savedTests.count + 1)"
-                    clinicianState = .add
-                } label: {
-                    HStack {
-                        Image(systemName: "plus")
-                            .font(.system(size: 30))
-                        Text("Add")
-                            .font(.system(size: 30))
-                            .bold()
-                            .padding(.vertical, 2)
-                    }
-                    .padding()
+            Button {
+                // Set name for the new test saving because no text field
+                customTest.name = "Custom Test \(savedTests.count + 1)"
+                clinicianState = .add
+            } label: {
+                HStack {
+                    Image(systemName: "plus")
+                        .font(.system(size: 30))
+                    Text("Add")
+                        .font(.system(size: 30))
+                        .bold()
+                        .padding(.vertical, 2)
                 }
-                .tint(Color.accentColor)
-                .padding()
-                
-                Button {
-                    transition(from: "clinician-window", to: "main-window")
-                } label: {
-                    HStack {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 30))
-                        Text("Back")
-                            .font(.system(size: 30))
-                            .bold()
-                    }
-                    .padding()
-                }
-                .tint(Color.red)
                 .padding()
             }
+            .tint(Color.accentColor)
             .padding()
         }
         .padding()
