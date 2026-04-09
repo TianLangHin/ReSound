@@ -5,6 +5,9 @@
 # Finder
 .DS_Store
 
+# Cursor
+.cursor/
+
 # Xcode - User files
 xcuserdata/
 
