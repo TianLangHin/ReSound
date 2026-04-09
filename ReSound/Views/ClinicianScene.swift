@@ -56,25 +56,26 @@ struct ClinicianScene: Scene {
         VStack {
             Text("Hearing Test Customisation")
                 .font(.system(size: 60))
-                .padding()
-            HStack {
-                
-                // Testing for storage showing
+                .bold()
+            
+            VStack {
                 if savedTests.isEmpty {
                     Text("No saved tests yet.")
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 30))
                         .padding()
-                        .padding(.horizontal)
                 } else {
                     List {
                         ForEach(savedTests, id: \.name) { test in
-                            Button(action: {
+                            Button {
                                 if let index = savedTests.firstIndex(where: { $0.name == test.name }) {
                                     customTest = savedCustoms[index]
                                     clinicianState = .edit(index)
                                 }
-                            }) {
+                            } label: {
                                 Text(test.name)
+                                    .font(.system(size: 30))
+                                    .bold()
+                                    .padding(.vertical, 25)
                             }
                         }
                         .onDelete { offsets in
@@ -88,31 +89,46 @@ struct ClinicianScene: Scene {
                     .frame(width: 700)
                     .padding(.horizontal)
                 }
-                
+            }
+            .padding()
+            
+            HStack {
                 Button {
                     // Set name for the new test saving because no text field
                     customTest.name = "Custom Test \(savedTests.count + 1)"
                     clinicianState = .add
                 } label: {
-                    Text("Add New Hearing Test")
-                        .font(.system(size: 30))
-                        .padding()
+                    HStack {
+                        Image(systemName: "plus")
+                            .font(.system(size: 30))
+                        Text("Add")
+                            .font(.system(size: 30))
+                            .bold()
+                            .padding(.vertical, 2)
+                    }
+                    .padding()
                 }
+                .tint(Color.accentColor)
+                .padding()
+                
+                Button {
+                    transition(from: "clinician-window", to: "main-window")
+                } label: {
+                    HStack {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 30))
+                        Text("Back")
+                            .font(.system(size: 30))
+                            .bold()
+                    }
+                    .padding()
+                }
+                .tint(Color.red)
                 .padding()
             }
             .padding()
-            
-            Button {
-                transition(from: "clinician-window", to: "main-window")
-            } label: {
-                HStack {
-                    Image(systemName: "chevron.left")
-                    Text("Back")
-                        .font(.system(size: 30))
-                }
-            }
-            .padding()
         }
+        .padding()
     }
 
     @ViewBuilder

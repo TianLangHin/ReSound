@@ -195,15 +195,17 @@ struct HearingTestScene: SwiftUI.Scene {
             Button {
                 exitEntirely()
             } label: {
-                Text("Exit")
-                    .font(.system(size: 40))
-                    .bold()
-                    .frame(maxWidth: 150)
-                    .padding(.vertical, 25)
+                HStack {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 30))
+                    Text("Exit")
+                        .font(.system(size: 30))
+                        .bold()
+                }
+                .padding()
             }
             .tint(Color.red)
         }
-        .padding()
     }
 
     @ViewBuilder

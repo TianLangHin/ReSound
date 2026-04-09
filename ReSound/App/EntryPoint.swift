@@ -80,6 +80,7 @@ struct EntryPoint: App {
                         .frame(maxWidth: 500)
                         .padding(.vertical, 25)
                 }
+                .padding(10)
                 
                 Button {
                     Task { @MainActor in
@@ -95,6 +96,7 @@ struct EntryPoint: App {
                         .frame(maxWidth: 500)
                         .padding(.vertical, 25)
                 }
+                .padding(10)
                 
                 Button {
                     // Go to view history page which is not currently implemented.
@@ -106,6 +108,7 @@ struct EntryPoint: App {
                         .frame(maxWidth: 500)
                         .padding(.vertical, 25)
                 }
+                .padding(10)
             }
             .padding()
             .background(
@@ -127,9 +130,17 @@ struct EntryPoint: App {
                 Button {
                     viewingState = .main
                 } label: {
-                    Image(systemName: "chevron.left")
-                        .padding()
+                    HStack {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 30))
+                        Text("Back")
+                            .font(.system(size: 30))
+                            .bold()
+                    }
+                    .padding()
                 }
+                .tint(Color.red)
+                
                 Spacer()
             }
             
@@ -147,11 +158,11 @@ struct EntryPoint: App {
             /// they wish to take (from the presets we have).
             VStack {
                 HStack {
-                    presetButton(buttonIndex: 0, title: "TEST")
+                    presetButton(buttonIndex: 0, title: "Home Room")
                     presetButton(buttonIndex: 1, title: "Train Station")
                 }
                 HStack {
-                    presetButton(buttonIndex: 2, title: "Do Not Use")
+                    presetButton(buttonIndex: 2, title: "Café")
                     presetButton(buttonIndex: 3, title: "Shuffle")
                 }
             }
@@ -178,11 +189,14 @@ struct EntryPoint: App {
                     selectedOption = -1
                 }
             } label: {
-                Text("Next")
-                    .font(.system(size: 40))
-                    .bold()
-                    .frame(maxWidth: 150)
-                    .padding(.vertical, 25)
+                HStack {
+                    Text("Next")
+                        .font(.system(size: 30))
+                        .bold()
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 30))
+                }
+                .padding()
             }
             .disabled(selectedOption == -1)
         }
@@ -207,7 +221,8 @@ struct EntryPoint: App {
                 .padding(.vertical, 25)
         }
         .tint(
-            selectedOption == buttonIndex ? Color.green : nil
+            selectedOption == buttonIndex ? Color.accentColor : nil
         )
+        .padding(10)
     }
 }
