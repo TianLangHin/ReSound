@@ -133,96 +133,160 @@ struct ClinicianScene: Scene {
 
     @ViewBuilder
     private func updateView() -> some View {
-        HStack {
-            VStack {
+        VStack {
+            HStack {
                 Button {
                     clinicianState = .begin
                 } label: {
                     HStack {
                         Image(systemName: "chevron.left")
+                            .font(.system(size: 30))
                         Text("Back")
                             .font(.system(size: 30))
+                            .bold()
                     }
+                    .padding()
                 }
-                .padding()
+                .tint(Color.red)
+                
                 Spacer()
             }
-            VStack {
-                Button {
-                    customTest.background = .home
-                } label: {
-                    Text("Home")
+            
+            HStack {
+                VStack {
+                    Text("Environment")
                         .font(.system(size: 40))
-                        .padding()
+                        .bold()
+                    
+                    Button {
+                        customTest.background = .home
+                    } label: {
+                        Text("Home")
+                            .font(.system(size: 35))
+                            .bold()
+                            .frame(maxWidth: 250)
+                            .padding(.vertical, 25)
+                    }
+                    .tint(customTest.background == .home ? Color.accentColor : nil)
+                    .padding(5)
+                    
+                    Button {
+                        customTest.background = .cafe
+                    } label: {
+                        Text("Café")
+                            .font(.system(size: 35))
+                            .bold()
+                            .frame(maxWidth: 250)
+                            .padding(.vertical, 25)
+                    }
+                    .tint(customTest.background == .cafe ? Color.accentColor : nil)
+                    .padding(5)
+                    
+                    Button {
+                        customTest.background = .train
+                    } label: {
+                        Text("Train Station")
+                            .font(.system(size: 35))
+                            .bold()
+                            .frame(maxWidth: 250)
+                            .padding(.vertical, 25)
+                    }
+                    .tint(customTest.background == .train ? Color.accentColor : nil)
+                    .padding(5)
                 }
-                .foregroundStyle(customTest.background == .home ? .green : .red)
                 .padding()
-                Button {
-                    customTest.background = .cafe
-                } label: {
-                    Text("Café")
+                .background(
+                    RoundedRectangle(cornerRadius: 25)
+                        .fill(.ultraThinMaterial)
+                )
+                
+                VStack {
+                    Text("Difficulty")
                         .font(.system(size: 40))
-                        .padding()
+                        .bold()
+                    
+                    Button {
+                        customTest.positioning = .easy
+                    } label: {
+                        Text("Easy")
+                            .font(.system(size: 35))
+                            .bold()
+                            .frame(maxWidth: 250)
+                            .padding(.vertical, 25)
+                    }
+                    .tint(customTest.positioning == .easy ? Color.accentColor : nil)
+                    .padding(5)
+                    
+                    Button {
+                        customTest.positioning = .medium
+                    } label: {
+                        Text("Medium")
+                            .font(.system(size: 35))
+                            .bold()
+                            .frame(maxWidth: 250)
+                            .padding(.vertical, 25)
+                    }
+                    .tint(customTest.positioning == .medium ? Color.accentColor : nil)
+                    .padding(5)
+                    
+                    Button {
+                        customTest.positioning = .hard
+                    } label: {
+                        Text("Hard")
+                            .font(.system(size: 35))
+                            .bold()
+                            .frame(maxWidth: 250)
+                            .padding(.vertical, 25)
+                    }
+                    .tint(customTest.positioning == .hard ? Color.accentColor : nil)
+                    .padding(5)
                 }
-                .foregroundStyle(customTest.background == .cafe ? .green : .red)
                 .padding()
-                Button {
-                    customTest.background = .train
-                } label: {
-                    Text("Train Station")
+                .background(
+                    RoundedRectangle(cornerRadius: 25)
+                        .fill(.ultraThinMaterial)
+                )
+                
+                VStack {
+                    Text("Other")
                         .font(.system(size: 40))
-                        .padding()
-                }
-                .foregroundStyle(customTest.background == .train ? .green : .red)
-                .padding()
-            }
-            VStack {
-                Button {
-                    customTest.positioning = .easy
-                } label: {
-                    Text("Easy")
-                        .font(.system(size: 40))
-                        .padding()
-                }
-                .foregroundStyle(customTest.positioning == .easy ? .green : .red)
-                .padding()
-                Button {
-                    customTest.positioning = .medium
-                } label: {
-                    Text("Medium")
-                        .font(.system(size: 40))
-                        .padding()
-                }
-                .foregroundStyle(customTest.positioning == .medium ? .green : .red)
-                .padding()
-                Button {
-                    customTest.positioning = .hard
-                } label: {
-                    Text("Hard")
-                        .font(.system(size: 40))
-                        .padding()
-                }
-                .foregroundStyle(customTest.positioning == .hard ? .green : .red)
-                .padding()
-                Slider(value: $customTest.targetVolume, in: -10.0 ... 0)
-                    .frame(width: 250)
+                        .bold()
+                    
+                    HStack {
+                        Text("Volume")
+                            .font(.system(size: 25))
+                            .bold()
+                        
+                        Slider(value: $customTest.targetVolume, in: -10.0 ... 0)
+                            .frame(width: 200)
+                            .padding()
+                    }
                     .padding()
-                Stepper("Number of questions: \(customTest.numberOfQuestions)",
-                    value: $customTest.numberOfQuestions, in: 1...5, step: 1)
-                    .frame(width: 250)
-                    .padding()
+                    
+                    Stepper("Questions: \(customTest.numberOfQuestions)",
+                        value: $customTest.numberOfQuestions, in: 1...5, step: 1)
+                        .frame(width: 250)
+                        .font(.system(size: 25))
+                        .bold()
+                        .padding()
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 25)
+                        .fill(.ultraThinMaterial)
+                )
             }
-            VStack {
+            HStack {
                 Button {
                     hearingTest = customTest.generateTest()
                     isHearingTestOpened = true
                     transition(from: "clinician-window", to: "practice-window")
                 } label: {
-                    Text("Practice Test")
+                    Text("Practice")
                         .font(.system(size: 30))
+                        .bold()
                         .padding()
                 }
-                .padding()
                 
                 // Save Button here
                 Button {
@@ -241,14 +305,16 @@ struct ClinicianScene: Scene {
                     PersistStorage.testStorage.saveCustom(savedCustoms)
                     clinicianState = .begin
                 } label: {
-                    Text("Save Test")
+                    Text("Save")
                         .font(.system(size: 30))
+                        .bold()
                         .padding()
                 }
-                .padding()
-                Spacer()
+                .tint(Color.green)
             }
+            .padding()
         }
+        .padding()
     }
 
     @MainActor
