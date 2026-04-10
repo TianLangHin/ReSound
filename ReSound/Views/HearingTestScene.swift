@@ -77,14 +77,14 @@ struct HearingTestScene: SwiftUI.Scene {
                     print("Speech content: \(newContent)")
                     print("Question state: \(questionState)")
                     if questionState == .waiting {
-                        if newContent.lowercased().contains("next") {
+                        if newContent.lowercased().contains("next") || newContent.lowercased().contains("continue") {
                             moveFromWaiting()
                         }
                     } else if questionState == .answering {
                         let currentQuestion = hearingTest.questions[questionNumber]
                         validateSpeechContent(newContent, question: currentQuestion.chosenQuestion)
                     } else if questionState == .ended {
-                        if newContent.lowercased().contains("exit") {
+                        if newContent.lowercased().contains("exit") || newContent.lowercased().contains("quit") {
                             exitEntirely()
                         }
                     }
