@@ -120,6 +120,12 @@ struct EntryPoint: App {
         /// Testing for speech recog
         .task {
             let _ = await speechRec.authoriseRequest()
+            try? speechRec.startRec()
+        }
+        .onChange(of: speechRec.speechContent) { _, newContent in
+            print("Speech content: \(newContent)")
+            voiceComHandler(newContent)
+            print("state: \(viewingState)")
         }
     }
     
@@ -201,6 +207,14 @@ struct EntryPoint: App {
             .disabled(selectedOption == -1)
         }
         .padding()
+//        .task {
+//            try? speechRec.startRec()
+//        }
+        .onChange(of: speechRec.speechContent) { _, newContent in
+            print("Speech content: \(newContent)")
+            voiceComHandler(newContent)
+            print("state: \(viewingState)")
+        }
     }
     
     @ViewBuilder
@@ -225,4 +239,80 @@ struct EntryPoint: App {
         )
         .padding(10)
     }
+    
+    
+    
+    private func voiceComHandler(_ speech: String) {
+        let voiceInput = speech.lowercased()
+        
+        switch viewingState {
+        case .main:
+            if voiceInput.contains("patient") || voiceInput.contains("test") {
+                viewingState = .chooseTest
+            } else if voiceInput.contains("clinician") || voiceInput.contains("customise") {
+                Task { @MainActor in
+                    openWindow(id: "clinician-window")
+                    try? await Task.sleep(for: .milliseconds(100))
+                    dismissWindow(id: "main-window")
+                }
+            } else if voiceInput.contains("history") {
+                // for the history tab :thumbsiup:
+            }
+            
+        case .chooseTest:
+            if voiceInput.contains("home") || voiceInput.contains("one") {
+                selectedOption = 0
+                hearingTest = Presets.hearingTests[0]
+                speechRec.stopRec()
+                Task {
+                    try? await Task.sleep(for: .milliseconds(400))
+                    try? speechRec.startRec()
+                }
+            } else if voiceInput.contains("train") || voiceInput.contains("two") {
+                selectedOption = 1
+                hearingTest = Presets.hearingTests[1]
+                speechRec.stopRec()
+                Task {
+                    try? await Task.sleep(for: .milliseconds(400))
+                    try? speechRec.startRec()
+                }
+            } else if voiceInput.contains("cafe") || voiceInput.contains("café") || voiceInput.contains("three") {
+                selectedOption = 2
+                hearingTest = Presets.hearingTests[Int.random(in: 0...1)]
+                speechRec.stopRec()
+                Task {
+                    try? await Task.sleep(for: .milliseconds(400))
+                    try? speechRec.startRec()
+                }
+            } else if voiceInput.contains("shuffle") || voiceInput.contains("four") {
+                selectedOption = 3
+                hearingTest = Presets.hearingTests[Int.random(in: 0...1)]
+                speechRec.stopRec()
+                Task {
+                    try? await Task.sleep(for: .milliseconds(400))
+                    try? speechRec.startRec()
+                }
+            } else if voiceInput.contains("next") || voiceInput.contains("start") {
+                guard selectedOption != -1 else { return }
+                Task { @MainActor in
+                    isHearingTestOpened = true
+                    openWindow(id: "hearing-test-window")
+                    try? await Task.sleep(for: .milliseconds(100))
+                    dismissWindow(id: "main-window")
+                    viewingState = .main
+                    selectedOption = -1
+                }
+            } else if voiceInput.contains("back") {
+                viewingState = .main
+                Task {
+                    try? await Task.sleep(for: .milliseconds(400))
+                    try? speechRec.startRec()
+                }
+            }
+        }
+    }
 }
+
+
+
+
