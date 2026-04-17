@@ -243,7 +243,7 @@ struct EntryPoint: App {
     
     
     private func voiceComHandler(_ speech: String) {
-        let voiceInput = speech.lowercased()
+        let voiceInput = speech.lowercased().components(separatedBy: .whitespaces).last ?? ""
         
         switch viewingState {
         case .main:
@@ -263,35 +263,15 @@ struct EntryPoint: App {
             if voiceInput.contains("home") || voiceInput.contains("one") {
                 selectedOption = 0
                 hearingTest = Presets.hearingTests[0]
-                speechRec.stopRec()
-                Task {
-                    try? await Task.sleep(for: .milliseconds(400))
-                    try? speechRec.startRec()
-                }
             } else if voiceInput.contains("train") || voiceInput.contains("two") {
                 selectedOption = 1
                 hearingTest = Presets.hearingTests[1]
-                speechRec.stopRec()
-                Task {
-                    try? await Task.sleep(for: .milliseconds(400))
-                    try? speechRec.startRec()
-                }
             } else if voiceInput.contains("cafe") || voiceInput.contains("café") || voiceInput.contains("three") {
                 selectedOption = 2
                 hearingTest = Presets.hearingTests[Int.random(in: 0...1)]
-                speechRec.stopRec()
-                Task {
-                    try? await Task.sleep(for: .milliseconds(400))
-                    try? speechRec.startRec()
-                }
             } else if voiceInput.contains("shuffle") || voiceInput.contains("four") {
                 selectedOption = 3
                 hearingTest = Presets.hearingTests[Int.random(in: 0...1)]
-                speechRec.stopRec()
-                Task {
-                    try? await Task.sleep(for: .milliseconds(400))
-                    try? speechRec.startRec()
-                }
             } else if voiceInput.contains("next") || voiceInput.contains("start") {
                 guard selectedOption != -1 else { return }
                 Task { @MainActor in
@@ -304,10 +284,6 @@ struct EntryPoint: App {
                 }
             } else if voiceInput.contains("back") {
                 viewingState = .main
-                Task {
-                    try? await Task.sleep(for: .milliseconds(400))
-                    try? speechRec.startRec()
-                }
             }
         }
     }
