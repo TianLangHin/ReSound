@@ -46,6 +46,7 @@ struct HearingTestScene: SwiftUI.Scene {
     @State var isDisplayingImmersive = false
 
     @State var scoreBreakdown: ScoreBreakdown = .empty()
+    @State var audioController: AudioPlaybackController? = nil
 
     var body: some SwiftUI.Scene {
         /// The ID of this window group is referenced in the outer parent view.
@@ -94,6 +95,16 @@ struct HearingTestScene: SwiftUI.Scene {
             }
             .onChange(of: questionState) {
                 print("Question state: \(questionState)")
+            }
+            RealityView { content in
+                content.add(Entity())
+                guard let audio = try? AudioFileResource.load(
+                    named: "Cafe_Worker.mp3",
+                    configuration: AudioFileResource.Configuration(shouldLoop: true)) else {
+                    print("Failed to load audio file.")
+                    return
+                }
+                audioController = content.entities[0].prepareAudio(audio)
             }
         }
         /// The immersive space is where the hearing test happens via spatial audio.
@@ -183,6 +194,17 @@ struct HearingTestScene: SwiftUI.Scene {
             
             Spacer()
                 .frame(height: 50)
+            
+            Button {
+                audioController?.play()
+            } label: {
+                Text("Start")
+            }
+            Button {
+                audioController?.pause()
+            } label: {
+                Text("Stop")
+            }
             
             Button {
                 openSpace()
@@ -296,6 +318,7 @@ struct HearingTestScene: SwiftUI.Scene {
     /// `startQuestion` is being called.
     /// That corresponds to the transition of `questionState` from `.before` to `.playing`.
     private func startQuestion(firstCall: Bool = false) {
+        audioController?.stop()
         let questionDuration = hearingTest.questions[questionNumber].chosenQuestion.duration
         isPlayingAudio = true
         questionState = .playing
