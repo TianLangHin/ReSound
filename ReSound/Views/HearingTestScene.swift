@@ -45,6 +45,8 @@ struct HearingTestScene: SwiftUI.Scene {
     /// Used to keep track of immersive display status.
     @State var isDisplayingImmersive = false
 
+    @State var scoreBreakdown: ScoreBreakdown = .empty()
+
     var body: some SwiftUI.Scene {
         /// The ID of this window group is referenced in the outer parent view.
         WindowGroup(id: hearingTestWindowId) {
@@ -113,6 +115,10 @@ struct HearingTestScene: SwiftUI.Scene {
 
     /// Function to return to the main menu (exiting the patient view).
     private func exitEntirely() {
+        if parentWindowId == "main-window" {
+            // TODO: Stub for storing the score breakdown into persistent storage.
+            print(scoreBreakdown)
+        }
         // Stops the speech recording before exiting.
         speechRec.stopRec()
         // Here, the window is dismissed and the state is reset
@@ -326,10 +332,15 @@ struct HearingTestScene: SwiftUI.Scene {
 
     /// Registers an answer of a particular question from the user.
     private func registerAnswer(choice: Int) {
-        let correctAnswer = hearingTest.questions[questionNumber].chosenQuestion.correctAnswer
-        if choice == correctAnswer {
+        let chosenQuestion = hearingTest.questions[questionNumber].chosenQuestion
+        let questionText = chosenQuestion.question
+        let selectedAnswer = chosenQuestion.answers[choice]
+        let isCorrect = choice == chosenQuestion.correctAnswer
+        if isCorrect {
             score += 1
         }
+        scoreBreakdown.hearingTestName = hearingTest.name
+        scoreBreakdown.addAnswer(.init(questionText: questionText, selectedAnswer: selectedAnswer, isCorrect: isCorrect))
     }
 
     private func openSpace() {
@@ -358,6 +369,7 @@ struct HearingTestScene: SwiftUI.Scene {
         score = 0
         isDisplayingImmersive = false
         speechRec.stopRec()
+        scoreBreakdown = .empty()
     }
 }
 
