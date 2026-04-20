@@ -34,6 +34,11 @@ struct HistoryScene: Scene {
             .onAppear {
                 savedScores = PersistStorage.testStorage.loadScore()
             }
+            .onChange(of: speechRec.speechContent) { _, newContent in
+                if newContent.lowercased().contains("back") {
+                    transition(from: "history-window", to: "main-window")
+                }
+            }
         }
     }
     

@@ -262,7 +262,11 @@ struct EntryPoint: App {
                     dismissWindow(id: "main-window")
                 }
             } else if voiceInput.contains("history") {
-                // for the history tab :thumbsiup:
+                Task { @MainActor in
+                    openWindow(id: "history-window")
+                    try? await Task.sleep(for: .milliseconds(100))
+                    dismissWindow(id: "main-window")
+                }
             }
             
         case .chooseTest:

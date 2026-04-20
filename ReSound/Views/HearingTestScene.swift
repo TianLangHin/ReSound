@@ -77,17 +77,30 @@ struct HearingTestScene: SwiftUI.Scene {
             }
             .onChange(of: speechRec.speechContent) { _, newContent in
                 DispatchQueue.main.async {
+                    let lastWord = newContent.lowercased().components(separatedBy: .whitespaces).last ?? ""
                     print("Speech content: \(newContent)")
                     print("Question state: \(questionState)")
-                    if questionState == .waiting {
-                        if newContent.lowercased().contains("next") || newContent.lowercased().contains("continue") {
+                    if questionState == .before {
+                        switch lastWord {
+                        case "calibrate", "volume":
+                            audioController?.play()
+                        case "pause", "stop":
+                            audioController?.pause()
+                        case "start", "next":
+                            openSpace()
+                            startQuestion(firstCall: true)
+                        default:
+                            break
+                        }
+                    } else if questionState == .waiting {
+                        if lastWord == "next" || lastWord == "continue" {
                             moveFromWaiting()
                         }
                     } else if questionState == .answering {
                         let currentQuestion = hearingTest.questions[questionNumber]
-                        validateSpeechContent(newContent, question: currentQuestion.chosenQuestion)
+                        validateSpeechContent(lastWord, question: currentQuestion.chosenQuestion)
                     } else if questionState == .ended {
-                        if newContent.lowercased().contains("exit") || newContent.lowercased().contains("quit") {
+                        if lastWord == "exit" || lastWord == "quit" {
                             exitEntirely()
                         }
                     }
@@ -133,8 +146,6 @@ struct HearingTestScene: SwiftUI.Scene {
             // TODO: Stub for storing the score breakdown into persistent storage.
             print(scoreBreakdown)
         }
-        // Stops the speech recording before exiting.
-        speechRec.stopRec()
         // Here, the window is dismissed and the state is reset
         // so another test can be administered after this.
         closeSpace()

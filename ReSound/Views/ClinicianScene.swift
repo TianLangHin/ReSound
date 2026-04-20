@@ -42,6 +42,12 @@ struct ClinicianScene: Scene {
                     updateView()
                 }
             }
+            .onChange(of: speechRec.speechContent) { _, newContent in
+                let lastWord = newContent.lowercased().components(separatedBy: .whitespaces).last ?? ""
+                if lastWord == "back" {
+                    transition(from: "clinician-window", to: "main-window")
+                }
+            }
         }
         HearingTestScene(
             hearingTest: $hearingTest,
