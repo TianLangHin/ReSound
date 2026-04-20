@@ -76,7 +76,7 @@ struct HistoryScene: Scene {
                         .padding()
                 } else {
                     List {
-                        ForEach(savedScores, id: \.hearingTestName) { score in
+                        ForEach(savedScores, id: \.id) { score in
                             Button {
                                 scoreDetails = score
                                 historyState = .detail

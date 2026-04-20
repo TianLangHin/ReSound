@@ -9,6 +9,7 @@
 import Foundation
 
 struct ScoreBreakdown: Codable {
+    var id: UUID = UUID()
     var hearingTestName: String
     var timeAttempted: Date
     var answers: [Answer]

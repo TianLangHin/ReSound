@@ -53,6 +53,6 @@ class PersistStorage {
         guard let data = UserDefaults.standard.data(forKey: "resound.scores"),
               let scores = try? JSONDecoder().decode([ScoreBreakdown].self, from: data)
         else { return [] }
-        return scores.reversed()
+        return scores.sorted { $0.timeAttempted > $1.timeAttempted }
     }
 }
