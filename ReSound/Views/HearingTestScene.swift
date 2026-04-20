@@ -200,12 +200,34 @@ struct HearingTestScene: SwiftUI.Scene {
     @ViewBuilder
     private func startView() -> some View {
         VStack {
-            Text("Start Test: \(hearingTest.name)")
-                .font(.system(size: 60))
-                .bold()
-            Text("Start the hearing test when you're ready!")
-                .font(.system(size: 30))
-            
+            ZStack {
+                VStack {
+                    Text("Start Test: \(hearingTest.name)")
+                        .font(.system(size: 60))
+                        .bold()
+                    Text("Start the hearing test when you're ready!")
+                        .font(.system(size: 30))
+                }
+                .padding()
+                
+                HStack {
+                    Button {
+                        exitEntirely()
+                    } label: {
+                        HStack {
+                            Text("Exit")
+                                .font(.system(size: 30))
+                                .bold()
+                            
+                            Image(systemName: "xmark")
+                                .font(.system(size: 30))
+                        }
+                        .padding()
+                    }
+                    Spacer()
+                }
+            }
+    
             Spacer()
                 .frame(height: 50)
             
@@ -233,20 +255,6 @@ struct HearingTestScene: SwiftUI.Scene {
             
             Spacer()
                 .frame(height: 50)
-
-            Button {
-                exitEntirely()
-            } label: {
-                HStack {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 30))
-                    Text("Exit")
-                        .font(.system(size: 30))
-                        .bold()
-                }
-                .padding()
-            }
-            .tint(Color.red)
         }
     }
 

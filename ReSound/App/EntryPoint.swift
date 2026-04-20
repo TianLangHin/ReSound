@@ -61,14 +61,18 @@ struct EntryPoint: App {
     @ViewBuilder
     private func loadMainMenu() -> some View {
         VStack {
-            Text("ReSound Hearing Test")
-                .font(.system(size: 60))
-                .bold()
-            Text("Test your hearing using spatial audio with the Apple Vision Pro")
-                .font(.system(size: 30))
+            /// This internal VStack not really necessary but the other screens have this structure because of the ZStack with back button so this just makes the spacing consistent
+            VStack {
+                Text("ReSound Hearing Test")
+                    .font(.system(size: 60))
+                    .bold()
+                Text("Test your hearing using spatial audio with the Apple Vision Pro")
+                    .font(.system(size: 30))
+            }
+            .padding()
             
             Spacer()
-                .frame(height: 50)
+                .frame(height: 20)
             
             VStack {
                 Button {
@@ -117,12 +121,8 @@ struct EntryPoint: App {
                 .padding(10)
             }
             .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 25)
-                    .fill(.ultraThinMaterial)
-            )
         }
-        .padding(.vertical, 25)
+        .padding()
         /// Testing for speech recog
         .task {
             let _ = await speechRec.authoriseRequest()
@@ -138,79 +138,46 @@ struct EntryPoint: App {
     @ViewBuilder
     private func chooseHearingTest() -> some View {
         VStack {
-            HStack {
-                Button {
-                    viewingState = .main
-                } label: {
-                    HStack {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 30))
-                        Text("Back")
-                            .font(.system(size: 30))
-                            .bold()
-                    }
-                    .padding()
+            ZStack {
+                VStack {
+                    Text("Select Environment")
+                        .font(.system(size: 60))
+                        .bold()
+                    
+                    Text("Choose your immersive testing environment")
+                        .font(.system(size: 30))
                 }
-                .tint(Color.red)
+                .padding()
                 
-                Spacer()
+                HStack {
+                    Button {
+                        viewingState = .main
+                    } label: {
+                        HStack {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 30))
+                            Text("Back")
+                                .font(.system(size: 30))
+                                .bold()
+                        }
+                        .padding()
+                    }
+                    Spacer()
+                }
             }
             
-            Text("Select Environment")
-                .font(.system(size: 60))
-                .bold()
-            
-            Text("Choose your immersive testing environment")
-                .font(.system(size: 30))
-            
             Spacer()
-                .frame(height: 50)
+                .frame(height: 20)
             
             /// The user will get to select which hearing test environment
             /// they wish to take (from the presets we have).
             VStack {
-                HStack {
-                    presetButton(buttonIndex: 0, title: "Home Room")
-                    presetButton(buttonIndex: 1, title: "Train Station")
-                }
-                HStack {
-                    presetButton(buttonIndex: 2, title: "Café")
-                    presetButton(buttonIndex: 3, title: "Shuffle")
-                }
+                chooseEnvButton(buttonIndex: 0, title: "Home Room")
+                chooseEnvButton(buttonIndex: 1, title: "Train Station")
+                /// This last one needs to change when the third preset is added to the patient environment selection view. Since we don't have it imported yet, having buttonIndex: 2 results in an Index out of range error. Because of this placeholder logic choosing café will always take the user to train station instead. Change this to chooseEnvButton(buttonIndex: 2, title: "Café")
+                chooseEnvButton(buttonIndex: 1, title: "Café")
             }
             .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 25)
-                    .fill(.ultraThinMaterial)
-            )
-            
-            Spacer()
-                .frame(height: 50)
-            
-            /// Goes into the patient view (i.e., spawns the hearing test window).
-            Button {
-                /// An asynchronous task on the main queue is used to load the other window,
-                /// wait for 100 milliseconds to ensure the system can recognise it is open,
-                /// and then close the previous window (which is only successful if another window is open).
-                Task { @MainActor in
-                    isHearingTestOpened = true
-                    openWindow(id: "hearing-test-window")
-                    try? await Task.sleep(for: .milliseconds(100))
-                    dismissWindow(id: "main-window")
-                    viewingState = .main
-                    selectedOption = -1
-                }
-            } label: {
-                HStack {
-                    Text("Next")
-                        .font(.system(size: 30))
-                        .bold()
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 30))
-                }
-                .padding()
-            }
-            .disabled(selectedOption == -1)
         }
         .padding()
 //        .task {
@@ -222,17 +189,22 @@ struct EntryPoint: App {
             print("state: \(viewingState)")
         }
     }
-    
+
     @ViewBuilder
-    private func presetButton(buttonIndex: Int, title: String) -> some View {
+    private func chooseEnvButton(buttonIndex: Int, title: String) -> some View {
         Button {
-            selectedOption = buttonIndex
-            var selectedPreset = buttonIndex
-            // If the user chose the third or fourth button (3rd preset or shuffle), make the hearing test load one of the two currently loaded presets. Replace this to > 2 after the third preset is loaded in.
-            if selectedPreset > 1 {
-                selectedPreset = Int.random(in: 0...1)
+            hearingTest = Presets.hearingTests[buttonIndex]
+            /// An asynchronous task on the main queue is used to load the other window,
+            /// wait for 100 milliseconds to ensure the system can recognise it is open,
+            /// and then close the previous window (which is only successful if another window is open).
+            Task { @MainActor in
+                isHearingTestOpened = true
+                openWindow(id: "hearing-test-window")
+                try? await Task.sleep(for: .milliseconds(100))
+                dismissWindow(id: "main-window")
+                viewingState = .main
+                selectedOption = -1
             }
-            hearingTest = Presets.hearingTests[selectedPreset]
         } label: {
             Text(title)
                 .font(.system(size: 35))
@@ -240,14 +212,9 @@ struct EntryPoint: App {
                 .frame(maxWidth: 500)
                 .padding(.vertical, 25)
         }
-        .tint(
-            selectedOption == buttonIndex ? Color.accentColor : nil
-        )
         .padding(10)
     }
-    
-    
-    
+
     private func voiceComHandler(_ speech: String) {
         let voiceInput = speech.lowercased().components(separatedBy: .whitespaces).last ?? ""
         

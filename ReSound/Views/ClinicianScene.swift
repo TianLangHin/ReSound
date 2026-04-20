@@ -60,27 +60,36 @@ struct ClinicianScene: Scene {
     @ViewBuilder
     private func beginView() -> some View {
         VStack {
-            HStack {
-                Button {
-                    transition(from: "clinician-window", to: "main-window")
-                } label: {
-                    HStack {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 30))
-                        Text("Back")
-                            .font(.system(size: 30))
-                            .bold()
-                    }
-                    .padding()
+            ZStack {
+                /// Put any other title or subtitle text here for clinician view
+                VStack {
+                    Text("Hearing Test Customisation")
+                        .font(.system(size: 60))
+                        .bold()
+                    Text("Add or edit your own custom test environment")
+                        .font(.system(size: 30))
                 }
-                .tint(Color.red)
+                .padding()
                 
-                Spacer()
+                HStack {
+                    Button {
+                        transition(from: "clinician-window", to: "main-window")
+                    } label: {
+                        HStack {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 30))
+                            Text("Back")
+                                .font(.system(size: 30))
+                                .bold()
+                        }
+                        .padding()
+                    }
+                    Spacer()
+                }
             }
             
-            Text("Hearing Test Customisation")
-                .font(.system(size: 60))
-                .bold()
+            Spacer()
+                .frame(height: 20)
             
             VStack {
                 if savedTests.isEmpty {
@@ -96,10 +105,18 @@ struct ClinicianScene: Scene {
                                     clinicianState = .edit(index)
                                 }
                             } label: {
-                                Text(test.name)
-                                    .font(.system(size: 30))
-                                    .bold()
-                                    .padding(.vertical, 25)
+                                HStack {
+                                    Text(test.name)
+                                        .font(.system(size: 30))
+                                        .bold()
+                                        .padding(.vertical, 10)
+                                    
+                                    Spacer()
+                                    
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 30))
+                                }
+                                .padding()
                             }
                         }
                         .onDelete { offsets in
@@ -122,12 +139,13 @@ struct ClinicianScene: Scene {
                 clinicianState = .add
             } label: {
                 HStack {
-                    Image(systemName: "plus")
-                        .font(.system(size: 30))
                     Text("Add")
                         .font(.system(size: 30))
                         .bold()
                         .padding(.vertical, 2)
+                    
+                    Image(systemName: "plus")
+                        .font(.system(size: 30))
                 }
                 .padding()
             }

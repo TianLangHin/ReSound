@@ -41,42 +41,43 @@ struct HistoryScene: Scene {
             }
         }
     }
-    
-    
-    
+
     private func scoreListView() -> some View {
         VStack {
-            HStack {
-                Button {
-                    transition(from: "history-window", to: "main-window")
-                } label: {
-                    HStack {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 30))
-                        Text("Back")
-                            .font(.system(size: 30))
-                            .bold()
-                    }
-                    .padding()
+            ZStack {
+                VStack {
+                    Text("Test History")
+                        .font(.system(size: 60))
+                        .bold()
+                    
+                    Text("View past hearing test scores on this device")
+                        .font(.system(size: 30))
                 }
-                .tint(Color.red)
+                .padding()
                 
-                Spacer()
+                HStack {
+                    Button {
+                        transition(from: "history-window", to: "main-window")
+                    } label: {
+                        HStack {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 30))
+                            Text("Back")
+                                .font(.system(size: 30))
+                                .bold()
+                        }
+                        .padding()
+                    }
+                    Spacer()
+                }
             }
-            
-            Text("History")
-                .font(.system(size: 60))
-                .bold()
-            
-            Text("Choose your immersive testing environment")
-                .font(.system(size: 30))
-            
+
             Spacer()
-                .frame(height: 50)
+                .frame(height: 30)
             
             VStack {
                 if savedScores.isEmpty {
-                    Text("No test attempt yet.")
+                    Text("No test attempts yet.")
                         .font(.system(size: 30))
                         .padding()
                 } else {
@@ -86,10 +87,18 @@ struct HistoryScene: Scene {
                                 scoreDetails = score
                                 historyState = .detail
                             } label: {
-                                Text(score.hearingTestName)
-                                    .font(.system(size: 30))
-                                    .bold()
-                                    .padding(.vertical, 25)
+                                HStack {
+                                    Text(score.hearingTestName)
+                                        .font(.system(size: 30))
+                                        .bold()
+                                        .padding(.vertical, 10)
+                                    
+                                    Spacer()
+                                    
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 30))
+                                }
+                                .padding()
                             }
                         }
                         .onDelete { offsets in
@@ -110,47 +119,48 @@ struct HistoryScene: Scene {
         }
         .padding()
     }
-        
-        
-        
-        
+
     private func scoreDetailView() -> some View {
         VStack {
-            HStack {
-                Button {
-                    savedScores = PersistStorage.testStorage.loadScore()
-                    historyState = .begin
-                } label: {
-                    HStack {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 30))
-                        Text("Back")
-                            .font(.system(size: 30))
-                            .bold()
-                    }
-                    .padding()
+            ZStack {
+                VStack {
+                    Text(scoreDetails.hearingTestName)
+                        .font(.system(size: 60))
+                        .bold()
+                    
+                    Text(scoreDetails.timeAttempted.formatted(date: .abbreviated, time: .shortened))
+                        .font(.system(size: 30))
                 }
-                .tint(.red)
+                .padding()
                 
-                Spacer()
+                HStack {
+                    Button {
+                        savedScores = PersistStorage.testStorage.loadScore()
+                        historyState = .begin
+                    } label: {
+                        HStack {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 30))
+                            Text("Back")
+                                .font(.system(size: 30))
+                                .bold()
+                        }
+                        .padding()
+                    }
+                    Spacer()
+                }
             }
             
-            Text(scoreDetails.hearingTestName)
-                .font(.system(size: 60))
-                .bold()
-            
-            Text(scoreDetails.timeAttempted.formatted(date: .abbreviated, time: .shortened))
-                .font(.system(size: 25))
-                .foregroundStyle(.secondary)
-            
-            Spacer().frame(height: 30)
+            Spacer()
+                .frame(height: 30)
             
             let (correct, total) = scoreDetails.overallScore()
             Text("Score: \(correct) / \(total)")
                 .font(.system(size: 35))
                 .bold()
             
-            Spacer().frame(height: 30)
+            /// Not sure if this spacer is necessary but we'll see if we need to add it back in
+            ///Spacer().frame(height: 30)
             
             List {
                 ForEach(scoreDetails.answers, id: \.questionText) { answer in
@@ -171,16 +181,10 @@ struct HistoryScene: Scene {
                 }
             }
             .frame(width: 700)
-            
-            Spacer()
         }
         .padding()
     }
-    
-    
-    
-    
-    
+
     @MainActor
     private func transition(from: String, to: String) {
         Task { @MainActor in
