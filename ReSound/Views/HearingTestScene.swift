@@ -106,6 +106,9 @@ struct HearingTestScene: SwiftUI.Scene {
                 }
                 audioController = content.entities[0].prepareAudio(audio)
             }
+            .frame(width: 0, height: 0)
+            .frame(depth: 0)
+            .fixedSize()
         }
         /// The immersive space is where the hearing test happens via spatial audio.
         ImmersiveSpace(id: hearingTestWindowId + "-immersive") {
