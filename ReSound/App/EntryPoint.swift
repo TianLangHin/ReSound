@@ -55,6 +55,7 @@ struct EntryPoint: App {
             hearingTestWindowId: "hearing-test-window",
             parentWindowId: "main-window")
         ClinicianScene(speechRec: speechRec)
+        HistoryScene(speechRec: speechRec)
     }
     
     @ViewBuilder
@@ -100,6 +101,11 @@ struct EntryPoint: App {
                 
                 Button {
                     // Go to view history page which is not currently implemented.
+                    Task { @MainActor in
+                        openWindow(id: "history-window")
+                        try? await Task.sleep(for: .milliseconds(100))
+                        dismissWindow(id: "main-window")
+                    }
                 } label: {
                     // Persistent storage which stores a list of patient scores and other related details.
                     Text("View History")

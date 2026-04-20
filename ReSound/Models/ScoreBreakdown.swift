@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct ScoreBreakdown {
+struct ScoreBreakdown: Codable {
     var hearingTestName: String
     var timeAttempted: Date
     var answers: [Answer]
@@ -27,7 +27,7 @@ struct ScoreBreakdown {
         return (correctQuestions, totalQuestions)
     }
 
-    struct Answer {
+    struct Answer: Codable {
         var questionText: String
         var selectedAnswer: String
         var isCorrect: Bool

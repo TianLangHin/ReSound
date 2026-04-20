@@ -12,6 +12,7 @@ import Foundation
 class PersistStorage {
     static let testStorage = PersistStorage()
     private let key = "resound.hearingTests"
+    private let scoreKey = "resound.scores"
     
     func saveTest(_ tests: [HearingTest]) {
         if let data = try? JSONEncoder().encode(tests) {
@@ -39,5 +40,19 @@ class PersistStorage {
               let customs = try? JSONDecoder().decode([CustomTest].self, from: data)
         else { return [] }
         return customs
+    }
+    
+    func saveScore(_ tests: [ScoreBreakdown]) {
+        if let data = try? JSONEncoder().encode(tests) {
+            UserDefaults.standard.set(data, forKey: scoreKey)
+        }
+    }
+    
+    
+    func loadScore() -> [ScoreBreakdown] {
+        guard let data = UserDefaults.standard.data(forKey: "resound.scores"),
+              let scores = try? JSONDecoder().decode([ScoreBreakdown].self, from: data)
+        else { return [] }
+        return scores.reversed()
     }
 }

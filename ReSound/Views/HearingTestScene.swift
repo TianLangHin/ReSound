@@ -348,6 +348,14 @@ struct HearingTestScene: SwiftUI.Scene {
             if questionNumber == lastQuestionNumber {
                 registerAnswer(choice: answer)
             }
+            print("parentWindowId is: \(parentWindowId)")
+            if parentWindowId == "main-window" {
+                scoreBreakdown.timeAttempted = Date()
+                var existingScores = PersistStorage.testStorage.loadScore()
+                existingScores.append(scoreBreakdown)
+                PersistStorage.testStorage.saveScore(existingScores)
+                print("Saved. Total score record: \(existingScores.count)")
+            }
             questionState = .ended
             try? speechRec.startRec()
         }
