@@ -46,6 +46,12 @@ struct EntryPoint: App {
                 }
             }
         }
+        .defaultWindowPlacement { content, context in
+            if let otherWindow = context.windows.first(where: { $0.id != "clinician-window" && $0.id != "history-window" }) {
+                return WindowPlacement(.above(otherWindow))
+            }
+            return WindowPlacement()
+        }
         /// The hearing test is administered through this scene,
         /// which by default is closed since the main WindowGroup above is loaded first.
         HearingTestScene(
@@ -187,21 +193,25 @@ struct EntryPoint: App {
         }
     }
 
+    func chooseEnv(index: Int, makeRandom: Bool = false) {
+        hearingTest = makeRandom ? Presets.hearingTests[Int.random(in: 0...1)] : Presets.hearingTests[index]
+        /// An asynchronous task on the main queue is used to load the other window,
+        /// wait for 100 milliseconds to ensure the system can recognise it is open,
+        /// and then close the previous window (which is only successful if another window is open).
+        Task { @MainActor in
+            isHearingTestOpened = true
+            openWindow(id: "hearing-test-window")
+            try? await Task.sleep(for: .milliseconds(100))
+            dismissWindow(id: "main-window")
+            viewingState = .main
+            selectedOption = -1
+        }
+    }
+
     @ViewBuilder
     private func chooseEnvButton(buttonIndex: Int, title: String) -> some View {
         Button {
-            hearingTest = Presets.hearingTests[buttonIndex]
-            /// An asynchronous task on the main queue is used to load the other window,
-            /// wait for 100 milliseconds to ensure the system can recognise it is open,
-            /// and then close the previous window (which is only successful if another window is open).
-            Task { @MainActor in
-                isHearingTestOpened = true
-                openWindow(id: "hearing-test-window")
-                try? await Task.sleep(for: .milliseconds(100))
-                dismissWindow(id: "main-window")
-                viewingState = .main
-                selectedOption = -1
-            }
+            chooseEnv(index: buttonIndex)
         } label: {
             Text(title)
                 .font(.system(size: 35))
@@ -235,17 +245,13 @@ struct EntryPoint: App {
             
         case .chooseTest:
             if voiceInput.contains("home") || voiceInput.contains("one") {
-                selectedOption = 0
-                hearingTest = Presets.hearingTests[0]
+                chooseEnv(index: 0)
             } else if voiceInput.contains("train") || voiceInput.contains("two") {
-                selectedOption = 1
-                hearingTest = Presets.hearingTests[1]
+                chooseEnv(index: 1)
             } else if voiceInput.contains("cafe") || voiceInput.contains("café") || voiceInput.contains("three") {
-                selectedOption = 2
-                hearingTest = Presets.hearingTests[Int.random(in: 0...1)]
+                chooseEnv(index: 2, makeRandom: true)
             } else if voiceInput.contains("shuffle") || voiceInput.contains("four") {
-                selectedOption = 3
-                hearingTest = Presets.hearingTests[Int.random(in: 0...1)]
+                chooseEnv(index: 3, makeRandom: true)
             } else if voiceInput.contains("next") || voiceInput.contains("start") {
                 guard selectedOption != -1 else { return }
                 Task { @MainActor in

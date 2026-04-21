@@ -49,6 +49,12 @@ struct ClinicianScene: Scene {
                 }
             }
         }
+        .defaultWindowPlacement { content, context in
+            if let otherWindow = context.windows.first(where: { $0.id != "main-window" }) {
+                return WindowPlacement(.above(otherWindow))
+            }
+            return WindowPlacement()
+        }
         HearingTestScene(
             hearingTest: $hearingTest,
             isOpened: $isHearingTestOpened,
