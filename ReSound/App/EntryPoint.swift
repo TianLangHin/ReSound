@@ -180,9 +180,6 @@ struct EntryPoint: App {
             .padding()
         }
         .padding()
-//        .task {
-//            try? speechRec.startRec()
-//        }
         .onChange(of: speechRec.speechContent) { _, newContent in
             print("Speech content: \(newContent)")
             voiceComHandler(newContent)

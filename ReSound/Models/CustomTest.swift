@@ -12,7 +12,11 @@
 /// will care about, while abstracting away the ways in which that affects
 /// the actual attributes of the equivalent `HearingTest` instance.
 /// This also includes random question generation depending on the theme.
+///
+import Foundation
+
 struct CustomTest: Codable {
+    var id: UUID = UUID()
     var name: String
     var background: Theme
     var positioning: Positioning

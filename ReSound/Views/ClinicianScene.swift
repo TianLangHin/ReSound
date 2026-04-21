@@ -44,7 +44,7 @@ struct ClinicianScene: Scene {
             }
             .onChange(of: speechRec.speechContent) { _, newContent in
                 let lastWord = newContent.lowercased().components(separatedBy: .whitespaces).last ?? ""
-                if lastWord == "back" {
+                if lastWord == "back", case .begin = clinicianState {
                     transition(from: "clinician-window", to: "main-window")
                 }
             }
@@ -92,21 +92,21 @@ struct ClinicianScene: Scene {
                 .frame(height: 20)
             
             VStack {
-                if savedTests.isEmpty {
+                if savedCustoms.isEmpty {
                     Text("No saved tests yet.")
                         .font(.system(size: 30))
                         .padding()
                 } else {
                     List {
-                        ForEach(savedTests, id: \.name) { test in
+                        ForEach(savedCustoms, id: \.id) { test in
                             Button {
-                                if let index = savedTests.firstIndex(where: { $0.name == test.name }) {
+                                if let index = savedCustoms.firstIndex(where: { $0.id == test.id }) {
                                     customTest = savedCustoms[index]
                                     clinicianState = .edit(index)
                                 }
                             } label: {
                                 HStack {
-                                    Text(test.name)
+                                    Text("\(test.name) (ID: \(test.id))")
                                         .font(.system(size: 30))
                                         .bold()
                                         .padding(.vertical, 10)
@@ -135,6 +135,7 @@ struct ClinicianScene: Scene {
             
             Button {
                 // Set name for the new test saving because no text field
+                customTest = CustomTest()
                 customTest.name = "Custom Test \(savedTests.count + 1)"
                 clinicianState = .add
             } label: {
@@ -153,6 +154,11 @@ struct ClinicianScene: Scene {
             .padding()
         }
         .padding()
+        .onChange(of: speechRec.speechContent) { _, newContent in
+            print("Speech content: \(newContent)")
+            voiceComHandler(newContent)
+            print("state: \(clinicianState)")
+        }
     }
 
     @ViewBuilder
@@ -339,6 +345,11 @@ struct ClinicianScene: Scene {
             .padding()
         }
         .padding()
+        .onChange(of: speechRec.speechContent) { _, newContent in
+            print("Speech content: \(newContent)")
+            voiceComHandler(newContent)
+            print("state: \(clinicianState)")
+        }
     }
 
     @MainActor
@@ -349,4 +360,95 @@ struct ClinicianScene: Scene {
             dismissWindow(id: from)
         }
     }
+    
+    
+    private func voiceComHandler(_ speech: String) {
+        let voiceInput = speech.lowercased().components(separatedBy: .whitespaces).last ?? ""
+        let words = speech.lowercased().components(separatedBy: .whitespaces)
+        let numberWords: [String: Int] = [
+            "one": 1,
+            "two": 2,
+            "three": 3,
+            "four": 4,
+            "five": 5
+        ]
+        
+        switch clinicianState {
+        case .begin:
+            if voiceInput.contains("add") {
+                customTest = CustomTest()
+                customTest.name = "Custom Test \(savedTests.count + 1)"
+                clinicianState = .add
+            }
+            if let editIndex = words.lastIndex(of: "number"),
+               editIndex + 2 == words.count {
+               let nextWord = words[editIndex + 1]
+               if let number = numberWords[nextWord], number >= 1 && number <= savedCustoms.count {
+                  let index = number - 1
+                  customTest = savedCustoms[index]
+                  clinicianState = .edit(index)
+               }
+            }
+            
+        case .edit(let num):
+            if voiceInput.contains("home") {
+                customTest.background = .home
+            } else if voiceInput.contains("train") {
+                customTest.background = .train
+            } else if voiceInput.contains("cafe") || voiceInput.contains("café") {
+                customTest.background = .cafe
+            } else if voiceInput.contains("easy") {
+                customTest.positioning = .easy
+            } else if voiceInput.contains("medium") {
+                customTest.positioning = .medium
+            } else if voiceInput.contains("hard") {
+                customTest.positioning = .hard
+            } else if voiceInput.contains("save") {
+                savedCustoms[num] = customTest
+                PersistStorage.testStorage.saveCustom(savedCustoms)
+                clinicianState = .begin
+            } else if voiceInput.contains("back") {
+                clinicianState = .begin
+            }
+            if let questionIndex = words.lastIndex(of: "question"),
+               questionIndex + 1 < words.count {
+                let nextWord = words[questionIndex + 1]
+                if let number = numberWords[nextWord], number >= 1 && number <= 5 {
+                    customTest.numberOfQuestions = number
+                }
+            }
+
+        case .add:
+            if voiceInput.contains("home") {
+                customTest.background = .home
+            } else if voiceInput.contains("train") {
+                customTest.background = .train
+            } else if voiceInput.contains("cafe") || voiceInput.contains("café") {
+                customTest.background = .cafe
+            } else if voiceInput.contains("easy") {
+                customTest.positioning = .easy
+            } else if voiceInput.contains("medium") {
+                customTest.positioning = .medium
+            } else if voiceInput.contains("hard") {
+                customTest.positioning = .hard
+            } else if voiceInput.contains("save") {
+                let test = customTest.generateTest()
+                savedCustoms.append(customTest)
+                savedTests.append(test)
+                PersistStorage.testStorage.saveCustom(savedCustoms)
+                PersistStorage.testStorage.saveTest(savedTests)
+                clinicianState = .begin
+            } else if voiceInput.contains("back") {
+                clinicianState = .begin
+            }
+            if let questionIndex = words.lastIndex(of: "question"),
+               questionIndex + 1 < words.count {
+                let nextWord = words[questionIndex + 1]
+                if let number = numberWords[nextWord], number >= 1 && number <= 5 {
+                    customTest.numberOfQuestions = number
+                }
+            }
+        }
+    }
+    
 }
