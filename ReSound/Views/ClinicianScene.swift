@@ -30,6 +30,42 @@ struct ClinicianScene: Scene {
     @State var savedTests: [HearingTest] = PersistStorage.testStorage.loadTest()
     @State var savedCustoms: [CustomTest] = PersistStorage.testStorage.loadCustom()
 
+    private var environmentSelection: Binding<Int> {
+        Binding(
+            get: {
+                switch customTest.background {
+                case .home: return 0
+                case .cafe: return 1
+                case .train: return 2
+                }
+            },
+            set: { value in
+                switch value {
+                case 0: customTest.background = .home
+                case 1: customTest.background = .cafe
+                default: customTest.background = .train
+                }
+            })
+    }
+
+    private var difficultySelection: Binding<Int> {
+        Binding(
+            get: {
+                switch customTest.positioning {
+                case .easy: return 0
+                case .medium: return 1
+                case .hard: return 2
+                }
+            },
+            set: { value in
+                switch value {
+                case 0: customTest.positioning = .easy
+                case 1: customTest.positioning = .medium
+                default: customTest.positioning = .hard
+                }
+            })
+    }
+
     var body: some Scene {
         WindowGroup(id: "clinician-window") {
             VStack {
@@ -193,42 +229,15 @@ struct ClinicianScene: Scene {
                     Text("Environment")
                         .font(.system(size: 40))
                         .bold()
-                    
-                    Button {
-                        customTest.background = .home
-                    } label: {
-                        Text("Home")
-                            .font(.system(size: 35))
-                            .bold()
-                            .frame(maxWidth: 250)
-                            .padding(.vertical, 25)
+
+                    Picker("Environment", selection: environmentSelection) {
+                        Text("Home").tag(0)
+                        Text("Café").tag(1)
+                        Text("Train").tag(2)
                     }
-                    .tint(customTest.background == .home ? Color.accentColor : nil)
-                    .padding(5)
-                    
-                    Button {
-                        customTest.background = .cafe
-                    } label: {
-                        Text("Café")
-                            .font(.system(size: 35))
-                            .bold()
-                            .frame(maxWidth: 250)
-                            .padding(.vertical, 25)
-                    }
-                    .tint(customTest.background == .cafe ? Color.accentColor : nil)
-                    .padding(5)
-                    
-                    Button {
-                        customTest.background = .train
-                    } label: {
-                        Text("Train Station")
-                            .font(.system(size: 35))
-                            .bold()
-                            .frame(maxWidth: 250)
-                            .padding(.vertical, 25)
-                    }
-                    .tint(customTest.background == .train ? Color.accentColor : nil)
-                    .padding(5)
+                    .pickerStyle(.segmented)
+                    .frame(width: 350)
+                    .padding(.top, 12)
                 }
                 .padding()
                 .background(
@@ -240,42 +249,15 @@ struct ClinicianScene: Scene {
                     Text("Difficulty")
                         .font(.system(size: 40))
                         .bold()
-                    
-                    Button {
-                        customTest.positioning = .easy
-                    } label: {
-                        Text("Easy")
-                            .font(.system(size: 35))
-                            .bold()
-                            .frame(maxWidth: 250)
-                            .padding(.vertical, 25)
+
+                    Picker("Difficulty", selection: difficultySelection) {
+                        Text("Easy").tag(0)
+                        Text("Medium").tag(1)
+                        Text("Hard").tag(2)
                     }
-                    .tint(customTest.positioning == .easy ? Color.accentColor : nil)
-                    .padding(5)
-                    
-                    Button {
-                        customTest.positioning = .medium
-                    } label: {
-                        Text("Medium")
-                            .font(.system(size: 35))
-                            .bold()
-                            .frame(maxWidth: 250)
-                            .padding(.vertical, 25)
-                    }
-                    .tint(customTest.positioning == .medium ? Color.accentColor : nil)
-                    .padding(5)
-                    
-                    Button {
-                        customTest.positioning = .hard
-                    } label: {
-                        Text("Hard")
-                            .font(.system(size: 35))
-                            .bold()
-                            .frame(maxWidth: 250)
-                            .padding(.vertical, 25)
-                    }
-                    .tint(customTest.positioning == .hard ? Color.accentColor : nil)
-                    .padding(5)
+                    .pickerStyle(.segmented)
+                    .frame(width: 350)
+                    .padding(.top, 12)
                 }
                 .padding()
                 .background(
@@ -397,24 +379,14 @@ struct ClinicianScene: Scene {
             }
             
         case .edit(let num):
-            if voiceInput.contains("home") {
-                customTest.background = .home
-            } else if voiceInput.contains("train") {
-                customTest.background = .train
-            } else if voiceInput.contains("cafe") || voiceInput.contains("café") {
-                customTest.background = .cafe
-            } else if voiceInput.contains("easy") {
-                customTest.positioning = .easy
-            } else if voiceInput.contains("medium") {
-                customTest.positioning = .medium
-            } else if voiceInput.contains("hard") {
-                customTest.positioning = .hard
-            } else if voiceInput.contains("save") {
+            if voiceInput.contains("save") {
                 savedCustoms[num] = customTest
                 PersistStorage.testStorage.saveCustom(savedCustoms)
                 clinicianState = .begin
             } else if voiceInput.contains("back") {
                 clinicianState = .begin
+            } else {
+                applyMappedSelection(from: voiceInput)
             }
             if let questionIndex = words.lastIndex(of: "question"),
                questionIndex + 1 < words.count {
@@ -425,19 +397,7 @@ struct ClinicianScene: Scene {
             }
 
         case .add:
-            if voiceInput.contains("home") {
-                customTest.background = .home
-            } else if voiceInput.contains("train") {
-                customTest.background = .train
-            } else if voiceInput.contains("cafe") || voiceInput.contains("café") {
-                customTest.background = .cafe
-            } else if voiceInput.contains("easy") {
-                customTest.positioning = .easy
-            } else if voiceInput.contains("medium") {
-                customTest.positioning = .medium
-            } else if voiceInput.contains("hard") {
-                customTest.positioning = .hard
-            } else if voiceInput.contains("save") {
+            if voiceInput.contains("save") {
                 let test = customTest.generateTest()
                 savedCustoms.append(customTest)
                 savedTests.append(test)
@@ -446,6 +406,8 @@ struct ClinicianScene: Scene {
                 clinicianState = .begin
             } else if voiceInput.contains("back") {
                 clinicianState = .begin
+            } else {
+                applyMappedSelection(from: voiceInput)
             }
             if let questionIndex = words.lastIndex(of: "question"),
                questionIndex + 1 < words.count {
@@ -455,6 +417,42 @@ struct ClinicianScene: Scene {
                 }
             }
         }
+    }
+
+    private func applyMappedSelection(from voiceInput: String) {
+        if let background = mappedBackground(from: voiceInput) {
+            customTest.background = background
+            return
+        }
+        if let positioning = mappedPositioning(from: voiceInput) {
+            customTest.positioning = positioning
+        }
+    }
+
+    private func mappedBackground(from voiceInput: String) -> CustomTest.Theme? {
+        if voiceInput.contains("home") {
+            return .home
+        }
+        if voiceInput.contains("train") {
+            return .train
+        }
+        if voiceInput.contains("cafe") || voiceInput.contains("café") {
+            return .cafe
+        }
+        return nil
+    }
+
+    private func mappedPositioning(from voiceInput: String) -> CustomTest.Positioning? {
+        if voiceInput.contains("easy") {
+            return .easy
+        }
+        if voiceInput.contains("medium") {
+            return .medium
+        }
+        if voiceInput.contains("hard") {
+            return .hard
+        }
+        return nil
     }
     
 }
