@@ -21,6 +21,9 @@ struct HistoryScene: Scene {
     @State var savedScores: [ScoreBreakdown] = PersistStorage.testStorage.loadScore()
     @State var scoreDetails: ScoreBreakdown = .empty()
     
+    // Slow down the process of recognising speech
+    @State private var numberDebounceTask: Task<Void, Never>? = nil
+    
     var body: some Scene {
         WindowGroup(id: "history-window") {
             VStack {
@@ -35,9 +38,9 @@ struct HistoryScene: Scene {
                 savedScores = PersistStorage.testStorage.loadScore()
             }
             .onChange(of: speechRec.speechContent) { _, newContent in
-                if newContent.lowercased().contains("back") {
-                    transition(from: "history-window", to: "main-window")
-                }
+                print("Speech content: \(newContent)")
+                voiceComHandler(newContent)
+                print("state: \(historyState)")
             }
         }
     }
@@ -191,6 +194,49 @@ struct HistoryScene: Scene {
             openWindow(id: to)
             try? await Task.sleep(for: .milliseconds(100))
             dismissWindow(id: from)
+        }
+    }
+    
+    
+    private func voiceComHandler(_ speech: String) {
+        let voiceInput = speech.lowercased().components(separatedBy: .whitespaces).last ?? ""
+        let words = speech.lowercased().components(separatedBy: .whitespaces)
+        
+        switch historyState {
+        case .begin:
+            if voiceInput.contains("back") {
+                transition(from: "history-window", to: "main-window")
+            }
+            
+            if let numberIndex = words.lastIndex(of: "number"), numberIndex + 1 < words.count {
+                // Cancel previous debounce
+                numberDebounceTask?.cancel()
+                numberDebounceTask = Task {
+                    try? await Task.sleep(for: .milliseconds(1200))
+                    guard !Task.isCancelled else { return }
+                    
+                    await MainActor.run {
+                        let latestWords = speechRec.speechContent.lowercased()
+                            .components(separatedBy: .whitespaces)
+                        guard let latestNumberIndex = latestWords.lastIndex(of: "number"),
+                              latestNumberIndex + 1 < latestWords.count,
+                              case .begin = historyState else { return }
+                        
+                        let latestRemaining = Array(latestWords[(latestNumberIndex + 1)...])
+                        if let number = parseSpokenNumber(latestRemaining),
+                           number >= 1 && number <= savedScores.count {
+                            let index = number - 1
+                            scoreDetails = savedScores[index]
+                            historyState = .detail
+                        }
+                    }
+                }
+            }
+            
+        case .detail:
+            if voiceInput.contains("back") {
+                historyState = .begin
+            }
         }
     }
 }
