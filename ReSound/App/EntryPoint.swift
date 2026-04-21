@@ -70,10 +70,10 @@ struct EntryPoint: App {
             /// This internal VStack not really necessary but the other screens have this structure because of the ZStack with back button so this just makes the spacing consistent
             VStack {
                 Text("ReSound Hearing Test")
-                    .font(.system(size: 60))
-                    .bold()
+                    .font(.largeTitle)
                 Text("Test your hearing using spatial audio with the Apple Vision Pro")
-                    .font(.system(size: 30))
+                    .font(.title)
+                    .foregroundStyle(.secondary)
             }
             .padding()
             
@@ -86,10 +86,9 @@ struct EntryPoint: App {
                 } label: {
                     // Go to environment selection screen.
                     Text("Start Hearing Test")
-                        .font(.system(size: 35))
-                        .bold()
-                        .frame(maxWidth: 500)
-                        .padding(.vertical, 25)
+                        .font(.headline)
+                        .frame(maxWidth: 400)
+                        .padding(.vertical, 20)
                 }
                 .padding(10)
                 
@@ -102,10 +101,9 @@ struct EntryPoint: App {
                 } label: {
                     // Go to the clinician view to create customised hearing tests.
                     Text("Clinician View")
-                        .font(.system(size: 35))
-                        .bold()
-                        .frame(maxWidth: 500)
-                        .padding(.vertical, 25)
+                        .font(.headline)
+                        .frame(maxWidth: 400)
+                        .padding(.vertical, 20)
                 }
                 .padding(10)
                 
@@ -119,10 +117,9 @@ struct EntryPoint: App {
                 } label: {
                     // Persistent storage which stores a list of patient scores and other related details.
                     Text("View History")
-                        .font(.system(size: 35))
-                        .bold()
-                        .frame(maxWidth: 500)
-                        .padding(.vertical, 25)
+                        .font(.headline)
+                        .frame(maxWidth: 400)
+                        .padding(.vertical, 20)
                 }
                 .padding(10)
             }
@@ -147,11 +144,11 @@ struct EntryPoint: App {
             ZStack {
                 VStack {
                     Text("Select Environment")
-                        .font(.system(size: 60))
-                        .bold()
+                        .font(.largeTitle)
                     
                     Text("Choose your immersive testing environment")
-                        .font(.system(size: 30))
+                        .font(.title)
+                        .foregroundStyle(.secondary)
                 }
                 .padding()
                 
@@ -161,10 +158,9 @@ struct EntryPoint: App {
                     } label: {
                         HStack {
                             Image(systemName: "chevron.left")
-                                .font(.system(size: 30))
+                                .font(.headline)
                             Text("Back")
-                                .font(.system(size: 30))
-                                .bold()
+                                .font(.headline)
                         }
                         .padding()
                     }
@@ -214,10 +210,9 @@ struct EntryPoint: App {
             chooseEnv(index: buttonIndex)
         } label: {
             Text(title)
-                .font(.system(size: 35))
-                .bold()
-                .frame(maxWidth: 500)
-                .padding(.vertical, 25)
+                .font(.headline)
+                .frame(maxWidth: 400)
+                .padding(.vertical, 20)
         }
         .padding(10)
     }

@@ -31,6 +31,7 @@ struct HearingTestScene: SwiftUI.Scene {
     @Binding var isOpened: Bool
 
     @State var speechRec: SpeechRec
+    @State var isCalibrating: Bool = false
 
     let hearingTestWindowId: String
     let parentWindowId: String
@@ -248,14 +249,22 @@ struct HearingTestScene: SwiftUI.Scene {
                 .frame(height: 50)
             
             Button {
-                audioController?.play()
+                if !isCalibrating { /// Not playing the calibration audio, so play
+                    audioController?.play()
+                } else { /// Playing the calibration audio, so pause
+                    audioController?.pause()
+                }
+                isCalibrating.toggle()
             } label: {
-                Text("Start")
-            }
-            Button {
-                audioController?.pause()
-            } label: {
-                Text("Stop")
+                HStack {
+                    Image(systemName: isCalibrating ? "pause.fill" : "play.fill")
+                        .font(.system(size: 30))
+                    
+                    Text(isCalibrating ? "Pause" : "Play")
+                        .font(.system(size: 30))
+                        .bold()
+                }
+                .padding()
             }
             
             Button {
