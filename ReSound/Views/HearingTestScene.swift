@@ -72,6 +72,7 @@ struct HearingTestScene: SwiftUI.Scene {
             }
             .padding()
             .glassBackgroundEffect()
+            .dynamicTypeSize(...DynamicTypeSize.accessibility2)
             .onAppear {
                 /// Toggling the Boolean binding for tracking in the parent view.
                 isOpened = true
@@ -252,11 +253,15 @@ struct HearingTestScene: SwiftUI.Scene {
             } label: {
                 Text("Start")
             }
+            .buttonStyle(.bordered)
+            .controlSize(.large)
             Button {
                 audioController?.pause()
             } label: {
                 Text("Stop")
             }
+            .buttonStyle(.bordered)
+            .controlSize(.large)
             
             Button {
                 openSpace()
@@ -268,6 +273,8 @@ struct HearingTestScene: SwiftUI.Scene {
                     .frame(maxWidth: 500)
                     .padding(.vertical, 25)
             }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
             
             Spacer()
                 .frame(height: 50)
@@ -286,7 +293,7 @@ struct HearingTestScene: SwiftUI.Scene {
         let currentQuestion = hearingTest.questions[questionNumber].chosenQuestion
         VStack {
             Text(currentQuestion.question)
-                .font(.title3)
+                .font(.title2)
                 .padding()
             List {
                 ForEach(Array(currentQuestion.answers.enumerated()), id: \.offset) { index, answer in
@@ -318,6 +325,8 @@ struct HearingTestScene: SwiftUI.Scene {
                     .font(.title3)
                     .padding()
             }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
         }
     }
 
@@ -334,6 +343,8 @@ struct HearingTestScene: SwiftUI.Scene {
                 Text("Exit immersive space")
                     .font(.title3)
             }
+            .buttonStyle(.bordered)
+            .controlSize(.large)
             Button {
                 exitEntirely()
             } label: {
@@ -341,6 +352,8 @@ struct HearingTestScene: SwiftUI.Scene {
                     .padding()
                     .font(.title2)
             }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
             .padding()
         }
         .padding()
