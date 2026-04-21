@@ -94,11 +94,7 @@ struct EntryPoint: App {
                 .padding(10)
                 
                 Button {
-                    Task { @MainActor in
-                        openWindow(id: "clinician-window")
-                        try? await Task.sleep(for: .milliseconds(100))
-                        dismissWindow(id: "main-window")
-                    }
+                    transition(from: "main-window", to: "clinician-window")
                 } label: {
                     // Go to the clinician view to create customised hearing tests.
                     Text("Clinician View")
@@ -111,11 +107,7 @@ struct EntryPoint: App {
                 
                 Button {
                     // Go to view history page which is not currently implemented.
-                    Task { @MainActor in
-                        openWindow(id: "history-window")
-                        try? await Task.sleep(for: .milliseconds(100))
-                        dismissWindow(id: "main-window")
-                    }
+                    transition(from: "main-window", to: "history-window")
                 } label: {
                     // Persistent storage which stores a list of patient scores and other related details.
                     Text("View History")
@@ -200,9 +192,7 @@ struct EntryPoint: App {
         /// and then close the previous window (which is only successful if another window is open).
         Task { @MainActor in
             isHearingTestOpened = true
-            openWindow(id: "hearing-test-window")
-            try? await Task.sleep(for: .milliseconds(100))
-            dismissWindow(id: "main-window")
+            transition(from: "main-window", to: "hearing-test-window")
             viewingState = .main
             selectedOption = -1
         }
@@ -224,51 +214,40 @@ struct EntryPoint: App {
 
     private func voiceComHandler(_ speech: String) {
         let voiceInput = speech.lowercased().components(separatedBy: .whitespaces).last ?? ""
-        
         switch viewingState {
         case .main:
-            if voiceInput.contains("patient") || voiceInput.contains("test") {
+            switch voiceInput {
+            case "patient", "test":
                 viewingState = .chooseTest
-            } else if voiceInput.contains("clinician") || voiceInput.contains("customise") {
-                Task { @MainActor in
-                    openWindow(id: "clinician-window")
-                    try? await Task.sleep(for: .milliseconds(100))
-                    dismissWindow(id: "main-window")
-                }
-            } else if voiceInput.contains("history") {
-                Task { @MainActor in
-                    openWindow(id: "history-window")
-                    try? await Task.sleep(for: .milliseconds(100))
-                    dismissWindow(id: "main-window")
-                }
+            case "clinician", "customise":
+                transition(from: "main-window", to: "clinician-window")
+            case "history":
+                transition(from: "main-window", to: "history-window")
+            default:
+                break
             }
-            
         case .chooseTest:
-            if voiceInput.contains("home") || voiceInput.contains("one") {
+            switch voiceInput {
+            case "home":
                 chooseEnv(index: 0)
-            } else if voiceInput.contains("train") || voiceInput.contains("two") {
+            case "train":
                 chooseEnv(index: 1)
-            } else if voiceInput.contains("cafe") || voiceInput.contains("café") || voiceInput.contains("three") {
+            case "cafe", "café":
                 chooseEnv(index: 2, makeRandom: true)
-            } else if voiceInput.contains("shuffle") || voiceInput.contains("four") {
-                chooseEnv(index: 3, makeRandom: true)
-            } else if voiceInput.contains("next") || voiceInput.contains("start") {
-                guard selectedOption != -1 else { return }
-                Task { @MainActor in
-                    isHearingTestOpened = true
-                    openWindow(id: "hearing-test-window")
-                    try? await Task.sleep(for: .milliseconds(100))
-                    dismissWindow(id: "main-window")
-                    viewingState = .main
-                    selectedOption = -1
-                }
-            } else if voiceInput.contains("back") {
+            case "back":
                 viewingState = .main
+            default:
+                break
             }
         }
     }
+
+    @MainActor
+    private func transition(from: String, to: String) {
+        Task { @MainActor in
+            openWindow(id: to)
+            try? await Task.sleep(for: .milliseconds(100))
+            dismissWindow(id: from)
+        }
+    }
 }
-
-
-
-
