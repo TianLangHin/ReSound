@@ -36,6 +36,7 @@ struct HistoryScene: Scene {
             }
             .onAppear {
                 savedScores = PersistStorage.testStorage.loadScore()
+                historyState = .begin
             }
             .onChange(of: speechRec.speechContent) { _, newContent in
                 print("Speech content: \(newContent)")
@@ -212,7 +213,7 @@ struct HistoryScene: Scene {
                 // Cancel previous debounce
                 numberDebounceTask?.cancel()
                 numberDebounceTask = Task {
-                    try? await Task.sleep(for: .milliseconds(1200))
+                    try? await Task.sleep(for: .milliseconds(700))
                     guard !Task.isCancelled else { return }
                     
                     await MainActor.run {

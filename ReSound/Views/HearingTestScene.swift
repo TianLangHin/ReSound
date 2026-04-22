@@ -396,6 +396,7 @@ struct HearingTestScene: SwiftUI.Scene {
                 registerAnswer(choice: answer)
             }
             print("parentWindowId is: \(parentWindowId)")
+            // Save the score right after the test is done
             if parentWindowId == "main-window" {
                 scoreBreakdown.timeAttempted = Date()
                 var existingScores = PersistStorage.testStorage.loadScore()

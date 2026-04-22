@@ -51,6 +51,9 @@ struct ClinicianScene: Scene {
                     transition(from: "clinician-window", to: "main-window")
                 }
             }
+            .onAppear {
+                clinicianState = .begin
+            }
         }
         .defaultWindowPlacement { content, context in
             if let otherWindow = context.windows.first(where: { $0.id != "main-window" }) {
@@ -167,7 +170,7 @@ struct ClinicianScene: Scene {
             print("Speech content: \(newContent)")
             voiceComHandler(newContent)
             Task {
-                try? await Task.sleep(for: .milliseconds(1500))
+                try? await Task.sleep(for: .milliseconds(800))
                 print("state: \(clinicianState)")
             }
         }
@@ -361,7 +364,7 @@ struct ClinicianScene: Scene {
             print("Speech content: \(newContent)")
             voiceComHandler(newContent)
             Task {
-                try? await Task.sleep(for: .milliseconds(1500))
+                try? await Task.sleep(for: .milliseconds(800))
                 print("state: \(clinicianState)")
             }
         }
@@ -392,7 +395,7 @@ struct ClinicianScene: Scene {
                 // Cancel previous debounce
                 numberDebounceTask?.cancel()
                 numberDebounceTask = Task {
-                    try? await Task.sleep(for: .milliseconds(1200))
+                    try? await Task.sleep(for: .milliseconds(700))
                     guard !Task.isCancelled else { return }
                     
                     await MainActor.run {
