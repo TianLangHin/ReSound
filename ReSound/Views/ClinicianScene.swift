@@ -32,6 +32,8 @@ struct ClinicianScene: Scene {
     
     // Slow down the process of recognising speech
     @State private var numberDebounceTask: Task<Void, Never>? = nil
+    
+    @State var isFromClinician = false
 
     var body: some Scene {
         WindowGroup(id: "clinician-window") {
@@ -52,7 +54,9 @@ struct ClinicianScene: Scene {
                 }
             }
             .onAppear {
-                clinicianState = .begin
+                if !isFromClinician {
+                    clinicianState = .begin
+                }
             }
         }
         .defaultWindowPlacement { content, context in
@@ -64,6 +68,7 @@ struct ClinicianScene: Scene {
         HearingTestScene(
             hearingTest: $hearingTest,
             isOpened: $isHearingTestOpened,
+            isFromClinician: $isFromClinician,
             speechRec: speechRec,
             hearingTestWindowId: "practice-window",
             parentWindowId: "clinician-window")

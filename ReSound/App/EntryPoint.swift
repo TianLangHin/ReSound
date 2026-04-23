@@ -56,7 +56,7 @@ struct EntryPoint: App {
         /// which by default is closed since the main WindowGroup above is loaded first.
         HearingTestScene(
             hearingTest: $hearingTest,
-            isOpened: $isHearingTestOpened,
+            isOpened: $isHearingTestOpened, isFromClinician: .constant(false),
             speechRec: speechRec,
             hearingTestWindowId: "hearing-test-window",
             parentWindowId: "main-window")

@@ -29,6 +29,8 @@ struct HearingTestScene: SwiftUI.Scene {
     /// and will toggle an "isOpened" indicator to notify the parent view.
     @Binding var hearingTest: HearingTest
     @Binding var isOpened: Bool
+    
+    @Binding var isFromClinician: Bool
 
     @State var speechRec: SpeechRec
     @State var isCalibrating: Bool = false
@@ -76,6 +78,9 @@ struct HearingTestScene: SwiftUI.Scene {
             .onAppear {
                 /// Toggling the Boolean binding for tracking in the parent view.
                 isOpened = true
+                if parentWindowId == "clinician-window" {
+                    isFromClinician = true
+                }
             }
             .onChange(of: speechRec.speechContent) { _, newContent in
                 DispatchQueue.main.async {
@@ -175,6 +180,10 @@ struct HearingTestScene: SwiftUI.Scene {
             try? await Task.sleep(for: .milliseconds(100))
             isOpened = false
             dismissWindow(id: hearingTestWindowId)
+            if parentWindowId == "clinician-window" {
+               try? await Task.sleep(for: .milliseconds(200))
+               try? speechRec.startRec()
+           }
         }
     }
 
