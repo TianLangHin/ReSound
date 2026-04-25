@@ -34,6 +34,8 @@ struct HearingTestScene: SwiftUI.Scene {
 
     @State var speechRec: SpeechRec
     @State var isCalibrating: Bool = false
+    
+    @Binding var instructionOpen: Bool
 
     let hearingTestWindowId: String
     let parentWindowId: String
@@ -78,6 +80,8 @@ struct HearingTestScene: SwiftUI.Scene {
             .onAppear {
                 /// Toggling the Boolean binding for tracking in the parent view.
                 isOpened = true
+                openWindow(id: "instruction-window")
+                instructionOpen = true
                 if parentWindowId == "clinician-window" {
                     isFromClinician = true
                 }
@@ -96,6 +100,11 @@ struct HearingTestScene: SwiftUI.Scene {
                         case "start", "next":
                             openSpace()
                             startQuestion(firstCall: true)
+                            if instructionOpen {
+                                dismissWindow(id: "instruction-window")
+                            } else {
+                                print("alr close bro")
+                            }
                         case "exit", "back", "quit":
                             try? speechRec.startRec()
                             Task { @MainActor in
@@ -272,6 +281,11 @@ struct HearingTestScene: SwiftUI.Scene {
             Button {
                 openSpace()
                 startQuestion(firstCall: true)
+                if instructionOpen {
+                    dismissWindow(id: "instruction-window")
+                } else {
+                    print("alr close bro")
+                }
             } label: {
                 Text("Start hearing test!")
                     .font(.system(size: 40))

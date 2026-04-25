@@ -27,6 +27,8 @@ struct EntryPoint: App {
     @State var hearingTest = Presets.hearingTests[0]
     @State var viewingState: MainMenuState = .main
     @State var selectedOption: Int = -1
+    
+    @State var instructionOpen: Bool = false
 
     /// A binded variable to suppress the main window when a new one pops up
     /// i.e., when the hearing test pops up.
@@ -52,8 +54,9 @@ struct EntryPoint: App {
             hearingTest: $hearingTest,
             isOpened: $isHearingTestOpened, isFromClinician: .constant(false),
             speechRec: speechRec,
-            hearingTestWindowId: "hearing-test-window",
+            instructionOpen: $instructionOpen, hearingTestWindowId: "hearing-test-window",
             parentWindowId: "main-window")
+        InstructionScene(instructionOpen: $instructionOpen)
         ClinicianScene(speechRec: speechRec)
         HistoryScene(speechRec: speechRec)
     }

@@ -64,7 +64,7 @@ struct ClinicianScene: Scene {
             isOpened: $isHearingTestOpened,
             isFromClinician: $isFromClinician,
             speechRec: speechRec,
-            hearingTestWindowId: "practice-window",
+            instructionOpen: .constant(false), hearingTestWindowId: "practice-window",
             parentWindowId: "clinician-window")
     }
 
