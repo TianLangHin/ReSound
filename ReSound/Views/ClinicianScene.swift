@@ -121,23 +121,16 @@ struct ClinicianScene: Scene {
                     Text("Add or edit your own custom test environment")
                         .font(.system(size: 30))
                 }
+                .frame(maxWidth: .infinity)
                 .padding()
                 
                 HStack {
-                    Button {
+                    backButton {
                         transition(from: "clinician-window", to: "main-window")
-                    } label: {
-                        HStack {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 30))
-                            Text("Back")
-                                .font(.system(size: 30))
-                                .bold()
-                        }
-                        .padding()
                     }
                     Spacer()
                 }
+                .padding(.horizontal, 8)
             }
             
             Spacer()
@@ -217,22 +210,13 @@ struct ClinicianScene: Scene {
     private func updateView() -> some View {
         VStack {
             HStack {
-                Button {
+                backButton {
                     clinicianState = .begin
-                } label: {
-                    HStack {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 30))
-                        Text("Back")
-                            .font(.system(size: 30))
-                            .bold()
-                    }
-                    .padding()
                 }
-                .tint(Color.red)
                 
                 Spacer()
             }
+            .padding(.horizontal, 8)
             .padding(.bottom, 8)
             
             VStack(alignment: .leading, spacing: 12) {
@@ -495,6 +479,21 @@ struct ClinicianScene: Scene {
             return .hard
         }
         return nil
+    }
+    
+    @ViewBuilder
+    private func backButton(action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 28))
+                Text("Back")
+                    .font(.system(size: 28))
+                    .bold()
+            }
+            .foregroundStyle(.primary)
+            .padding()
+        }
     }
     
 }
