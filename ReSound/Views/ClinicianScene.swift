@@ -31,13 +31,14 @@ struct ClinicianScene: Scene {
     @State var savedCustoms: [CustomTest] = PersistStorage.testStorage.loadCustom()
     
     private let optionControlWidth: CGFloat = 350
-    private let optionCardSpacing: CGFloat = 8
+    private let optionCardSpacing: CGFloat = 16
+    private let editorSectionSpacing: CGFloat = 16
+    
     private let optionCardInnerPadding: CGFloat = 16
 
-    private let actionButtonWidth: CGFloat = 220
+    private let actionButtonWidth: CGFloat = 160
     private let actionButtonHeight: CGFloat = 72
 
-    
     private var editorGroupWidth: CGFloat {
         ((optionControlWidth + (optionCardInnerPadding * 2)) * 2) + optionCardSpacing
     }
@@ -207,7 +208,7 @@ struct ClinicianScene: Scene {
 
     @ViewBuilder
     private func updateView() -> some View {
-        VStack {
+        VStack(spacing: editorSectionSpacing) {
             clinicianBackBar {
                 clinicianState = .begin
             }
@@ -313,7 +314,7 @@ struct ClinicianScene: Scene {
             }
             .frame(width: editorGroupWidth)
             
-            HStack {
+            HStack (spacing: 16) {
                 Button {
                     hearingTest = customTest.generateTest()
                     isHearingTestOpened = true
