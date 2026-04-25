@@ -498,8 +498,8 @@ struct ClinicianScene: Scene {
             Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 16)
-        .padding(.bottom, 16)
+        .padding(.horizontal, 20)
+        .padding(.bottom, 20)
     }
     
 }
