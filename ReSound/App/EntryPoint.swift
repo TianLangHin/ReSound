@@ -89,7 +89,7 @@ struct EntryPoint: App {
                         .font(.system(size: 35))
                         .bold()
                         .frame(maxWidth: 500)
-                        .padding(.vertical, 25)
+                        .padding(.vertical, 24)
                 }
                 .padding(10)
                 
@@ -101,7 +101,7 @@ struct EntryPoint: App {
                         .font(.system(size: 35))
                         .bold()
                         .frame(maxWidth: 500)
-                        .padding(.vertical, 25)
+                        .padding(.vertical, 24)
                 }
                 .padding(10)
                 
@@ -114,12 +114,14 @@ struct EntryPoint: App {
                         .font(.system(size: 35))
                         .bold()
                         .frame(maxWidth: 500)
-                        .padding(.vertical, 25)
+                        .padding(.vertical, 24)
                 }
                 .padding(10)
             }
             .padding()
         }
+        /// Full width so `VStack` children stay centered.
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .padding()
         /// Testing for speech recog
         .task {
@@ -136,34 +138,21 @@ struct EntryPoint: App {
     @ViewBuilder
     private func chooseHearingTest() -> some View {
         VStack {
-            ZStack {
-                VStack {
-                    Text("Select Environment")
-                        .font(.system(size: 60))
-                        .bold()
-                    
-                    Text("Choose your immersive testing environment")
-                        .font(.system(size: 30))
-                }
-                .padding()
-                
-                HStack {
-                    Button {
-                        viewingState = .main
-                    } label: {
-                        HStack {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 30))
-                            Text("Back")
-                                .font(.system(size: 30))
-                                .bold()
-                        }
-                        .padding()
-                    }
-                    Spacer()
-                }
+            mainMenuBackBar {
+                viewingState = .main
             }
-            
+
+            VStack {
+                Text("Select Environment")
+                    .font(.system(size: 60))
+                    .bold()
+
+                Text("Choose your immersive testing environment")
+                    .font(.system(size: 30))
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+
             Spacer()
                 .frame(height: 20)
             
@@ -177,6 +166,7 @@ struct EntryPoint: App {
             }
             .padding()
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding()
         .onChange(of: speechRec.speechContent) { _, newContent in
             print("Speech content: \(newContent)")
@@ -207,7 +197,7 @@ struct EntryPoint: App {
                 .font(.system(size: 35))
                 .bold()
                 .frame(maxWidth: 500)
-                .padding(.vertical, 25)
+                .padding(.vertical, 24)
         }
         .padding(10)
     }
@@ -249,5 +239,31 @@ struct EntryPoint: App {
             try? await Task.sleep(for: .milliseconds(100))
             dismissWindow(id: from)
         }
+    }
+
+    @ViewBuilder
+    private func backButton(action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 28))
+                Text("Back")
+                    .font(.system(size: 28))
+                    .bold()
+            }
+            .foregroundStyle(.primary)
+            .padding()
+        }
+    }
+
+    @ViewBuilder
+    private func mainMenuBackBar(action: @escaping () -> Void) -> some View {
+        HStack(spacing: 0) {
+            backButton(action: action)
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.leading, 20)
+        .padding(.top, 20)
     }
 }
