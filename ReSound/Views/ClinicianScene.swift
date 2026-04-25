@@ -243,9 +243,8 @@ struct ClinicianScene: Scene {
                         Text("Café").tag(1)
                         Text("Train").tag(2)
                     }
+                    .frame(width: optionControlWidth, height: 50, alignment: .leading)
                     .pickerStyle(.segmented)
-                    .frame(width: optionControlWidth)
-                    .frame(height: 50)
                     .padding(.top, 16)
                 }
                 .padding()
@@ -265,8 +264,7 @@ struct ClinicianScene: Scene {
                         Text("Hard").tag(2)
                     }
                     .pickerStyle(.segmented)
-                    .frame(width: optionControlWidth)
-                    .frame(height: 50)
+                    .frame(width: optionControlWidth, height: 50, alignment: .leading)
                     .padding(.top, 16)
                 }
                 .padding()
@@ -283,13 +281,14 @@ struct ClinicianScene: Scene {
                         .font(.system(size: 28))
                         .bold()
                     
-                    Stepper("Questions: \(customTest.numberOfQuestions)",
-                        value: $customTest.numberOfQuestions, in: 1...5, step: 1)
-                        .frame(width: optionControlWidth)
-                        .frame(height: 50)
-                        .font(.system(size: 25))
-                        .bold()
-                        .padding(.top, 16)
+                     Stepper(value: $customTest.numberOfQuestions, in: 1...5, step: 1) {
+                        Text("Questions: \(customTest.numberOfQuestions)")
+                            .font(.system(size: 25))
+                            .bold()
+                    }
+                    .frame(width: optionControlWidth, height: 50, alignment: .leading)
+                    .tint(.accentColor)
+                    .padding(.top, 16)
                 }
                 .padding()
                 .background(
@@ -303,8 +302,7 @@ struct ClinicianScene: Scene {
                         .bold()
                     
                     Slider(value: $customTest.targetVolume, in: -10.0 ... 0)
-                        .frame(width: optionControlWidth)
-                        .frame(height: 50)
+                        .frame(width: optionControlWidth, height: 50, alignment: .leading)
                         .padding(.top, 16)
                 }
                 .padding()
