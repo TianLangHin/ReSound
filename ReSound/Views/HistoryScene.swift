@@ -20,7 +20,7 @@ struct HistoryScene: Scene {
     @State var historyState: HistoryState = .begin
     @State var savedScores: [ScoreBreakdown] = PersistStorage.testStorage.loadScore()
     @State var scoreDetails: ScoreBreakdown = .empty()
-    
+
     var body: some Scene {
         WindowGroup(id: "history-window") {
             VStack {
@@ -42,39 +42,27 @@ struct HistoryScene: Scene {
         }
     }
 
+    @ViewBuilder
     private func scoreListView() -> some View {
         VStack {
-            ZStack {
-                VStack {
-                    Text("Test History")
-                        .font(.system(size: 60))
-                        .bold()
-                    
-                    Text("View past hearing test scores on this device")
-                        .font(.system(size: 30))
-                }
-                .padding()
-                
-                HStack {
-                    Button {
-                        transition(from: "history-window", to: "main-window")
-                    } label: {
-                        HStack {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 30))
-                            Text("Back")
-                                .font(.system(size: 30))
-                                .bold()
-                        }
-                        .padding()
-                    }
-                    Spacer()
-                }
+            historyBackBar {
+                transition(from: "history-window", to: "main-window")
             }
+
+            VStack {
+                Text("Test History")
+                    .font(.system(size: 60))
+                    .bold()
+
+                Text("View past hearing test scores on this device")
+                    .font(.system(size: 30))
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
 
             Spacer()
                 .frame(height: 30)
-            
+
             VStack {
                 if savedScores.isEmpty {
                     Text("No test attempts yet.")
@@ -92,18 +80,14 @@ struct HistoryScene: Scene {
                                         .font(.system(size: 30))
                                         .bold()
                                         .padding(.vertical, 10)
-                                    
+
                                     Spacer()
-                                    
+
                                     Image(systemName: "chevron.right")
                                         .font(.system(size: 30))
                                 }
                                 .padding()
                             }
-                        }
-                        .onDelete { offsets in
-                            savedScores.remove(atOffsets: offsets)
-                            PersistStorage.testStorage.saveScore(savedScores)
                         }
                         .onDelete { offsets in
                             savedScores.remove(atOffsets: offsets)
@@ -117,51 +101,37 @@ struct HistoryScene: Scene {
             }
             .padding()
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding()
     }
 
+    @ViewBuilder
     private func scoreDetailView() -> some View {
         VStack {
-            ZStack {
-                VStack {
-                    Text(scoreDetails.hearingTestName)
-                        .font(.system(size: 60))
-                        .bold()
-                    
-                    Text(scoreDetails.timeAttempted.formatted(date: .abbreviated, time: .shortened))
-                        .font(.system(size: 30))
-                }
-                .padding()
-                
-                HStack {
-                    Button {
-                        savedScores = PersistStorage.testStorage.loadScore()
-                        historyState = .begin
-                    } label: {
-                        HStack {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 30))
-                            Text("Back")
-                                .font(.system(size: 30))
-                                .bold()
-                        }
-                        .padding()
-                    }
-                    Spacer()
-                }
+            historyBackBar {
+                savedScores = PersistStorage.testStorage.loadScore()
+                historyState = .begin
             }
-            
+
+            VStack {
+                Text(scoreDetails.hearingTestName)
+                    .font(.system(size: 60))
+                    .bold()
+
+                Text(scoreDetails.timeAttempted.formatted(date: .abbreviated, time: .shortened))
+                    .font(.system(size: 30))
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+
             Spacer()
                 .frame(height: 30)
-            
+
             let (correct, total) = scoreDetails.overallScore()
             Text("Score: \(correct) / \(total)")
                 .font(.system(size: 35))
                 .bold()
-            
-            /// Not sure if this spacer is necessary but we'll see if we need to add it back in
-            ///Spacer().frame(height: 30)
-            
+
             List {
                 ForEach(scoreDetails.answers, id: \.questionText) { answer in
                     HStack {
@@ -182,6 +152,7 @@ struct HistoryScene: Scene {
             }
             .frame(width: 700)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding()
     }
 
@@ -192,5 +163,33 @@ struct HistoryScene: Scene {
             try? await Task.sleep(for: .milliseconds(100))
             dismissWindow(id: from)
         }
+    }
+
+    // MARK: (similar method to `ClinicianScene`)
+
+    @ViewBuilder
+    private func backButton(action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 28))
+                Text("Back")
+                    .font(.system(size: 28))
+                    .bold()
+            }
+            .foregroundStyle(.primary)
+            .padding()
+        }
+    }
+
+    @ViewBuilder
+    private func historyBackBar(action: @escaping () -> Void) -> some View {
+        HStack(spacing: 0) {
+            backButton(action: action)
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.leading, 20)
+        .padding(.top, 20)
     }
 }
