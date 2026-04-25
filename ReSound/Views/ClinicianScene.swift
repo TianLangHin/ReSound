@@ -29,6 +29,16 @@ struct ClinicianScene: Scene {
     
     @State var savedTests: [HearingTest] = PersistStorage.testStorage.loadTest()
     @State var savedCustoms: [CustomTest] = PersistStorage.testStorage.loadCustom()
+    
+    private let optionControlWidth: CGFloat = 350
+    private let optionCardSpacing: CGFloat = 8
+    private let optionCardInnerPadding: CGFloat = 16
+    private let actionButtonWidth: CGFloat = 220
+    private let actionButtonHeight: CGFloat = 72
+    
+    private var editorGroupWidth: CGFloat {
+        ((optionControlWidth + (optionCardInnerPadding * 2)) * 2) + optionCardSpacing
+    }
 
     private var environmentSelection: Binding<Int> {
         Binding(
@@ -223,11 +233,30 @@ struct ClinicianScene: Scene {
                 
                 Spacer()
             }
+            .padding(.bottom, 8)
             
-            HStack {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Test Name")
+                    .font(.system(size: 28))
+                    .bold()
+                
+                TextField("Enter test name", text: $customTest.name)
+                    .textFieldStyle(.roundedBorder)
+                    .font(.system(size: 24))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+            }
+            .padding()
+            .frame(width: editorGroupWidth, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(.ultraThinMaterial)
+            )
+            
+            HStack(spacing: optionCardSpacing) {
                 VStack {
                     Text("Environment")
-                        .font(.system(size: 40))
+                        .font(.system(size: 28))
                         .bold()
 
                     Picker("Environment", selection: environmentSelection) {
@@ -236,7 +265,8 @@ struct ClinicianScene: Scene {
                         Text("Train").tag(2)
                     }
                     .pickerStyle(.segmented)
-                    .frame(width: 350)
+                    .frame(width: optionControlWidth)
+                    .frame(height: 50)
                     .padding(.top, 12)
                 }
                 .padding()
@@ -247,7 +277,7 @@ struct ClinicianScene: Scene {
                 
                 VStack {
                     Text("Difficulty")
-                        .font(.system(size: 40))
+                        .font(.system(size: 28))
                         .bold()
 
                     Picker("Difficulty", selection: difficultySelection) {
@@ -256,8 +286,31 @@ struct ClinicianScene: Scene {
                         Text("Hard").tag(2)
                     }
                     .pickerStyle(.segmented)
-                    .frame(width: 350)
+                    .frame(width: optionControlWidth)
+                    .frame(height: 50)
                     .padding(.top, 12)
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 25)
+                        .fill(.ultraThinMaterial)
+                )
+            }
+            .frame(width: editorGroupWidth)
+            
+            HStack(spacing: optionCardSpacing) {
+                VStack {
+                    Text("Number of Questions")
+                        .font(.system(size: 28))
+                        .bold()
+                    
+                    Stepper("Questions: \(customTest.numberOfQuestions)",
+                        value: $customTest.numberOfQuestions, in: 1...5, step: 1)
+                        .frame(width: optionControlWidth)
+                        .frame(height: 50)
+                        .font(.system(size: 25))
+                        .bold()
+                        .padding(.top, 12)
                 }
                 .padding()
                 .background(
@@ -266,27 +319,14 @@ struct ClinicianScene: Scene {
                 )
                 
                 VStack {
-                    Text("Other")
-                        .font(.system(size: 40))
+                    Text("Volume")
+                        .font(.system(size: 28))
                         .bold()
                     
-                    HStack {
-                        Text("Volume")
-                            .font(.system(size: 25))
-                            .bold()
-                        
-                        Slider(value: $customTest.targetVolume, in: -10.0 ... 0)
-                            .frame(width: 200)
-                            .padding()
-                    }
-                    .padding()
-                    
-                    Stepper("Questions: \(customTest.numberOfQuestions)",
-                        value: $customTest.numberOfQuestions, in: 1...5, step: 1)
-                        .frame(width: 250)
-                        .font(.system(size: 25))
-                        .bold()
-                        .padding()
+                    Slider(value: $customTest.targetVolume, in: -10.0 ... 0)
+                        .frame(width: optionControlWidth)
+                        .frame(height: 50)
+                        .padding(.top, 12)
                 }
                 .padding()
                 .background(
@@ -294,6 +334,8 @@ struct ClinicianScene: Scene {
                         .fill(.ultraThinMaterial)
                 )
             }
+            .frame(width: editorGroupWidth)
+            
             HStack {
                 Button {
                     hearingTest = customTest.generateTest()
@@ -301,12 +343,12 @@ struct ClinicianScene: Scene {
                     transition(from: "clinician-window", to: "practice-window")
                 } label: {
                     Text("Practice")
-                        .font(.system(size: 30))
+                        .font(.system(size: 28))
                         .bold()
-                        .padding()
+                        .frame(width: actionButtonWidth, height: actionButtonHeight)
                 }
                 
-                // Save Button here
+                // Save Button
                 Button {
                     let test = customTest.generateTest()
                     switch clinicianState {
@@ -324,9 +366,9 @@ struct ClinicianScene: Scene {
                     clinicianState = .begin
                 } label: {
                     Text("Save")
-                        .font(.system(size: 30))
+                        .font(.system(size: 28))
                         .bold()
-                        .padding()
+                        .frame(width: actionButtonWidth, height: actionButtonHeight)
                 }
                 .tint(Color.green)
             }
