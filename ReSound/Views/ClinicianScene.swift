@@ -217,6 +217,7 @@ struct ClinicianScene: Scene {
                 Text("Test Name")
                     .font(.system(size: 28))
                     .bold()
+                    .frame(maxWidth: .infinity, alignment: .center)
                 
                 TextField("Enter test name", text: $customTest.name)
                     .textFieldStyle(.roundedBorder)
