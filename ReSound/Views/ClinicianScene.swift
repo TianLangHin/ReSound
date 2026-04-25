@@ -33,8 +33,10 @@ struct ClinicianScene: Scene {
     private let optionControlWidth: CGFloat = 350
     private let optionCardSpacing: CGFloat = 8
     private let optionCardInnerPadding: CGFloat = 16
+
     private let actionButtonWidth: CGFloat = 220
     private let actionButtonHeight: CGFloat = 72
+
     
     private var editorGroupWidth: CGFloat {
         ((optionControlWidth + (optionCardInnerPadding * 2)) * 2) + optionCardSpacing
@@ -498,8 +500,8 @@ struct ClinicianScene: Scene {
             Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 20)
-        .padding(.bottom, 20)
+        .padding(.leading, 20)
+        .padding(.top, 20)
     }
     
 }
