@@ -46,12 +46,6 @@ struct EntryPoint: App {
                 }
             }
         }
-        .defaultWindowPlacement { content, context in
-            if let otherWindow = context.windows.first(where: { $0.id != "clinician-window" && $0.id != "history-window" }) {
-                return WindowPlacement(.above(otherWindow))
-            }
-            return WindowPlacement()
-        }
         /// The hearing test is administered through this scene,
         /// which by default is closed since the main WindowGroup above is loaded first.
         HearingTestScene(

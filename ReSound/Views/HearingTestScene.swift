@@ -138,13 +138,6 @@ struct HearingTestScene: SwiftUI.Scene {
             .frame(depth: 0)
             .fixedSize()
         }
-        .defaultWindowPlacement { content, context in
-            if let mainWindow = context.windows.first(where: { $0.id == "main-window" || $0.id == "clinician-window" }) {
-                return WindowPlacement(.below(mainWindow))
-            }
-            return WindowPlacement()
-        }
-        .windowStyle(.plain)
         /// The immersive space is where the hearing test happens via spatial audio.
         ImmersiveSpace(id: hearingTestWindowId + "-immersive") {
             let indicatorEntity = makeIndicatorEntity()
