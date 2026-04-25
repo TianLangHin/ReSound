@@ -112,26 +112,20 @@ struct ClinicianScene: Scene {
     @ViewBuilder
     private func beginView() -> some View {
         VStack {
-            ZStack {
-                /// Put any other title or subtitle text here for clinician view
-                VStack {
-                    Text("Hearing Test Customisation")
-                        .font(.system(size: 60))
-                        .bold()
-                    Text("Add or edit your own custom test environment")
-                        .font(.system(size: 30))
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                
-                HStack {
-                    backButton {
-                        transition(from: "clinician-window", to: "main-window")
-                    }
-                    Spacer()
-                }
-                .padding(.horizontal, 8)
+            clinicianBackBar {
+                transition(from: "clinician-window", to: "main-window")
             }
+            
+            /// Put any other title or subtitle text here for clinician view
+            VStack {
+                Text("Hearing Test Customisation")
+                    .font(.system(size: 60))
+                    .bold()
+                Text("Add or edit your own custom test environment")
+                    .font(.system(size: 30))
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
             
             Spacer()
                 .frame(height: 20)
@@ -154,7 +148,7 @@ struct ClinicianScene: Scene {
                                     Text("\(test.name) (ID: \(test.id))")
                                         .font(.system(size: 30))
                                         .bold()
-                                        .padding(.vertical, 10)
+                                        .padding(.vertical, 16)
                                     
                                     Spacer()
                                     
@@ -198,6 +192,9 @@ struct ClinicianScene: Scene {
             .tint(Color.accentColor)
             .padding()
         }
+        /// Fill the window and pin content to the top; otherwise a short stack can sit lower
+        /// than a tall one and the back row appears to “move down” when switching screens.
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding()
         .onChange(of: speechRec.speechContent) { _, newContent in
             print("Speech content: \(newContent)")
@@ -209,15 +206,9 @@ struct ClinicianScene: Scene {
     @ViewBuilder
     private func updateView() -> some View {
         VStack {
-            HStack {
-                backButton {
-                    clinicianState = .begin
-                }
-                
-                Spacer()
+            clinicianBackBar {
+                clinicianState = .begin
             }
-            .padding(.horizontal, 8)
-            .padding(.bottom, 8)
             
             VStack(alignment: .leading, spacing: 12) {
                 Text("Test Name")
@@ -251,7 +242,7 @@ struct ClinicianScene: Scene {
                     .pickerStyle(.segmented)
                     .frame(width: optionControlWidth)
                     .frame(height: 50)
-                    .padding(.top, 12)
+                    .padding(.top, 16)
                 }
                 .padding()
                 .background(
@@ -272,7 +263,7 @@ struct ClinicianScene: Scene {
                     .pickerStyle(.segmented)
                     .frame(width: optionControlWidth)
                     .frame(height: 50)
-                    .padding(.top, 12)
+                    .padding(.top, 16)
                 }
                 .padding()
                 .background(
@@ -294,7 +285,7 @@ struct ClinicianScene: Scene {
                         .frame(height: 50)
                         .font(.system(size: 25))
                         .bold()
-                        .padding(.top, 12)
+                        .padding(.top, 16)
                 }
                 .padding()
                 .background(
@@ -310,7 +301,7 @@ struct ClinicianScene: Scene {
                     Slider(value: $customTest.targetVolume, in: -10.0 ... 0)
                         .frame(width: optionControlWidth)
                         .frame(height: 50)
-                        .padding(.top, 12)
+                        .padding(.top, 16)
                 }
                 .padding()
                 .background(
@@ -358,6 +349,9 @@ struct ClinicianScene: Scene {
             }
             .padding()
         }
+        /// Full width so the back row spans the window; full height + top alignment so the
+        /// back row matches `beginView` vertically when this screen has less content.
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding()
         .onChange(of: speechRec.speechContent) { _, newContent in
             print("Speech content: \(newContent)")
@@ -494,6 +488,18 @@ struct ClinicianScene: Scene {
             .foregroundStyle(.primary)
             .padding()
         }
+    }
+    
+    /// Shared back bar for `beginView` and `updateView` (same width, padding, alignment).
+    @ViewBuilder
+    private func clinicianBackBar(action: @escaping () -> Void) -> some View {
+        HStack(spacing: 0) {
+            backButton(action: action)
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 16)
+        .padding(.bottom, 16)
     }
     
 }
