@@ -22,7 +22,7 @@ struct InstructionScene: Scene {
             }
         }
         .defaultWindowPlacement { content, context in
-            if let mainWindow = context.windows.first(where: { $0.id == "hearing-test-window" }) {
+            if let mainWindow = context.windows.first {
                 return WindowPlacement(.trailing(mainWindow))
             }
             return WindowPlacement()

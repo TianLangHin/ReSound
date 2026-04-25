@@ -48,6 +48,12 @@ struct EntryPoint: App {
                 }
             }
         }
+        .defaultWindowPlacement { content, context in
+            if let otherWindow = context.windows.first(where: { $0.id == "instruction-window" }) {
+                return WindowPlacement(.leading(otherWindow))
+            }
+            return WindowPlacement()
+        }
         /// The hearing test is administered through this scene,
         /// which by default is closed since the main WindowGroup above is loaded first.
         HearingTestScene(
@@ -57,7 +63,7 @@ struct EntryPoint: App {
             instructionOpen: $instructionOpen, hearingTestWindowId: "hearing-test-window",
             parentWindowId: "main-window")
         InstructionScene(instructionOpen: $instructionOpen)
-        ClinicianScene(speechRec: speechRec)
+        ClinicianScene(speechRec: speechRec, instructionOpen: $instructionOpen)
         HistoryScene(speechRec: speechRec)
     }
     

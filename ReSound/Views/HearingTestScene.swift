@@ -106,12 +106,15 @@ struct HearingTestScene: SwiftUI.Scene {
                                 print("alr close bro")
                             }
                         case "exit", "back", "quit":
-                            try? speechRec.startRec()
                             Task { @MainActor in
-                                openWindow(id: parentWindowId)
+                                try? speechRec.startRec()
+                                if instructionOpen {
+                                    dismissWindow(id: "instruction-window")
+                                } else {
+                                    print("alr close bro")
+                                }
                                 try? await Task.sleep(for: .milliseconds(100))
-                                isOpened = false
-                                dismissWindow(id: hearingTestWindowId)
+                                exitEntirely()
                             }
                         default:
                             break
@@ -241,6 +244,12 @@ struct HearingTestScene: SwiftUI.Scene {
                 HStack {
                     Button {
                         exitEntirely()
+                        if instructionOpen {
+                            dismissWindow(id: "instruction-window")
+                            instructionOpen = false
+                        } else {
+                            print("alr close bro")
+                        }
                     } label: {
                         HStack {
                             Text("Exit")
@@ -283,6 +292,7 @@ struct HearingTestScene: SwiftUI.Scene {
                 startQuestion(firstCall: true)
                 if instructionOpen {
                     dismissWindow(id: "instruction-window")
+                    instructionOpen = false
                 } else {
                     print("alr close bro")
                 }

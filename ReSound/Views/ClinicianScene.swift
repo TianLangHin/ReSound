@@ -19,7 +19,8 @@ struct ClinicianScene: Scene {
     @Environment(\.dismissWindow) private var dismissWindow
 
     @State var speechRec: SpeechRec
-
+    @Binding var instructionOpen: Bool
+    
     @State var clinicianState: ClinicianState = .begin
     @State var customTest: CustomTest = .init()
     @State var hearingTest: HearingTest = .init(
@@ -59,12 +60,18 @@ struct ClinicianScene: Scene {
                 }
             }
         }
+        .defaultWindowPlacement { content, context in
+            if let otherWindow = context.windows.first(where: { $0.id == "instruction-window" }) {
+                return WindowPlacement(.leading(otherWindow))
+            }
+            return WindowPlacement()
+        }
         HearingTestScene(
             hearingTest: $hearingTest,
             isOpened: $isHearingTestOpened,
             isFromClinician: $isFromClinician,
             speechRec: speechRec,
-            instructionOpen: .constant(false), hearingTestWindowId: "practice-window",
+            instructionOpen: $instructionOpen, hearingTestWindowId: "practice-window",
             parentWindowId: "clinician-window")
     }
 
