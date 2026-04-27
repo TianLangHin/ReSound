@@ -94,8 +94,10 @@ struct HearingTestScene: SwiftUI.Scene {
                     if questionState == .before {
                         switch lastWord {
                         case "calibrate", "volume":
+                            isCalibrating = true
                             audioController?.play()
                         case "pause", "stop":
+                            isCalibrating = false
                             audioController?.pause()
                         case "start", "next":
                             openSpace()
@@ -234,10 +236,10 @@ struct HearingTestScene: SwiftUI.Scene {
             ZStack {
                 VStack {
                     Text("Start Test: \(hearingTest.name)")
-                        .font(.system(size: 60))
-                        .bold()
+                        .font(.largeTitle)
                     Text("Start the hearing test when you're ready!")
-                        .font(.system(size: 30))
+                        .font(.title)
+                        .foregroundStyle(.secondary)
                 }
                 .padding()
                 
@@ -253,11 +255,10 @@ struct HearingTestScene: SwiftUI.Scene {
                     } label: {
                         HStack {
                             Text("Exit")
-                                .font(.system(size: 30))
-                                .bold()
+                                .font(.headline)
                             
                             Image(systemName: "xmark")
-                                .font(.system(size: 30))
+                                .font(.headline)
                         }
                         .padding()
                     }
@@ -266,7 +267,7 @@ struct HearingTestScene: SwiftUI.Scene {
             }
     
             Spacer()
-                .frame(height: 50)
+                .frame(height: 20)
             
             Button {
                 if !isCalibrating { /// Not playing the calibration audio, so play
@@ -278,11 +279,10 @@ struct HearingTestScene: SwiftUI.Scene {
             } label: {
                 HStack {
                     Image(systemName: isCalibrating ? "pause.fill" : "play.fill")
-                        .font(.system(size: 30))
+                        .font(.headline)
                     
                     Text(isCalibrating ? "Pause" : "Play")
-                        .font(.system(size: 30))
-                        .bold()
+                        .font(.headline)
                 }
                 .padding()
             }
@@ -297,15 +297,11 @@ struct HearingTestScene: SwiftUI.Scene {
                     print("alr close bro")
                 }
             } label: {
-                Text("Start hearing test!")
-                    .font(.system(size: 40))
-                    .bold()
-                    .frame(maxWidth: 500)
-                    .padding(.vertical, 25)
+                Text("Start test!")
+                    .font(.headline)
+                    .frame(maxWidth: 400)
+                    .padding(.vertical, 20)
             }
-            
-            Spacer()
-                .frame(height: 50)
         }
     }
 
