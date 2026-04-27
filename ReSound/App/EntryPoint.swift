@@ -88,10 +88,18 @@ struct EntryPoint: App {
                     viewingState = .chooseTest
                 } label: {
                     // Go to environment selection screen.
-                    Text("Start Hearing Test")
-                        .font(.headline)
-                        .frame(maxWidth: 400)
-                        .padding(.vertical, 20)
+                    ZStack {
+                        Text("Start Hearing Test")
+                            .font(.headline)
+                        
+                        HStack {
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.headline)
+                        }
+                    }
+                    .frame(maxWidth: 400)
+                    .padding(.vertical, 20)
                 }
                 .padding(10)
                 
@@ -99,10 +107,18 @@ struct EntryPoint: App {
                     transition(from: "main-window", to: "clinician-window")
                 } label: {
                     // Go to the clinician view to create customised hearing tests.
-                    Text("Clinician View")
-                        .font(.headline)
-                        .frame(maxWidth: 400)
-                        .padding(.vertical, 20)
+                    ZStack {
+                        Text("Clinician View")
+                            .font(.headline)
+                        
+                        HStack {
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.headline)
+                        }
+                    }
+                    .frame(maxWidth: 400)
+                    .padding(.vertical, 20)
                 }
                 .padding(10)
                 
@@ -111,10 +127,18 @@ struct EntryPoint: App {
                     transition(from: "main-window", to: "history-window")
                 } label: {
                     // Persistent storage which stores a list of patient scores and other related details.
-                    Text("View History")
-                        .font(.headline)
-                        .frame(maxWidth: 400)
-                        .padding(.vertical, 20)
+                    ZStack {
+                        Text("View History")
+                            .font(.headline)
+                        
+                        HStack {
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.headline)
+                        }
+                    }
+                    .frame(maxWidth: 400)
+                    .padding(.vertical, 20)
                 }
                 .padding(10)
             }
@@ -132,6 +156,7 @@ struct EntryPoint: App {
             print("state: \(viewingState)")
         }
     }
+        
     
     @ViewBuilder
     private func chooseHearingTest() -> some View {
@@ -184,8 +209,8 @@ struct EntryPoint: App {
         }
     }
 
-    func chooseEnv(index: Int, makeRandom: Bool = false) {
-        hearingTest = makeRandom ? Presets.hearingTests[Int.random(in: 0...1)] : Presets.hearingTests[index]
+    func chooseEnv(index: Int) {
+        hearingTest = Presets.hearingTests[index]
         /// An asynchronous task on the main queue is used to load the other window,
         /// wait for 100 milliseconds to ensure the system can recognise it is open,
         /// and then close the previous window (which is only successful if another window is open).
@@ -202,10 +227,18 @@ struct EntryPoint: App {
         Button {
             chooseEnv(index: buttonIndex)
         } label: {
-            Text(title)
-                .font(.headline)
-                .frame(maxWidth: 400)
-                .padding(.vertical, 20)
+            ZStack {
+                Text(title)
+                    .font(.headline)
+                
+                HStack {
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.headline)
+                }
+            }
+            .frame(maxWidth: 400)
+            .padding(.vertical, 20)
         }
         .padding(10)
     }
@@ -231,7 +264,8 @@ struct EntryPoint: App {
             case "train":
                 chooseEnv(index: 1)
             case "cafe", "café":
-                chooseEnv(index: 2, makeRandom: true)
+                /// Change when add café environment. Needs to be 2
+                chooseEnv(index: 1)
             case "back":
                 viewingState = .main
             default:

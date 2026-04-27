@@ -265,7 +265,6 @@ struct HearingTestScene: SwiftUI.Scene {
                         HStack {
                             Text("Exit")
                                 .font(.headline)
-                            
                             Image(systemName: "xmark")
                                 .font(.headline)
                         }
@@ -279,24 +278,6 @@ struct HearingTestScene: SwiftUI.Scene {
                 .frame(height: 20)
             
             Button {
-                if !isCalibrating { /// Not playing the calibration audio, so play
-                    audioController?.play()
-                } else { /// Playing the calibration audio, so pause
-                    audioController?.pause()
-                }
-                isCalibrating.toggle()
-            } label: {
-                HStack {
-                    Image(systemName: isCalibrating ? "pause.fill" : "play.fill")
-                        .font(.headline)
-                    
-                    Text(isCalibrating ? "Pause" : "Play")
-                        .font(.headline)
-                }
-                .padding()
-            }
-            
-            Button {
                 openSpace()
                 startQuestion(firstCall: true)
                 if instructionOpen {
@@ -306,12 +287,45 @@ struct HearingTestScene: SwiftUI.Scene {
                     print("alr close bro")
                 }
             } label: {
-                Text("Start test!")
-                    .font(.headline)
-                    .frame(maxWidth: 400)
-                    .padding(.vertical, 20)
+                ZStack {
+                    Text("Start")
+                        .font(.headline)
+                    
+                    HStack {
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.headline)
+                    }
+                }
+                .frame(maxWidth: 400)
+                .padding(.vertical, 20)
             }
+            .padding(10)
+            
+            Button {
+                if !isCalibrating { /// Not playing the calibration audio, so play
+                    audioController?.play()
+                } else { /// Playing the calibration audio, so pause
+                    audioController?.pause()
+                }
+                isCalibrating.toggle()
+            } label: {
+                ZStack {
+                    Text(isCalibrating ? "Pause Calibration Audio" : "Play Calibration Audio")
+                        .font(.headline)
+                    
+                    HStack {
+                        Spacer()
+                        Image(systemName: isCalibrating ? "pause.fill" : "play.fill")
+                            .font(.headline)
+                    }
+                }
+                .frame(maxWidth: 400)
+                .padding(.vertical, 20)
+            }
+            .padding(10)
         }
+        .padding()
     }
 
     @ViewBuilder
@@ -326,15 +340,24 @@ struct HearingTestScene: SwiftUI.Scene {
         let currentQuestion = hearingTest.questions[questionNumber].chosenQuestion
         VStack {
             Text(currentQuestion.question)
-                .font(.title3)
+                .font(.largeTitle)
                 .padding()
+            
+            Spacer()
+                .frame(height: 20)
+            
             List {
                 ForEach(Array(currentQuestion.answers.enumerated()), id: \.offset) { index, answer in
                     Button {
                         advanceQuestion(answer: index)
                     } label: {
-                        Text("\(index + 1). \(answer)")
-                            .font(.title2)
+                        HStack {
+                            Text("\(index + 1). \(answer)")
+                                .font(.headline)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.headline)
+                        }
                     }
                     .padding()
                 }
@@ -347,18 +370,29 @@ struct HearingTestScene: SwiftUI.Scene {
     private func waitingView() -> some View {
         VStack {
             Text("Continue on to Question \(questionNumber + 2)?")
-                .font(.system(size: 60))
+                .font(.largeTitle)
                 .padding()
             Button {
                 // Question advancement is delayed so that the visual pointer
                 // is revealed only when the question starts.
                 moveFromWaiting()
             } label: {
-                Text("Continue")
-                    .font(.title3)
-                    .padding()
+                ZStack {
+                    Text("Next")
+                        .font(.headline)
+                    
+                    HStack {
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.headline)
+                    }
+                }
+                .frame(maxWidth: 400)
+                .padding(.vertical, 20)
             }
+            .padding(10)
         }
+        .padding()
     }
 
     @ViewBuilder
