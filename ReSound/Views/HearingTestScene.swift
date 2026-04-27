@@ -65,23 +65,31 @@ struct HearingTestScene: SwiftUI.Scene {
                 switch questionState {
                 case .before:
                     startView()
+                        .glassBackgroundEffect()
                 case .playing:
                     playingView()
                 case .answering:
                     questionChoiceView()
+                        .glassBackgroundEffect()
                 case .waiting:
                     waitingView()
+                        .glassBackgroundEffect()
                 case .ended:
                     endView()
+                        .glassBackgroundEffect()
                 }
             }
             .padding()
-            .glassBackgroundEffect()
+            .opacity(questionState == .playing ? 0 : 1)
+            .persistentSystemOverlays(questionState == .playing ? .hidden : .visible)
             .onAppear {
                 /// Toggling the Boolean binding for tracking in the parent view.
                 isOpened = true
-                openWindow(id: "instruction-window")
-                instructionOpen = true
+                Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(500))
+                    openWindow(id: "instruction-window")
+                    instructionOpen = true
+                }
                 if parentWindowId == "clinician-window" {
                     isFromClinician = true
                 }
@@ -152,6 +160,7 @@ struct HearingTestScene: SwiftUI.Scene {
             .frame(depth: 0)
             .fixedSize()
         }
+        .windowStyle(.plain)
         /// The immersive space is where the hearing test happens via spatial audio.
         ImmersiveSpace(id: hearingTestWindowId + "-immersive") {
             let indicatorEntity = makeIndicatorEntity()
