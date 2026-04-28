@@ -543,3 +543,14 @@ struct ClinicianScene: Scene {
         }
     }
 }
+
+// Note: Font sizes
+// For title:
+    // .font(.largeTitle)
+
+// For subtitle:
+    // .font(.title)
+    // .foregroundStyle(. secondary)
+
+// For buttons:
+    // .font(.headline)

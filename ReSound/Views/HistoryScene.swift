@@ -55,11 +55,11 @@ struct HistoryScene: Scene {
 
             VStack {
                 Text("Test History")
-                    .font(.system(size: 60))
-                    .bold()
+                    .font(.largeTitle)
 
                 Text("View past hearing test scores on this device")
-                    .font(.system(size: 30))
+                    .font(.title)
+                    .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity)
             .padding()
@@ -70,7 +70,8 @@ struct HistoryScene: Scene {
             VStack {
                 if savedScores.isEmpty {
                     Text("No test attempts yet.")
-                        .font(.system(size: 30))
+                        .font(.title)
+                        .foregroundStyle(.secondary)
                         .padding()
                 } else {
                     List {
@@ -81,14 +82,15 @@ struct HistoryScene: Scene {
                             } label: {
                                 HStack {
                                     Text(score.hearingTestName)
-                                        .font(.system(size: 30))
-                                        .bold()
+                                        .font(.title)
+                                        .foregroundStyle(.secondary)
                                         .padding(.vertical, 10)
 
                                     Spacer()
 
                                     Image(systemName: "chevron.right")
-                                        .font(.system(size: 30))
+                                        .font(.title)
+                                        .foregroundStyle(.secondary)
                                 }
                                 .padding()
                             }
@@ -119,11 +121,11 @@ struct HistoryScene: Scene {
 
             VStack {
                 Text(scoreDetails.hearingTestName)
-                    .font(.system(size: 60))
-                    .bold()
+                    .font(.largeTitle)
 
                 Text(scoreDetails.timeAttempted.formatted(date: .abbreviated, time: .shortened))
-                    .font(.system(size: 30))
+                    .font(.title)
+                    .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity)
             .padding()
@@ -133,21 +135,22 @@ struct HistoryScene: Scene {
 
             let (correct, total) = scoreDetails.overallScore()
             Text("Score: \(correct) / \(total)")
-                .font(.system(size: 35))
-                .bold()
+                .font(.title)
+                .foregroundStyle(.secondary)
 
             List {
                 ForEach(scoreDetails.answers, id: \.questionText) { answer in
                     HStack {
                         Image(systemName: answer.isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
                             .foregroundStyle(answer.isCorrect ? .green : .red)
-                            .font(.system(size: 25))
+                            .font(.title)
+                            .foregroundStyle(.secondary)
                         VStack(alignment: .leading) {
                             Text(answer.questionText)
-                                .font(.system(size: 25))
-                                .bold()
+                                .font(.title)
+                                .foregroundStyle(.secondary)
                             Text("Selected: \(answer.selectedAnswer)")
-                                .font(.system(size: 20))
+                                .font(.title)
                                 .foregroundStyle(.secondary)
                         }
                     }
@@ -176,10 +179,9 @@ struct HistoryScene: Scene {
         Button(action: action) {
             HStack {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 28))
+                    .font(.headline)
                 Text("Back")
-                    .font(.system(size: 28))
-                    .bold()
+                    .font(.headline)
             }
             .foregroundStyle(.primary)
             .padding()

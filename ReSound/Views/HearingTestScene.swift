@@ -331,7 +331,7 @@ struct HearingTestScene: SwiftUI.Scene {
     @ViewBuilder
     private func playingView() -> some View {
         Text("Audio for Question \(questionNumber + 1) is playing.")
-            .font(.system(size: 60))
+            .font(.largeTitle)
             .padding()
     }
 
@@ -400,14 +400,16 @@ struct HearingTestScene: SwiftUI.Scene {
         let questionCount = hearingTest.questions.count
         VStack {
             Text("Score: \(score) out of \(questionCount)")
-                .font(.system(size: 48))
+                .font(.title)
+                .foregroundStyle(.secondary)
                 .padding()
             Button {
                 exitEntirely()
             } label: {
                 Text("Exit back to main menu")
+                    .font(.title)
+                    .foregroundStyle(.secondary)
                     .padding()
-                    .font(.title2)
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
