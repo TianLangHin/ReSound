@@ -411,7 +411,7 @@ struct ClinicianScene: Scene {
                         }
                     }
                 }
-            }
+            } 
 
         case .edit(let num):
             if voiceInput.contains("save") {
@@ -423,15 +423,15 @@ struct ClinicianScene: Scene {
             } else {
                 applyMappedSelection(from: voiceInput)
             }
-            if let questionIndex = words.lastIndex(of: "question"),
-               questionIndex + 1 < words.count {
-                let remainingWords = Array(words[(questionIndex + 1)...])
-                if let number = parseSpokenNumber(remainingWords),
+            if let questionIndex = words.lastIndex(where: { $0 == "question" || $0 == "questions" }) {
+                let precedingWords = Array(words[..<questionIndex])
+                
+                if let number = parseSpokenNumber(precedingWords),
                    number >= 1 && number <= 5 {
                     customTest.numberOfQuestions = number
                 }
             }
-
+            
         case .add:
             if voiceInput.contains("save") {
                 let test = customTest.generateTest()
@@ -445,10 +445,10 @@ struct ClinicianScene: Scene {
             } else {
                 applyMappedSelection(from: voiceInput)
             }
-            if let questionIndex = words.lastIndex(of: "question"),
-               questionIndex + 1 < words.count {
-                let remainingWords = Array(words[(questionIndex + 1)...])
-                if let number = parseSpokenNumber(remainingWords),
+            if let questionIndex = words.lastIndex(where: { $0 == "question" || $0 == "questions" }) {
+                let precedingWords = Array(words[..<questionIndex])
+                
+                if let number = parseSpokenNumber(precedingWords),
                    number >= 1 && number <= 5 {
                     customTest.numberOfQuestions = number
                 }

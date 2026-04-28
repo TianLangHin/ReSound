@@ -101,7 +101,7 @@ struct HearingTestScene: SwiftUI.Scene {
                     print("Question state: \(questionState)")
                     if questionState == .before {
                         switch lastWord {
-                        case "calibrate", "volume":
+                        case "calibrate", "volume", "play":
                             isCalibrating = true
                             audioController?.play()
                         case "pause", "stop":

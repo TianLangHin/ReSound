@@ -128,7 +128,7 @@ struct EntryPoint: App {
                 } label: {
                     // Persistent storage which stores a list of patient scores and other related details.
                     ZStack {
-                        Text("View History")
+                        Text("History Log")
                             .font(.headline)
                         
                         HStack {
@@ -238,20 +238,20 @@ struct EntryPoint: App {
         switch viewingState {
         case .main:
             switch voiceInput {
-            case "patient", "test":
+            case "patient", "test", "hearing":
                 viewingState = .chooseTest
-            case "clinician", "customise":
+            case "clinician", "customise", "view":
                 transition(from: "main-window", to: "clinician-window")
-            case "history":
+            case "history", "log":
                 transition(from: "main-window", to: "history-window")
             default:
                 break
             }
         case .chooseTest:
             switch voiceInput {
-            case "home":
+            case "home", "room":
                 chooseEnv(index: 0)
-            case "train":
+            case "train", "station":
                 chooseEnv(index: 1)
             case "cafe", "café":
                 /// Change when add café environment. Needs to be 2
