@@ -278,10 +278,9 @@ struct EntryPoint: App {
         Button(action: action) {
             HStack {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 28))
+                    .font(.headline)
                 Text("Back")
-                    .font(.system(size: 28))
-                    .bold()
+                    .font(.headline)
             }
             .foregroundStyle(.primary)
             .padding()
