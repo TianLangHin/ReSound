@@ -30,6 +30,9 @@ struct ClinicianScene: Scene {
     
     @State var savedTests: [HearingTest] = PersistStorage.testStorage.loadTest()
     @State var savedCustoms: [CustomTest] = PersistStorage.testStorage.loadCustom()
+
+    @State private var numberDebounceTask: Task<Void, Never>? = nil
+    @State var isFromClinician = false
     
     private let optionControlWidth: CGFloat = 350
     private let optionCardSpacing: CGFloat = 16
