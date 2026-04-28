@@ -132,10 +132,10 @@ struct ClinicianScene: Scene {
             /// Put any other title or subtitle text here for clinician view
             VStack {
                 Text("Hearing Test Customisation")
-                    .font(.system(size: 60))
-                    .bold()
+                    .font(.largeTitle)
                 Text("Add or edit your own custom test environment")
-                    .font(.system(size: 30))
+                    .font(.title)
+                    .foregroundStyle(. secondary)
             }
             .frame(maxWidth: .infinity)
             .padding()
@@ -146,7 +146,8 @@ struct ClinicianScene: Scene {
             VStack {
                 if savedCustoms.isEmpty {
                     Text("No saved tests yet.")
-                        .font(.system(size: 30))
+                        .font(.title)
+                        .foregroundStyle(. secondary)
                         .padding()
                 } else {
                     List {
@@ -159,14 +160,15 @@ struct ClinicianScene: Scene {
                             } label: {
                                 HStack {
                                     Text("\(test.name) (ID: \(test.id))")
-                                        .font(.system(size: 30))
-                                        .bold()
+                                        .font(.title)
+                                        .foregroundStyle(. secondary)
                                         .padding(.vertical, 16)
                                     
                                     Spacer()
                                     
                                     Image(systemName: "chevron.right")
-                                        .font(.system(size: 30))
+                                        .font(.title)
+                                        .foregroundStyle(. secondary)
                                 }
                                 .padding()
                             }
@@ -193,12 +195,11 @@ struct ClinicianScene: Scene {
             } label: {
                 HStack {
                     Text("Add")
-                        .font(.system(size: 30))
-                        .bold()
+                        .font(.headline)
                         .padding(.vertical, 2)
                     
                     Image(systemName: "plus")
-                        .font(.system(size: 30))
+                        .font(.headline)
                 }
                 .padding()
             }
@@ -228,13 +229,12 @@ struct ClinicianScene: Scene {
             
             VStack(alignment: .leading, spacing: 12) {
                 Text("Test Name")
-                    .font(.system(size: 28))
-                    .bold()
+                    .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .center)
                 
                 TextField("Enter test name", text: $customTest.name)
                     .textFieldStyle(.roundedBorder)
-                    .font(.system(size: 24))
+                    .font(.headline)
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
             }
@@ -248,8 +248,7 @@ struct ClinicianScene: Scene {
             HStack(spacing: optionCardSpacing) {
                 VStack {
                     Text("Environment")
-                        .font(.system(size: 28))
-                        .bold()
+                        .font(.headline)
 
                     Picker("Environment", selection: environmentSelection) {
                         Text("Home").tag(0)
@@ -268,8 +267,7 @@ struct ClinicianScene: Scene {
                 
                 VStack {
                     Text("Difficulty")
-                        .font(.system(size: 28))
-                        .bold()
+                        .font(.headline)
 
                     Picker("Difficulty", selection: difficultySelection) {
                         Text("Easy").tag(0)
@@ -291,13 +289,11 @@ struct ClinicianScene: Scene {
             HStack(spacing: optionCardSpacing) {
                 VStack {
                     Text("Number of Questions")
-                        .font(.system(size: 28))
-                        .bold()
+                        .font(.headline)
                     
                      Stepper(value: $customTest.numberOfQuestions, in: 1...5, step: 1) {
                         Text("Questions: \(customTest.numberOfQuestions)")
-                            .font(.system(size: 25))
-                            .bold()
+                            .font(.headline)
                     }
                     .frame(width: optionControlWidth, height: 50, alignment: .leading)
                     .tint(.accentColor)
@@ -311,9 +307,7 @@ struct ClinicianScene: Scene {
                 
                 VStack {
                     Text("Volume")
-                        .font(.system(size: 28))
-                        .bold()
-                    
+                        .font(.headline)
                     Slider(value: $customTest.targetVolume, in: -10.0 ... 0)
                         .frame(width: optionControlWidth, height: 50, alignment: .leading)
                         .padding(.top, 16)
@@ -333,8 +327,7 @@ struct ClinicianScene: Scene {
                     transition(from: "clinician-window", to: "practice-window")
                 } label: {
                     Text("Practice")
-                        .font(.system(size: 28))
-                        .bold()
+                        .font(.headline)
                         .frame(width: actionButtonWidth, height: actionButtonHeight)
                 }
                 
@@ -356,8 +349,7 @@ struct ClinicianScene: Scene {
                     clinicianState = .begin
                 } label: {
                     Text("Save")
-                        .font(.system(size: 28))
-                        .bold()
+                        .font(.headline)
                         .frame(width: actionButtonWidth, height: actionButtonHeight)
                 }
                 .tint(Color.green)
@@ -508,10 +500,9 @@ struct ClinicianScene: Scene {
         Button(action: action) {
             HStack {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 28))
+                    .font(.headline)
                 Text("Back")
-                    .font(.system(size: 28))
-                    .bold()
+                    .font(.headline)
             }
             .foregroundStyle(.primary)
             .padding()
