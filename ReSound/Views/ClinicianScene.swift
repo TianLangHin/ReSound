@@ -31,10 +31,54 @@ struct ClinicianScene: Scene {
     @State var savedTests: [HearingTest] = PersistStorage.testStorage.loadTest()
     @State var savedCustoms: [CustomTest] = PersistStorage.testStorage.loadCustom()
     
-    // Slow down the process of recognising speech
-    @State private var numberDebounceTask: Task<Void, Never>? = nil
+    private let optionControlWidth: CGFloat = 350
+    private let optionCardSpacing: CGFloat = 16
+    private let editorSectionSpacing: CGFloat = 16
     
-    @State var isFromClinician = false
+    private let optionCardInnerPadding: CGFloat = 16
+
+    private let actionButtonWidth: CGFloat = 160
+    private let actionButtonHeight: CGFloat = 72
+
+    private var editorGroupWidth: CGFloat {
+        ((optionControlWidth + (optionCardInnerPadding * 2)) * 2) + optionCardSpacing
+    }
+
+    private var environmentSelection: Binding<Int> {
+        Binding(
+            get: {
+                switch customTest.background {
+                case .home: return 0
+                case .cafe: return 1
+                case .train: return 2
+                }
+            },
+            set: { value in
+                switch value {
+                case 0: customTest.background = .home
+                case 1: customTest.background = .cafe
+                default: customTest.background = .train
+                }
+            })
+    }
+
+    private var difficultySelection: Binding<Int> {
+        Binding(
+            get: {
+                switch customTest.positioning {
+                case .easy: return 0
+                case .medium: return 1
+                case .hard: return 2
+                }
+            },
+            set: { value in
+                switch value {
+                case 0: customTest.positioning = .easy
+                case 1: customTest.positioning = .medium
+                default: customTest.positioning = .hard
+                }
+            })
+    }
 
     var body: some Scene {
         WindowGroup(id: "clinician-window") {
@@ -78,33 +122,20 @@ struct ClinicianScene: Scene {
     @ViewBuilder
     private func beginView() -> some View {
         VStack {
-            ZStack {
-                /// Put any other title or subtitle text here for clinician view
-                VStack {
-                    Text("Hearing Test Customisation")
-                        .font(.system(size: 60))
-                        .bold()
-                    Text("Add or edit your own custom test environment")
-                        .font(.system(size: 30))
-                }
-                .padding()
-                
-                HStack {
-                    Button {
-                        transition(from: "clinician-window", to: "main-window")
-                    } label: {
-                        HStack {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 30))
-                            Text("Back")
-                                .font(.system(size: 30))
-                                .bold()
-                        }
-                        .padding()
-                    }
-                    Spacer()
-                }
+            clinicianBackBar {
+                transition(from: "clinician-window", to: "main-window")
             }
+            
+            /// Put any other title or subtitle text here for clinician view
+            VStack {
+                Text("Hearing Test Customisation")
+                    .font(.system(size: 60))
+                    .bold()
+                Text("Add or edit your own custom test environment")
+                    .font(.system(size: 30))
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
             
             Spacer()
                 .frame(height: 20)
@@ -127,7 +158,7 @@ struct ClinicianScene: Scene {
                                     Text("\(test.name) (ID: \(test.id))")
                                         .font(.system(size: 30))
                                         .bold()
-                                        .padding(.vertical, 10)
+                                        .padding(.vertical, 16)
                                     
                                     Spacer()
                                     
@@ -171,6 +202,9 @@ struct ClinicianScene: Scene {
             .tint(Color.accentColor)
             .padding()
         }
+        /// Fill the window and pin content to the top; otherwise a short stack can sit lower
+        /// than a tall one and the back row appears to “move down” when switching screens.
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding()
         .onChange(of: speechRec.speechContent) { _, newContent in
             print("Speech content: \(newContent)")
@@ -184,66 +218,44 @@ struct ClinicianScene: Scene {
 
     @ViewBuilder
     private func updateView() -> some View {
-        VStack {
-            HStack {
-                Button {
-                    clinicianState = .begin
-                } label: {
-                    HStack {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 30))
-                        Text("Back")
-                            .font(.system(size: 30))
-                            .bold()
-                    }
-                    .padding()
-                }
-                .tint(Color.red)
-                
-                Spacer()
+        VStack(spacing: editorSectionSpacing) {
+            clinicianBackBar {
+                clinicianState = .begin
             }
             
-            HStack {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Test Name")
+                    .font(.system(size: 28))
+                    .bold()
+                    .frame(maxWidth: .infinity, alignment: .center)
+                
+                TextField("Enter test name", text: $customTest.name)
+                    .textFieldStyle(.roundedBorder)
+                    .font(.system(size: 24))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+            }
+            .padding()
+            .frame(width: editorGroupWidth, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(.ultraThinMaterial)
+            )
+            
+            HStack(spacing: optionCardSpacing) {
                 VStack {
                     Text("Environment")
-                        .font(.system(size: 40))
+                        .font(.system(size: 28))
                         .bold()
-                    
-                    Button {
-                        customTest.background = .home
-                    } label: {
-                        Text("Home")
-                            .font(.system(size: 35))
-                            .bold()
-                            .frame(maxWidth: 250)
-                            .padding(.vertical, 25)
+
+                    Picker("Environment", selection: environmentSelection) {
+                        Text("Home").tag(0)
+                        Text("Café").tag(1)
+                        Text("Train").tag(2)
                     }
-                    .tint(customTest.background == .home ? Color.accentColor : nil)
-                    .padding(5)
-                    
-                    Button {
-                        customTest.background = .cafe
-                    } label: {
-                        Text("Café")
-                            .font(.system(size: 35))
-                            .bold()
-                            .frame(maxWidth: 250)
-                            .padding(.vertical, 25)
-                    }
-                    .tint(customTest.background == .cafe ? Color.accentColor : nil)
-                    .padding(5)
-                    
-                    Button {
-                        customTest.background = .train
-                    } label: {
-                        Text("Train Station")
-                            .font(.system(size: 35))
-                            .bold()
-                            .frame(maxWidth: 250)
-                            .padding(.vertical, 25)
-                    }
-                    .tint(customTest.background == .train ? Color.accentColor : nil)
-                    .padding(5)
+                    .frame(width: optionControlWidth, height: 50, alignment: .leading)
+                    .pickerStyle(.segmented)
+                    .padding(.top, 16)
                 }
                 .padding()
                 .background(
@@ -253,44 +265,40 @@ struct ClinicianScene: Scene {
                 
                 VStack {
                     Text("Difficulty")
-                        .font(.system(size: 40))
+                        .font(.system(size: 28))
+                        .bold()
+
+                    Picker("Difficulty", selection: difficultySelection) {
+                        Text("Easy").tag(0)
+                        Text("Medium").tag(1)
+                        Text("Hard").tag(2)
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: optionControlWidth, height: 50, alignment: .leading)
+                    .padding(.top, 16)
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 25)
+                        .fill(.ultraThinMaterial)
+                )
+            }
+            .frame(width: editorGroupWidth)
+            
+            HStack(spacing: optionCardSpacing) {
+                VStack {
+                    Text("Number of Questions")
+                        .font(.system(size: 28))
                         .bold()
                     
-                    Button {
-                        customTest.positioning = .easy
-                    } label: {
-                        Text("Easy")
-                            .font(.system(size: 35))
+                     Stepper(value: $customTest.numberOfQuestions, in: 1...5, step: 1) {
+                        Text("Questions: \(customTest.numberOfQuestions)")
+                            .font(.system(size: 25))
                             .bold()
-                            .frame(maxWidth: 250)
-                            .padding(.vertical, 25)
                     }
-                    .tint(customTest.positioning == .easy ? Color.accentColor : nil)
-                    .padding(5)
-                    
-                    Button {
-                        customTest.positioning = .medium
-                    } label: {
-                        Text("Medium")
-                            .font(.system(size: 35))
-                            .bold()
-                            .frame(maxWidth: 250)
-                            .padding(.vertical, 25)
-                    }
-                    .tint(customTest.positioning == .medium ? Color.accentColor : nil)
-                    .padding(5)
-                    
-                    Button {
-                        customTest.positioning = .hard
-                    } label: {
-                        Text("Hard")
-                            .font(.system(size: 35))
-                            .bold()
-                            .frame(maxWidth: 250)
-                            .padding(.vertical, 25)
-                    }
-                    .tint(customTest.positioning == .hard ? Color.accentColor : nil)
-                    .padding(5)
+                    .frame(width: optionControlWidth, height: 50, alignment: .leading)
+                    .tint(.accentColor)
+                    .padding(.top, 16)
                 }
                 .padding()
                 .background(
@@ -299,27 +307,13 @@ struct ClinicianScene: Scene {
                 )
                 
                 VStack {
-                    Text("Other")
-                        .font(.system(size: 40))
+                    Text("Volume")
+                        .font(.system(size: 28))
                         .bold()
                     
-                    HStack {
-                        Text("Volume")
-                            .font(.system(size: 25))
-                            .bold()
-                        
-                        Slider(value: $customTest.targetVolume, in: -10.0 ... 0)
-                            .frame(width: 200)
-                            .padding()
-                    }
-                    .padding()
-                    
-                    Stepper("Questions: \(customTest.numberOfQuestions)",
-                        value: $customTest.numberOfQuestions, in: 1...5, step: 1)
-                        .frame(width: 250)
-                        .font(.system(size: 25))
-                        .bold()
-                        .padding()
+                    Slider(value: $customTest.targetVolume, in: -10.0 ... 0)
+                        .frame(width: optionControlWidth, height: 50, alignment: .leading)
+                        .padding(.top, 16)
                 }
                 .padding()
                 .background(
@@ -327,19 +321,21 @@ struct ClinicianScene: Scene {
                         .fill(.ultraThinMaterial)
                 )
             }
-            HStack {
+            .frame(width: editorGroupWidth)
+            
+            HStack (spacing: 16) {
                 Button {
                     hearingTest = customTest.generateTest()
                     isHearingTestOpened = true
                     transition(from: "clinician-window", to: "practice-window")
                 } label: {
                     Text("Practice")
-                        .font(.system(size: 30))
+                        .font(.system(size: 28))
                         .bold()
-                        .padding()
+                        .frame(width: actionButtonWidth, height: actionButtonHeight)
                 }
                 
-                // Save Button here
+                // Save Button
                 Button {
                     let test = customTest.generateTest()
                     switch clinicianState {
@@ -357,14 +353,17 @@ struct ClinicianScene: Scene {
                     clinicianState = .begin
                 } label: {
                     Text("Save")
-                        .font(.system(size: 30))
+                        .font(.system(size: 28))
                         .bold()
-                        .padding()
+                        .frame(width: actionButtonWidth, height: actionButtonHeight)
                 }
                 .tint(Color.green)
             }
             .padding()
         }
+        /// Full width so the back row spans the window; full height + top alignment so the
+        /// back row matches `beginView` vertically when this screen has less content.
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding()
         .onChange(of: speechRec.speechContent) { _, newContent in
             print("Speech content: \(newContent)")
@@ -423,11 +422,14 @@ struct ClinicianScene: Scene {
             }
 
         case .edit(let num):
-            voiceOptions(voiceInput)
             if voiceInput.contains("save") {
                 savedCustoms[num] = customTest
                 PersistStorage.testStorage.saveCustom(savedCustoms)
                 clinicianState = .begin
+            } else if voiceInput.contains("back") {
+                clinicianState = .begin
+            } else {
+                applyMappedSelection(from: voiceInput)
             }
             if let questionIndex = words.lastIndex(of: "question"),
                questionIndex + 1 < words.count {
@@ -439,7 +441,6 @@ struct ClinicianScene: Scene {
             }
 
         case .add:
-            voiceOptions(voiceInput)
             if voiceInput.contains("save") {
                 let test = customTest.generateTest()
                 savedCustoms.append(customTest)
@@ -447,6 +448,10 @@ struct ClinicianScene: Scene {
                 PersistStorage.testStorage.saveCustom(savedCustoms)
                 PersistStorage.testStorage.saveTest(savedTests)
                 clinicianState = .begin
+            } else if voiceInput.contains("back") {
+                clinicianState = .begin
+            } else {
+                applyMappedSelection(from: voiceInput)
             }
             if let questionIndex = words.lastIndex(of: "question"),
                questionIndex + 1 < words.count {
@@ -457,6 +462,69 @@ struct ClinicianScene: Scene {
                 }
             }
         }
+    }
+
+    private func applyMappedSelection(from voiceInput: String) {
+        if let background = mappedBackground(from: voiceInput) {
+            customTest.background = background
+            return
+        }
+        if let positioning = mappedPositioning(from: voiceInput) {
+            customTest.positioning = positioning
+        }
+    }
+
+    private func mappedBackground(from voiceInput: String) -> CustomTest.Theme? {
+        if voiceInput.contains("home") {
+            return .home
+        }
+        if voiceInput.contains("train") {
+            return .train
+        }
+        if voiceInput.contains("cafe") || voiceInput.contains("café") {
+            return .cafe
+        }
+        return nil
+    }
+
+    private func mappedPositioning(from voiceInput: String) -> CustomTest.Positioning? {
+        if voiceInput.contains("easy") {
+            return .easy
+        }
+        if voiceInput.contains("medium") {
+            return .medium
+        }
+        if voiceInput.contains("hard") {
+            return .hard
+        }
+        return nil
+    }
+    
+    @ViewBuilder
+    private func backButton(action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 28))
+                Text("Back")
+                    .font(.system(size: 28))
+                    .bold()
+            }
+            .foregroundStyle(.primary)
+            .padding()
+        }
+    }
+    
+    /// Shared back bar for `beginView` and `updateView` (same width, padding, alignment).
+    @ViewBuilder
+    private func clinicianBackBar(action: @escaping () -> Void) -> some View {
+        HStack(spacing: 0) {
+            backButton(action: action)
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.leading, 20)
+        .padding(.top, 20)
     }
     
     private func voiceOptions(_ voiceInput: String) {

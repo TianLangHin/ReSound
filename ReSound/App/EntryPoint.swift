@@ -144,6 +144,8 @@ struct EntryPoint: App {
             }
             .padding()
         }
+        /// Full width so `VStack` children stay centered.
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .padding()
         /// Testing for speech recog
         .task {
@@ -161,33 +163,20 @@ struct EntryPoint: App {
     @ViewBuilder
     private func chooseHearingTest() -> some View {
         VStack {
-            ZStack {
-                VStack {
-                    Text("Select Environment")
-                        .font(.largeTitle)
-                    
-                    Text("Choose your immersive testing environment")
-                        .font(.title)
-                        .foregroundStyle(.secondary)
-                }
-                .padding()
-                
-                HStack {
-                    Button {
-                        viewingState = .main
-                    } label: {
-                        HStack {
-                            Image(systemName: "chevron.left")
-                                .font(.headline)
-                            Text("Back")
-                                .font(.headline)
-                        }
-                        .padding()
-                    }
-                    Spacer()
-                }
+            mainMenuBackBar {
+                viewingState = .main
             }
-            
+
+            VStack {
+                Text("Select Environment")
+                    .font(.largeTitle)
+
+                Text("Choose your immersive testing environment")
+                    .font(.title)
+                    .foregroundStyle(.secondary)
+            }
+            .padding()
+
             Spacer()
                 .frame(height: 20)
             
@@ -201,6 +190,7 @@ struct EntryPoint: App {
             }
             .padding()
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding()
         .onChange(of: speechRec.speechContent) { _, newContent in
             print("Speech content: \(newContent)")
@@ -281,5 +271,31 @@ struct EntryPoint: App {
             try? await Task.sleep(for: .milliseconds(100))
             dismissWindow(id: from)
         }
+    }
+
+    @ViewBuilder
+    private func backButton(action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 28))
+                Text("Back")
+                    .font(.system(size: 28))
+                    .bold()
+            }
+            .foregroundStyle(.primary)
+            .padding()
+        }
+    }
+
+    @ViewBuilder
+    private func mainMenuBackBar(action: @escaping () -> Void) -> some View {
+        HStack(spacing: 0) {
+            backButton(action: action)
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.leading, 20)
+        .padding(.top, 20)
     }
 }

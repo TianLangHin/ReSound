@@ -409,6 +409,8 @@ struct HearingTestScene: SwiftUI.Scene {
                     .padding()
                     .font(.title2)
             }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
             .padding()
         }
         .padding()
