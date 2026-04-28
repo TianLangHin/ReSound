@@ -230,7 +230,7 @@ struct HearingTestScene: SwiftUI.Scene {
 //            materials: [UnlitMaterial(color: .systemYellow)])
         
         let indicatorEntity = ModelEntity(
-            mesh: .generateCone(height: 0.1, radius: 0.05),
+            mesh: .generateCone(height: 0.2, radius: 0.1),
             materials: [UnlitMaterial(color: .systemYellow)]
         )
         indicatorEntity.orientation = simd_quatf(angle: .pi, axis: [0, 0, 1]) // rotate 180 degrees to point cone downward
@@ -402,12 +402,6 @@ struct HearingTestScene: SwiftUI.Scene {
             Text("Score: \(score) out of \(questionCount)")
                 .font(.system(size: 48))
                 .padding()
-            Button {
-                closeSpace()
-            } label: {
-                Text("Exit immersive space")
-                    .font(.title3)
-            }
             Button {
                 exitEntirely()
             } label: {

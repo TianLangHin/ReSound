@@ -103,11 +103,11 @@ struct CustomTest: Codable {
         case .cafe:
             let serverLeft = AudioSource(
                 type: .silent,
-                location: .init(x: -0.5, y: 0.0, z: -1.0),
+                location: .init(x: -0.5, y: 0.0, z: -2.8),
                 visualResourceLink: .asset("Woman1.usdz"))
             let serverRight = AudioSource(
                 type: .silent,
-                location: .init(x: 0.5, y: 0.0, z: -1.0),
+                location: .init(x: 0.5, y: 0.0, z: -2.8),
                 visualResourceLink: .asset("Woman2.usdz"))
             return [serverLeft, serverRight]
         case .train:
@@ -192,14 +192,14 @@ struct CustomTest: Codable {
                             visualResourceLink: .asset("")),
                 // Main "talking" ambient source.
                 AudioSource(type: .conversation("Cafe_Ambience.mp3"),
-                            location: .init(x: 1.0, y: 0.0, z: 4.0),
+                            location: .init(x: 1.0, y: 0.0, z: 2.0),
                             visualResourceLink: .asset("Man1.usdz")),
                 // Auxiliary assets to simulate a crowd.
                 AudioSource(type: .silent,
-                            location: .init(x: 0.5, y: 0.0, z: 4.0),
+                            location: .init(x: 0.5, y: 0.0, z: 2.0),
                             visualResourceLink: .asset("Man2.usdz")),
                 AudioSource(type: .silent,
-                            location: .init(x: 1.5, y: 0.0, z: 4.0),
+                            location: .init(x: 1.5, y: 0.0, z: 2.0),
                             visualResourceLink: .asset("Woman1.usdz")),
             ]
         case .train:

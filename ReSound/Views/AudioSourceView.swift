@@ -43,7 +43,9 @@ struct AudioSourceView: View {
                 // `assetName` should be the name of a USDZ file.
                 if assetName != "" {
                     if let entityAsset = try? await Entity(named: assetName) {
-                        entityAsset.scale *= 0.3
+                        if assetName == "Train_Speaker.usdz" {
+                            entityAsset.scale *= 0.75
+                        }
                         entity.addChild(entityAsset)
                     }
                 }
@@ -55,7 +57,8 @@ struct AudioSourceView: View {
             let isFocused = currentQuestion.focus == audioSource.id
 
             // Attach the child `indicatorEntity` to be slightly above the object to be focused.
-            self.indicatorEntity.position = [0, 1.0, 0]
+            let height: Float = audioSource.visualResourceLink == .asset("Train_Speaker.usdz") ? 2.5 : 1.9
+            self.indicatorEntity.position = [0, height, 0]
             if isFocused {
                 entity.addChild(self.indicatorEntity)
             }
