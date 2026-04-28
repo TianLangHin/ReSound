@@ -145,10 +145,11 @@ struct ClinicianScene: Scene {
             
             VStack {
                 if savedCustoms.isEmpty {
-                    Text("No saved tests yet.")
-                        .font(.title)
-                        .foregroundStyle(. secondary)
+                    Spacer()
+                    Text("No saved tests on this device yet.")
+                        .font(.body)
                         .padding()
+                    Spacer()
                 } else {
                     List {
                         ForEach(savedCustoms, id: \.id) { test in
@@ -160,15 +161,11 @@ struct ClinicianScene: Scene {
                             } label: {
                                 HStack {
                                     Text("\(test.name) (ID: \(test.id))")
-                                        .font(.title)
-                                        .foregroundStyle(. secondary)
+                                        .font(.headline)
                                         .padding(.vertical, 16)
-                                    
                                     Spacer()
-                                    
                                     Image(systemName: "chevron.right")
-                                        .font(.title)
-                                        .foregroundStyle(. secondary)
+                                        .font(.headline)
                                 }
                                 .padding()
                             }

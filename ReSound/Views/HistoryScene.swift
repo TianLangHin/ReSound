@@ -65,14 +65,15 @@ struct HistoryScene: Scene {
             .padding()
 
             Spacer()
-                .frame(height: 30)
+                .frame(height: 20)
 
             VStack {
                 if savedScores.isEmpty {
-                    Text("No test attempts yet.")
-                        .font(.title)
-                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Text("No test attempts on this device yet.")
+                        .font(.body)
                         .padding()
+                    Spacer()
                 } else {
                     List {
                         ForEach(savedScores, id: \.id) { score in
@@ -82,14 +83,13 @@ struct HistoryScene: Scene {
                             } label: {
                                 HStack {
                                     Text(score.hearingTestName)
-                                        .font(.title)
-                                        .foregroundStyle(.secondary)
+                                        .font(.headline)
                                         .padding(.vertical, 10)
 
                                     Spacer()
 
                                     Image(systemName: "chevron.right")
-                                        .font(.title)
+                                        .font(.headline)
                                         .foregroundStyle(.secondary)
                                 }
                                 .padding()
