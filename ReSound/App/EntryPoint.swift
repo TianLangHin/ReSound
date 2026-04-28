@@ -27,6 +27,8 @@ struct EntryPoint: App {
     @State var hearingTest = Presets.hearingTests[0]
     @State var viewingState: MainMenuState = .main
     @State var selectedOption: Int = -1
+    
+    @State var instructionOpen: Bool = false
 
     /// A binded variable to suppress the main window when a new one pops up
     /// i.e., when the hearing test pops up.
@@ -47,8 +49,8 @@ struct EntryPoint: App {
             }
         }
         .defaultWindowPlacement { content, context in
-            if let otherWindow = context.windows.first(where: { $0.id != "clinician-window" && $0.id != "history-window" }) {
-                return WindowPlacement(.above(otherWindow))
+            if let otherWindow = context.windows.first(where: { $0.id == "instruction-window" }) {
+                return WindowPlacement(.leading(otherWindow))
             }
             return WindowPlacement()
         }
@@ -56,11 +58,12 @@ struct EntryPoint: App {
         /// which by default is closed since the main WindowGroup above is loaded first.
         HearingTestScene(
             hearingTest: $hearingTest,
-            isOpened: $isHearingTestOpened,
+            isOpened: $isHearingTestOpened, isFromClinician: .constant(false),
             speechRec: speechRec,
-            hearingTestWindowId: "hearing-test-window",
+            instructionOpen: $instructionOpen, hearingTestWindowId: "hearing-test-window",
             parentWindowId: "main-window")
-        ClinicianScene(speechRec: speechRec)
+        InstructionScene(instructionOpen: $instructionOpen)
+        ClinicianScene(speechRec: speechRec, instructionOpen: $instructionOpen)
         HistoryScene(speechRec: speechRec)
     }
     
@@ -70,10 +73,10 @@ struct EntryPoint: App {
             /// This internal VStack not really necessary but the other screens have this structure because of the ZStack with back button so this just makes the spacing consistent
             VStack {
                 Text("ReSound Hearing Test")
-                    .font(.system(size: 60))
-                    .bold()
+                    .font(.largeTitle)
                 Text("Test your hearing using spatial audio with the Apple Vision Pro")
-                    .font(.system(size: 30))
+                    .font(.title)
+                    .foregroundStyle(.secondary)
             }
             .padding()
             
@@ -85,11 +88,18 @@ struct EntryPoint: App {
                     viewingState = .chooseTest
                 } label: {
                     // Go to environment selection screen.
-                    Text("Start Hearing Test")
-                        .font(.system(size: 35))
-                        .bold()
-                        .frame(maxWidth: 500)
-                        .padding(.vertical, 24)
+                    ZStack {
+                        Text("Start Hearing Test")
+                            .font(.headline)
+                        
+                        HStack {
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.headline)
+                        }
+                    }
+                    .frame(maxWidth: 400)
+                    .padding(.vertical, 20)
                 }
                 .padding(10)
                 
@@ -97,11 +107,18 @@ struct EntryPoint: App {
                     transition(from: "main-window", to: "clinician-window")
                 } label: {
                     // Go to the clinician view to create customised hearing tests.
-                    Text("Clinician View")
-                        .font(.system(size: 35))
-                        .bold()
-                        .frame(maxWidth: 500)
-                        .padding(.vertical, 24)
+                    ZStack {
+                        Text("Clinician View")
+                            .font(.headline)
+                        
+                        HStack {
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.headline)
+                        }
+                    }
+                    .frame(maxWidth: 400)
+                    .padding(.vertical, 20)
                 }
                 .padding(10)
                 
@@ -110,11 +127,18 @@ struct EntryPoint: App {
                     transition(from: "main-window", to: "history-window")
                 } label: {
                     // Persistent storage which stores a list of patient scores and other related details.
-                    Text("View History")
-                        .font(.system(size: 35))
-                        .bold()
-                        .frame(maxWidth: 500)
-                        .padding(.vertical, 24)
+                    ZStack {
+                        Text("View History")
+                            .font(.headline)
+                        
+                        HStack {
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.headline)
+                        }
+                    }
+                    .frame(maxWidth: 400)
+                    .padding(.vertical, 20)
                 }
                 .padding(10)
             }
@@ -134,6 +158,7 @@ struct EntryPoint: App {
             print("state: \(viewingState)")
         }
     }
+        
     
     @ViewBuilder
     private func chooseHearingTest() -> some View {
@@ -144,13 +169,12 @@ struct EntryPoint: App {
 
             VStack {
                 Text("Select Environment")
-                    .font(.system(size: 60))
-                    .bold()
+                    .font(.largeTitle)
 
                 Text("Choose your immersive testing environment")
-                    .font(.system(size: 30))
+                    .font(.title)
+                    .foregroundStyle(.secondary)
             }
-            .frame(maxWidth: .infinity)
             .padding()
 
             Spacer()
@@ -175,8 +199,8 @@ struct EntryPoint: App {
         }
     }
 
-    func chooseEnv(index: Int, makeRandom: Bool = false) {
-        hearingTest = makeRandom ? Presets.hearingTests[Int.random(in: 0...1)] : Presets.hearingTests[index]
+    func chooseEnv(index: Int) {
+        hearingTest = Presets.hearingTests[index]
         /// An asynchronous task on the main queue is used to load the other window,
         /// wait for 100 milliseconds to ensure the system can recognise it is open,
         /// and then close the previous window (which is only successful if another window is open).
@@ -193,11 +217,18 @@ struct EntryPoint: App {
         Button {
             chooseEnv(index: buttonIndex)
         } label: {
-            Text(title)
-                .font(.system(size: 35))
-                .bold()
-                .frame(maxWidth: 500)
-                .padding(.vertical, 24)
+            ZStack {
+                Text(title)
+                    .font(.headline)
+                
+                HStack {
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.headline)
+                }
+            }
+            .frame(maxWidth: 400)
+            .padding(.vertical, 20)
         }
         .padding(10)
     }
@@ -223,7 +254,8 @@ struct EntryPoint: App {
             case "train":
                 chooseEnv(index: 1)
             case "cafe", "café":
-                chooseEnv(index: 2, makeRandom: true)
+                /// Change when add café environment. Needs to be 2
+                chooseEnv(index: 1)
             case "back":
                 viewingState = .main
             default:

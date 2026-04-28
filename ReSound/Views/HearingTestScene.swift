@@ -29,8 +29,13 @@ struct HearingTestScene: SwiftUI.Scene {
     /// and will toggle an "isOpened" indicator to notify the parent view.
     @Binding var hearingTest: HearingTest
     @Binding var isOpened: Bool
+    
+    @Binding var isFromClinician: Bool
 
     @State var speechRec: SpeechRec
+    @State var isCalibrating: Bool = false
+    
+    @Binding var instructionOpen: Bool
 
     let hearingTestWindowId: String
     let parentWindowId: String
@@ -60,22 +65,34 @@ struct HearingTestScene: SwiftUI.Scene {
                 switch questionState {
                 case .before:
                     startView()
+                        .glassBackgroundEffect()
                 case .playing:
                     playingView()
                 case .answering:
                     questionChoiceView()
+                        .glassBackgroundEffect()
                 case .waiting:
                     waitingView()
+                        .glassBackgroundEffect()
                 case .ended:
                     endView()
+                        .glassBackgroundEffect()
                 }
             }
             .padding()
-            .glassBackgroundEffect()
-            .dynamicTypeSize(...DynamicTypeSize.accessibility2)
+            .opacity(questionState == .playing ? 0 : 1)
+            .persistentSystemOverlays(questionState == .playing ? .hidden : .visible)
             .onAppear {
                 /// Toggling the Boolean binding for tracking in the parent view.
                 isOpened = true
+                Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(500))
+                    openWindow(id: "instruction-window")
+                    instructionOpen = true
+                }
+                if parentWindowId == "clinician-window" {
+                    isFromClinician = true
+                }
             }
             .onChange(of: speechRec.speechContent) { _, newContent in
                 DispatchQueue.main.async {
@@ -85,19 +102,29 @@ struct HearingTestScene: SwiftUI.Scene {
                     if questionState == .before {
                         switch lastWord {
                         case "calibrate", "volume":
+                            isCalibrating = true
                             audioController?.play()
                         case "pause", "stop":
+                            isCalibrating = false
                             audioController?.pause()
                         case "start", "next":
                             openSpace()
                             startQuestion(firstCall: true)
+                            if instructionOpen {
+                                dismissWindow(id: "instruction-window")
+                            } else {
+                                print("alr close bro")
+                            }
                         case "exit", "back", "quit":
-                            try? speechRec.startRec()
                             Task { @MainActor in
-                                openWindow(id: parentWindowId)
+                                try? speechRec.startRec()
+                                if instructionOpen {
+                                    dismissWindow(id: "instruction-window")
+                                } else {
+                                    print("alr close bro")
+                                }
                                 try? await Task.sleep(for: .milliseconds(100))
-                                isOpened = false
-                                dismissWindow(id: hearingTestWindowId)
+                                exitEntirely()
                             }
                         default:
                             break
@@ -132,12 +159,6 @@ struct HearingTestScene: SwiftUI.Scene {
             .frame(width: 0, height: 0)
             .frame(depth: 0)
             .fixedSize()
-        }
-        .defaultWindowPlacement { content, context in
-            if let mainWindow = context.windows.first(where: { $0.id == "main-window" || $0.id == "clinician-window" }) {
-                return WindowPlacement(.below(mainWindow))
-            }
-            return WindowPlacement()
         }
         .windowStyle(.plain)
         /// The immersive space is where the hearing test happens via spatial audio.
@@ -175,6 +196,10 @@ struct HearingTestScene: SwiftUI.Scene {
             try? await Task.sleep(for: .milliseconds(100))
             isOpened = false
             dismissWindow(id: hearingTestWindowId)
+            if parentWindowId == "clinician-window" {
+               try? await Task.sleep(for: .milliseconds(200))
+               try? speechRec.startRec()
+           }
         }
     }
 
@@ -205,7 +230,7 @@ struct HearingTestScene: SwiftUI.Scene {
 //            materials: [UnlitMaterial(color: .systemYellow)])
         
         let indicatorEntity = ModelEntity(
-            mesh: .generateCone(height: 0.1, radius: 0.05),
+            mesh: .generateCone(height: 0.2, radius: 0.1),
             materials: [UnlitMaterial(color: .systemYellow)]
         )
         indicatorEntity.orientation = simd_quatf(angle: .pi, axis: [0, 0, 1]) // rotate 180 degrees to point cone downward
@@ -220,24 +245,28 @@ struct HearingTestScene: SwiftUI.Scene {
             ZStack {
                 VStack {
                     Text("Start Test: \(hearingTest.name)")
-                        .font(.system(size: 60))
-                        .bold()
+                        .font(.largeTitle)
                     Text("Start the hearing test when you're ready!")
-                        .font(.system(size: 30))
+                        .font(.title)
+                        .foregroundStyle(.secondary)
                 }
                 .padding()
                 
                 HStack {
                     Button {
                         exitEntirely()
+                        if instructionOpen {
+                            dismissWindow(id: "instruction-window")
+                            instructionOpen = false
+                        } else {
+                            print("alr close bro")
+                        }
                     } label: {
                         HStack {
                             Text("Exit")
-                                .font(.system(size: 30))
-                                .bold()
-                            
+                                .font(.headline)
                             Image(systemName: "xmark")
-                                .font(.system(size: 30))
+                                .font(.headline)
                         }
                         .padding()
                     }
@@ -246,39 +275,57 @@ struct HearingTestScene: SwiftUI.Scene {
             }
     
             Spacer()
-                .frame(height: 50)
-            
-            Button {
-                audioController?.play()
-            } label: {
-                Text("Start")
-            }
-            .buttonStyle(.bordered)
-            .controlSize(.large)
-            Button {
-                audioController?.pause()
-            } label: {
-                Text("Stop")
-            }
-            .buttonStyle(.bordered)
-            .controlSize(.large)
+                .frame(height: 20)
             
             Button {
                 openSpace()
                 startQuestion(firstCall: true)
+                if instructionOpen {
+                    dismissWindow(id: "instruction-window")
+                    instructionOpen = false
+                } else {
+                    print("alr close bro")
+                }
             } label: {
-                Text("Start hearing test!")
-                    .font(.system(size: 40))
-                    .bold()
-                    .frame(maxWidth: 500)
-                    .padding(.vertical, 25)
+                ZStack {
+                    Text("Start")
+                        .font(.headline)
+                    
+                    HStack {
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.headline)
+                    }
+                }
+                .frame(maxWidth: 400)
+                .padding(.vertical, 20)
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
+            .padding(10)
             
-            Spacer()
-                .frame(height: 50)
+            Button {
+                if !isCalibrating { /// Not playing the calibration audio, so play
+                    audioController?.play()
+                } else { /// Playing the calibration audio, so pause
+                    audioController?.pause()
+                }
+                isCalibrating.toggle()
+            } label: {
+                ZStack {
+                    Text(isCalibrating ? "Pause Calibration Audio" : "Play Calibration Audio")
+                        .font(.headline)
+                    
+                    HStack {
+                        Spacer()
+                        Image(systemName: isCalibrating ? "pause.fill" : "play.fill")
+                            .font(.headline)
+                    }
+                }
+                .frame(maxWidth: 400)
+                .padding(.vertical, 20)
+            }
+            .padding(10)
         }
+        .padding()
     }
 
     @ViewBuilder
@@ -293,15 +340,24 @@ struct HearingTestScene: SwiftUI.Scene {
         let currentQuestion = hearingTest.questions[questionNumber].chosenQuestion
         VStack {
             Text(currentQuestion.question)
-                .font(.title2)
+                .font(.largeTitle)
                 .padding()
+            
+            Spacer()
+                .frame(height: 20)
+            
             List {
                 ForEach(Array(currentQuestion.answers.enumerated()), id: \.offset) { index, answer in
                     Button {
                         advanceQuestion(answer: index)
                     } label: {
-                        Text("\(index + 1). \(answer)")
-                            .font(.title2)
+                        HStack {
+                            Text("\(index + 1). \(answer)")
+                                .font(.headline)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.headline)
+                        }
                     }
                     .padding()
                 }
@@ -314,20 +370,29 @@ struct HearingTestScene: SwiftUI.Scene {
     private func waitingView() -> some View {
         VStack {
             Text("Continue on to Question \(questionNumber + 2)?")
-                .font(.system(size: 60))
+                .font(.largeTitle)
                 .padding()
             Button {
                 // Question advancement is delayed so that the visual pointer
                 // is revealed only when the question starts.
                 moveFromWaiting()
             } label: {
-                Text("Continue")
-                    .font(.title3)
-                    .padding()
+                ZStack {
+                    Text("Next")
+                        .font(.headline)
+                    
+                    HStack {
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.headline)
+                    }
+                }
+                .frame(maxWidth: 400)
+                .padding(.vertical, 20)
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
+            .padding(10)
         }
+        .padding()
     }
 
     @ViewBuilder
@@ -337,14 +402,6 @@ struct HearingTestScene: SwiftUI.Scene {
             Text("Score: \(score) out of \(questionCount)")
                 .font(.system(size: 48))
                 .padding()
-            Button {
-                closeSpace()
-            } label: {
-                Text("Exit immersive space")
-                    .font(.title3)
-            }
-            .buttonStyle(.bordered)
-            .controlSize(.large)
             Button {
                 exitEntirely()
             } label: {
@@ -400,6 +457,7 @@ struct HearingTestScene: SwiftUI.Scene {
                 registerAnswer(choice: answer)
             }
             print("parentWindowId is: \(parentWindowId)")
+            // Save the score right after the test is done
             if parentWindowId == "main-window" {
                 scoreBreakdown.timeAttempted = Date()
                 var existingScores = PersistStorage.testStorage.loadScore()
