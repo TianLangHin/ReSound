@@ -35,12 +35,13 @@ struct SkyboxView: View {
         guard let stationEntity = try? await Entity(named: "Station_Resized.usdz") else {
             return
         }
+        stationEntity.position = [0, 0, -2]
+        content.add(stationEntity)
         let trainLights: [Float] = [-30, -20, -10, 0, 10, 20, 30]
         let positions: [(Float, Float, Float)] = [(4, 4, 0)] + trainLights.map { z in (-5, 3, z) }
         for (x, y, z) in positions {
             content.add(makeLight(position: .init(x: x, y: y, z: z), intensity: 1000000, attenuation: 500000))
         }
-        content.add(stationEntity)
     }
 
     func cafeEnvironment(content: RealityViewContent) async {

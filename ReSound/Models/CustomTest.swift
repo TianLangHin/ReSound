@@ -112,13 +112,15 @@ struct CustomTest: Codable {
             return [serverLeft, serverRight]
         case .train:
             let speakerLeft = AudioSource(
-                type: .conversation("AudioSample1.mp3"),
-                location: .init(x: -0.5, y: 0.0, z: -1.5),
-                visualResourceLink: .asset("Train_Speaker.usdz"))
+                type: .silent,
+                location: .init(x: 0.8, y: 0.6, z: -2.5),
+                visualResourceLink: .asset("Train_Loudspeaker.usdz"),
+                orientation: simd_quatf(angle: -.pi / 2, axis: [0, 1, 0]))
             let speakerRight = AudioSource(
-                type: .conversation("AudioSample1.mp3"),
-                location: .init(x: 0.5, y: 0.0, z: -1.5),
-                visualResourceLink: .asset("Train_Speaker.usdz"))
+                type: .silent,
+                location: .init(x: 0.8, y: 0.6, z: 1.5),
+                visualResourceLink: .asset("Train_Loudspeaker.usdz"),
+                orientation: simd_quatf(angle: -.pi / 2, axis: [0, 1, 0]))
             return [speakerLeft, speakerRight]
         }
     }
@@ -148,6 +150,7 @@ struct CustomTest: Codable {
 
     func generateDistractorSources(_ positioning: Positioning, _ theme: Theme) -> (AudioSource, AudioSource) {
         let (leftLocation, rightLocation) = generateDistractorLocations(positioning, theme)
+
         var leftDistractor: AudioSource, rightDistractor: AudioSource
 
         switch theme {
