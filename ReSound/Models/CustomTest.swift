@@ -104,11 +104,11 @@ struct CustomTest: Codable {
             let serverLeft = AudioSource(
                 type: .silent,
                 location: .init(x: -0.5, y: 0.1, z: -2.8),
-                visualResourceLink: .asset("Woman1.usdz"))
+                visualResourceLink: .animated("ANIM_StandingWoman4.usdz"))
             let serverRight = AudioSource(
                 type: .silent,
                 location: .init(x: 0.5, y: 0.25, z: -2.8),
-                visualResourceLink: .asset("Woman2.usdz"))
+                visualResourceLink: .animated("ANIM_StandingWoman2.usdz"))
             return [serverLeft, serverRight]
         case .train:
             let speakerLeft = AudioSource(

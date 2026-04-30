@@ -35,11 +35,11 @@ class Presets {
         AudioSource(
             type: .silent,
             location: .init(x: -0.5, y: 0.2, z: -2.8),
-            visualResourceLink: .asset("Woman1.usdz")),
+            visualResourceLink: .animated("ANIM_StandingWoman4.usdz")),
         AudioSource(
             type: .silent,
             location: .init(x: 0.5, y: 0.35, z: -2.8),
-            visualResourceLink: .asset("Woman2.usdz")),
+            visualResourceLink: .animated("ANIM_StandingWoman2.usdz")),
         AudioSource(
             type: .ambient("Cafe_Ambience.mp3"),
             location: .init(x: 3.0, y: 0.0, z: 3.0),
