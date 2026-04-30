@@ -32,6 +32,22 @@ class Presets {
             type: .ambient("Train_PeopleTalking.mp3"),
             location: .init(x: 1.5, y: 0.0, z: -0.5),
             visualResourceLink: .asset("BusinessMan.usdz")),
+        AudioSource(
+            type: .silent,
+            location: .init(x: -0.5, y: 0.2, z: -2.8),
+            visualResourceLink: .asset("Woman1.usdz")),
+        AudioSource(
+            type: .silent,
+            location: .init(x: 0.5, y: 0.35, z: -2.8),
+            visualResourceLink: .asset("Woman2.usdz")),
+        AudioSource(
+            type: .ambient("Cafe_Ambience.mp3"),
+            location: .init(x: 3.0, y: 0.0, z: 3.0),
+            visualResourceLink: .asset("")),
+        AudioSource(
+            type: .ambient("Cafe_Music.mp3"),
+            location: .init(x: 0.0, y: 5.0, z: 0.0),
+            visualResourceLink: .asset("")),
     ]
 
     static var hearingTests: [HearingTest] = [
@@ -61,6 +77,20 @@ class Presets {
                                       chosenQuestion: Presets.possibleQuestions[3]),
                     ],
                     backgroundResourceLink: "dresden_station_night_4k.exr"),
+        HearingTest(name: "Café",
+                    audioSources: [
+                        Presets.audioSources[6],
+                        Presets.audioSources[7],
+                        Presets.audioSources[8],
+                        Presets.audioSources[9],
+                    ],
+                    questions: [
+                        AudioQuestion(focus: Presets.audioSources[6].id,
+                                      chosenQuestion: Presets.possibleQuestions[8]),
+                        AudioQuestion(focus: Presets.audioSources[7].id,
+                                      chosenQuestion: Presets.possibleQuestions[9]),
+                    ],
+                    backgroundResourceLink: "Cafe")
     ]
 
     static var possibleQuestions: [PossibleQuestion] = [

@@ -46,10 +46,16 @@ struct AudioSourceView: View {
                         if assetName == "Train_Speaker.usdz" {
                             entityAsset.scale *= 0.75
                         }
+                        entityAsset.orientation = audioSource.orientation * entityAsset.orientation
                         entity.addChild(entityAsset)
                     }
                 }
                 // Make it empty otherwise.
+            case let .animated(assetName):
+                if let entityAsset = await makeAnimated(name: assetName) {
+                    entityAsset.orientation = audioSource.orientation * entityAsset.orientation
+                    entity.addChild(entityAsset)
+                }
             }
 
             // Next, we determine whether we need to add the extra visual indicator or not.
@@ -106,9 +112,6 @@ struct AudioSourceView: View {
                 }
                 // Set the spatial audio settings of the entity, attach it to the entity, and play the audio.
                 content.entities[0].spatialAudio = SpatialAudioComponent(directivity: .beam(focus: 0.2))
-                // Adjusts the relative volume if this entity is the target audio,
-                // and naturally lowers everything else since it is ambient sound.
-                content.entities[0].spatialAudio?.gain = isFocused ? newQuestion.volumeLevel : -5.0
                 let audioController = content.entities[0].playAudio(audio)
 
                 // Set the clip to stop playing after the question's duration times out.
@@ -122,4 +125,19 @@ struct AudioSourceView: View {
         }
     }
 
+    func makeAnimated(name: String, anim: String = "default subtree animation", looping: Bool = true) async -> Entity? {
+        guard let entity = try? await Entity(named: name) else {
+            print("Cannot load animated entity.")
+            return nil
+        }
+        guard let anim = entity
+            .components[AnimationLibraryComponent.self]?
+            .animations[anim] else {
+            print("Cannot load animation.")
+            return nil
+        }
+        let animation = looping ? anim.repeat() : anim
+        entity.playAnimation(animation)
+        return entity
+    }
 }
