@@ -21,6 +21,8 @@ struct EntryPoint: App {
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismissWindow) private var dismissWindow
 
+    @Environment(\.scenePhase) private var scenePhase
+
     /// Since the HearingTestScene will always be part of this Scene's body,
     /// we keep track of which one it is referencing through a reference
     /// to the `HearingTest` instance (which can be managed by a Picker).
@@ -45,6 +47,16 @@ struct EntryPoint: App {
                     case .chooseTest:
                         chooseHearingTest()
                     }
+                }
+            }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                viewingState = .main
+                isHearingTestOpened = false
+                Task { @MainActor in
+                    openWindow(id: "main-window")
+                    try? speechRec.startRec()
                 }
             }
         }
