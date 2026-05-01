@@ -108,7 +108,7 @@ struct EntryPoint: App {
                 } label: {
                     // Go to the clinician view to create customised hearing tests.
                     ZStack {
-                        Text("Clinician View")
+                        Text("Customise Environment")
                             .font(.headline)
                         
                         HStack {
@@ -240,7 +240,7 @@ struct EntryPoint: App {
             switch voiceInput {
             case "patient", "test", "hearing":
                 viewingState = .chooseTest
-            case "clinician", "customise", "view":
+            case "clinician", "customise", "view", "customize", "environment":
                 transition(from: "main-window", to: "clinician-window")
             case "history", "log":
                 transition(from: "main-window", to: "history-window")

@@ -423,10 +423,9 @@ struct ClinicianScene: Scene {
             } else {
                 applyMappedSelection(from: voiceInput)
             }
-            if let questionIndex = words.lastIndex(where: { $0 == "question" || $0 == "questions" }) {
-                let precedingWords = Array(words[..<questionIndex])
-                
-                if let number = parseSpokenNumber(precedingWords),
+            if let questionIndex = words.lastIndex(where: { $0 == "question" || $0 == "questions" }), questionIndex > 0 {
+                let precedingWords = words[questionIndex - 1]
+               if let number = parseSpokenNumber([precedingWords]),
                    number >= 1 && number <= 5 {
                     customTest.numberOfQuestions = number
                 }
@@ -445,10 +444,9 @@ struct ClinicianScene: Scene {
             } else {
                 applyMappedSelection(from: voiceInput)
             }
-            if let questionIndex = words.lastIndex(where: { $0 == "question" || $0 == "questions" }) {
-                let precedingWords = Array(words[..<questionIndex])
-                
-                if let number = parseSpokenNumber(precedingWords),
+            if let questionIndex = words.lastIndex(where: { $0 == "question" || $0 == "questions" }), questionIndex > 0 {
+                let precedingWords = words[questionIndex - 1].lowercased()
+               if let number = parseSpokenNumber([precedingWords]),
                    number >= 1 && number <= 5 {
                     customTest.numberOfQuestions = number
                 }
