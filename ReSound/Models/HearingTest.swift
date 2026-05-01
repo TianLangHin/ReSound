@@ -43,6 +43,7 @@ struct AudioSource: Equatable, Hashable {
         case presetBox
         case asset(String)
         case animated(String)
+        case video(String)
     }
 
     enum AudioSourceType: Equatable, Hashable, Codable {

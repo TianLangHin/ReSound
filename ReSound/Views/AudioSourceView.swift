@@ -6,6 +6,7 @@
 //  Copyright © 2026 Apple. All rights reserved.
 //
 
+import AVFoundation
 import SwiftUI
 import RealityKit
 
@@ -55,6 +56,15 @@ struct AudioSourceView: View {
                 if let entityAsset = await makeAnimated(name: assetName) {
                     entityAsset.orientation = audioSource.orientation * entityAsset.orientation
                     entity.addChild(entityAsset)
+                }
+            case let .video(assetName):
+                if let url = Bundle.main.url(forResource: assetName, withExtension: "mp4") {
+                    let player = AVPlayer(url: url)
+                    let material = VideoMaterial(avPlayer: player)
+                    let videoPlane = ModelEntity(mesh: .generatePlane(width: 2.0, height: 1.2), materials: [material])
+                    videoPlane.position = [0.15, 1.75, -2.1]
+                    entity.addChild(videoPlane)
+                    player.play()
                 }
             }
 

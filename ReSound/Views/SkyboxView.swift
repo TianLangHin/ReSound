@@ -39,6 +39,9 @@ struct SkyboxView: View {
         guard let homeEntity = try? await Entity(named: "untexturedHome.usdz") else {
             return
         }
+        let originalRotation = homeEntity.transform.rotation
+        homeEntity.transform.rotation = simd_quatf(angle: .pi, axis: [0, 1, 0]) * originalRotation
+        container.addChild(homeEntity)
 
         if let skybox = await makeSkybox(name: "suburban_garden_4k.exr") {
             container.addChild(skybox)

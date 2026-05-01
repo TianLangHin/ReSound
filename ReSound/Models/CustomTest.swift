@@ -112,8 +112,8 @@ struct CustomTest: Codable {
         case .home:
             let tv = AudioSource(
                 type: .silent,
-                location: .init(x: 0.0, y: 0.0, z: -1.0),
-                visualResourceLink: .asset("Home_TV.usdz"))
+                location: .init(x: 0.0, y: 0.0, z: 0.0),
+                visualResourceLink: .video("weather-intro"))
             return [tv]
         case .cafe:
             let serverLeft = AudioSource(
@@ -145,11 +145,11 @@ struct CustomTest: Codable {
         case .home:
             switch positioning {
             case .easy:
-                return (.init(x: -2.0, y: 0.0, z: -0.5), .init(x: 2.0, y: 0.0, z: -0.5))
+                return (.init(x: -2.0, y: 0.3, z: -0.5), .init(x: 2.0, y: 0.5, z: 0.3))
             case .medium:
-                return (.init(x: -1.5, y: 0.0, z: -1.0), .init(x: 1.5, y: 0.0, z: -1.0))
+                return (.init(x: -1.5, y: 0.3, z: -1.0), .init(x: 1.5, y: 0.5, z: -0.3))
             case .hard:
-                return (.init(x: -1.0, y: 0.0, z: -1.5), .init(x: 1.0, y: 0.0, z: -1.5))
+                return (.init(x: -1.0, y: 0.3, z: -1.3), .init(x: 1.0, y: 0.5, z: -1.3))
             }
         case .cafe:
             switch positioning {
@@ -186,7 +186,8 @@ struct CustomTest: Codable {
             rightDistractor = AudioSource(
                 type: .conversation("AudioSample1.mp3"),
                 location: rightLocation,
-                visualResourceLink: .asset("Man1.usdz"))
+                visualResourceLink: .animated("ANIM_StandingMan1.usdz"),
+                orientation: simd_quatf(angle: -.pi / 2, axis: [0, 1, 0]))
         case .cafe:
             leftDistractor = AudioSource(
                 type: .conversation("AudioSample1.mp3"),
@@ -227,10 +228,11 @@ struct CustomTest: Codable {
             return [
                 // The ambient noise for the home environment has distant people talking and a car passing by outside.
                 AudioSource(type: .ambient("Home_People Talking.mp3"),
-                            location: .init(x: -5.0, y: 0.0, z: -1.0),
-                            visualResourceLink: .asset("")),
+                            location: .init(x: 2.5, y: 0.6, z: 2.0),
+                            visualResourceLink: .animated("ANIM_StandingWoman1.usdz"),
+                            orientation: simd_quatf(angle: -.pi/2, axis: [0, 1, 0])),
                 AudioSource(type: .ambient("Home_CarPassing.mp3"),
-                            location: .init(x: 4.0, y: 0.0, z: 1.0),
+                            location: .init(x: 5.0, y: 0.0, z: 0.0),
                             visualResourceLink: .asset("")),
             ]
         case .cafe:
