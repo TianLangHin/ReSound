@@ -31,6 +31,7 @@ struct EntryPoint: App {
     @State var selectedOption: Int = -1
     
     @State var instructionOpen: Bool = false
+    @State private var openAlready: Bool = false
 
     /// A binded variable to suppress the main window when a new one pops up
     /// i.e., when the hearing test pops up.
@@ -48,14 +49,17 @@ struct EntryPoint: App {
                         chooseHearingTest()
                     }
                 }
+                .onAppear {
+                    openAlready = true
+                }
             }
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
+                dismissWindow(id: "main-window")
                 viewingState = .main
                 isHearingTestOpened = false
                 Task { @MainActor in
-                    openWindow(id: "main-window")
                     try? speechRec.startRec()
                 }
             }
