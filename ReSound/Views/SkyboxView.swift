@@ -21,6 +21,8 @@ struct SkyboxView: View {
                 await cafeEnvironment(content: content)
             } else if resourceName == "Train" {
                 await trainEnvironment(content: content)
+            } else if resourceName == "Home" {
+                await homeEnvironment(content: content)
             }
 
             if resourceName.hasSuffix(".exr") || resourceName.hasSuffix(".hdr") {
@@ -31,26 +33,44 @@ struct SkyboxView: View {
         }
     }
 
+    func homeEnvironment(content: RealityViewContent) async {
+        let container = Entity()
+
+        guard let homeEntity = try? await Entity(named: "untexturedHome.usdz") else {
+            return
+        }
+
+        container.addChild(homeEntity)
+        content.add(container)
+    }
+
     func trainEnvironment(content: RealityViewContent) async {
+        let container = Entity()
+
         guard let stationEntity = try? await Entity(named: "Station_Resized.usdz") else {
             return
         }
         stationEntity.position = [0, 0, -2]
-        content.add(stationEntity)
+        container.addChild(stationEntity)
+
         let trainLights: [Float] = [-30, -20, -10, 0, 10, 20, 30]
         let positions: [(Float, Float, Float)] = [(4, 4, 0)] + trainLights.map { z in (-5, 3, z) }
         for (x, y, z) in positions {
-            content.add(makeLight(position: .init(x: x, y: y, z: z), intensity: 1000000, attenuation: 500000))
+            container.addChild(makeLight(position: .init(x: x, y: y, z: z), intensity: 1000000, attenuation: 500000))
         }
+        container.position = CustomTest.Theme.train.offset()
+        content.add(container)
     }
 
     func cafeEnvironment(content: RealityViewContent) async {
+        let container = Entity()
+
         guard let cafeteriaEntity = try? await Entity(named: "Cafe_Resized.usdz") else {
             return
         }
         let originalRotation = cafeteriaEntity.transform.rotation
         cafeteriaEntity.transform.rotation = simd_quatf(angle: .pi, axis: [0, 1, 0]) * originalRotation
-        content.add(cafeteriaEntity)
+        container.addChild(cafeteriaEntity)
 
         let xPositions: [Float] = [-1.0, 1.0, 3.0]
         let zPositions: [Float] = [-2.0, 0.0, 2.0]
@@ -59,7 +79,7 @@ struct SkyboxView: View {
                 if x == xPositions[1] && z == zPositions[1] {
                     continue
                 }
-                content.add(makeLight(position: .init(x: x, y: 2, z: z), intensity: 20000, attenuation: 5000))
+                container.addChild(makeLight(position: .init(x: x, y: 2, z: z), intensity: 20000, attenuation: 5000))
             }
         }
 
@@ -67,44 +87,35 @@ struct SkyboxView: View {
             man1.transform.rotation = simd_quatf(angle: .pi, axis: [0, 1, 0]) * man1.transform.rotation
             man1.scale *= 1.2
             man1.position = [2.3, 0, 3.0]
-            content.add(man1)
+            container.addChild(man1)
         }
 
         if let man2 = await makeAnimated(name: "ANIM_SittingMan2.usdz") {
             man2.scale *= 1.2
             man2.position = [2.3, 0, 1.55]
-            content.add(man2)
-        }
-
-        if let man3 = await makeAnimated(name: "ANIM_SittingMan3.usdz") {
-            man3.transform.rotation = simd_quatf(angle: .pi, axis: [0, 1, 0]) * man3.transform.rotation
-            man3.position = [3.2, 0, 3.3]
-            content.add(man3)
-        }
-
-        if let man4 = await makeAnimated(name: "ANIM_SittingMan4.usdz") {
-            man4.scale *= 1.2
-            man4.position = [3.2, 0, 1.55]
-            content.add(man4)
+            container.addChild(man2)
         }
 
         if let woman1 = await makeAnimated(name: "ANIM_SittingWoman1.usdz") {
             woman1.transform.rotation = simd_quatf(angle: .pi / 2, axis: [0, 1, 0]) * woman1.transform.rotation
             woman1.scale *= 1.3
             woman1.position = [2.8, 0, -1.1]
-            content.add(woman1)
+            container.addChild(woman1)
         }
 
         if let woman2 = await makeAnimated(name: "ANIM_SittingWoman3.usdz") {
             woman2.transform.rotation = simd_quatf(angle: .pi / 2, axis: [0, 1, 0]) * woman2.transform.rotation
             woman2.scale *= 1.3
             woman2.position = [2.75, -0.1, -0.1]
-            content.add(woman2)
+            container.addChild(woman2)
         }
 
         if let skybox = await makeSkybox(name: "suburban_garden_4k.exr") {
-            content.add(skybox)
+            container.addChild(skybox)
         }
+
+        container.position = CustomTest.Theme.cafe.offset()
+        content.add(container)
     }
 
     func makeAnimated(

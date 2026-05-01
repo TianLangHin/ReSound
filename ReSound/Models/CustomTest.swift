@@ -58,6 +58,17 @@ struct CustomTest: Codable {
                 return "Train_"
             }
         }
+
+        func offset() -> SIMD3<Float> {
+            switch self {
+            case .home:
+                return .init(x: 0, y: 0, z: 0)
+            case .cafe:
+                return .init(x: 0, y: -0.5, z: 0.5)
+            case .train:
+                return .init(x: 0, y: -0.25, z: 0)
+            }
+        }
     }
 
     enum Positioning: Codable {
@@ -85,9 +96,13 @@ struct CustomTest: Codable {
                 chosenQuestion: question,
                 volumeLevel: self.targetVolume)
         }
+        var audioSources = (targetAudioSources + [leftDistractor, rightDistractor] + ambientSources)
+        for i in 0..<audioSources.count {
+            audioSources[i].location += self.background.offset()
+        }
         return .init(
             name: self.name,
-            audioSources: targetAudioSources + [leftDistractor, rightDistractor] + ambientSources,
+            audioSources: audioSources,
             questions: chosenQuestions,
             backgroundResourceLink: self.background.resourceLink())
     }
@@ -127,6 +142,15 @@ struct CustomTest: Codable {
 
     func generateDistractorLocations(_ positioning: Positioning, _ theme: Theme) -> (SIMD3<Float>, SIMD3<Float>) {
         switch theme {
+        case .home:
+            switch positioning {
+            case .easy:
+                return (.init(x: -2.0, y: 0.0, z: -0.5), .init(x: 2.0, y: 0.0, z: -0.5))
+            case .medium:
+                return (.init(x: -1.5, y: 0.0, z: -1.0), .init(x: 1.5, y: 0.0, z: -1.0))
+            case .hard:
+                return (.init(x: -1.0, y: 0.0, z: -1.5), .init(x: 1.0, y: 0.0, z: -1.5))
+            }
         case .cafe:
             switch positioning {
             case .easy:
@@ -136,14 +160,14 @@ struct CustomTest: Codable {
             case .hard:
                 return (.init(x: 0, y: 0.45, z: 0.7), .init(x: 2.0, y: 0.6, z: -0.5))
             }
-        default:
+        case .train:
             switch positioning {
             case .easy:
-                return (.init(x: -2.0, y: 0.0, z: -0.5), .init(x: 2.0, y: 0.0, z: -0.5))
+                return (.init(x: 0.0, y: 0.3, z: -3), .init(x: 3.3, y: 0.3, z: 0.0))
             case .medium:
-                return (.init(x: -1.5, y: 0.0, z: -1.0), .init(x: 1.5, y: 0.0, z: -1.0))
+                return (.init(x: 0.0, y: 0.3, z: -2), .init(x: 2.3, y: 0.3, z: 0.0))
             case .hard:
-                return (.init(x: -1.0, y: 0.0, z: -1.5), .init(x: 1.0, y: 0.0, z: -1.5))
+                return (.init(x: 0.0, y: 0.3, z: -1.5), .init(x: 1.3, y: 0.3, z: 0.0))
             }
         }
     }
@@ -184,13 +208,15 @@ struct CustomTest: Codable {
             }
         case .train:
             leftDistractor = AudioSource(
-                type: .ambient("Train_Birds.mp3"),
+                type: .conversation("AudioSample1.mp3"),
                 location: leftLocation,
-                visualResourceLink: .asset("Train_Pigeon.usdz"))
+                visualResourceLink: .animated("ANIM_StandingMan2.usdz"),
+                orientation: simd_quatf(angle: -.pi / 2, axis: [0, 1, 0]))
             rightDistractor = AudioSource(
-                type: .ambient("Train_PeopleTalking.mp3"),
+                type: .conversation("AudioSample2.mp3"),
                 location: rightLocation,
-                visualResourceLink: .asset("Man2.usdz"))
+                visualResourceLink: .animated("ANIM_StandingMan1.usdz"),
+                orientation: simd_quatf(angle: .pi, axis: [0, 1, 0]))
         }
         return (leftDistractor, rightDistractor)
     }
@@ -224,23 +250,32 @@ struct CustomTest: Codable {
             return [
                 // Train departing on the left, with a crowd of people on the right in conversation.
                 AudioSource(type: .ambient("Train_Departing.mp3"),
-                            location: .init(x: 0.0, y: 0.2, z: 0.0),
+                            location: .init(x: 0.0, y: 0.6, z: 0.0),
                             visualResourceLink: .animated("TrainCarriage_Resized.usdz")),
                 AudioSource(type: .ambient("Train_Departing.mp3"),
-                            location: .init(x: 0.0, y: 0.25, z: 13.0),
+                            location: .init(x: 0.0, y: 0.65, z: 13.0),
                             visualResourceLink: .animated("TrainCarriage_Resized.usdz")),
                 AudioSource(type: .ambient("Train_Departing.mp3"),
-                            location: .init(x: 0.0, y: 0.25, z: -13.0),
+                            location: .init(x: 0.0, y: 0.65, z: -13.0),
                             visualResourceLink: .animated("TrainCarriage_Resized.usdz")),
+               AudioSource(type: .conversation("Train_PeopleTalking.mp3"),
+                            location: .init(x: 1.8, y: 0.6, z: -0.5),
+                            visualResourceLink: .asset("Woman1.usdz")),
                 AudioSource(type: .conversation("Train_PeopleTalking.mp3"),
-                            location: .init(x: 1.5, y: 0.0, z: -0.5),
+                            location: .init(x: 2.8, y: 0.6, z: -0.5),
                             visualResourceLink: .asset("Woman1.usdz")),
                 AudioSource(type: .silent,
-                            location: .init(x: 1.3, y: 0.0, z: -0.7),
-                            visualResourceLink: .asset("Woman2.usdz")),
+                            location: .init(x: -1.0, y: 0.7, z: -2),
+                            visualResourceLink: .animated("ANIM_StandingWoman2.usdz"),
+                            orientation: simd_quatf(angle: .pi / 2, axis: [0, 1, 0])),
                 AudioSource(type: .silent,
-                            location: .init(x: 1.7, y: 0.0, z: -0.9),
-                            visualResourceLink: .asset("OldMan.usdz")),
+                            location: .init(x: -1.0, y: 0.8, z: -3),
+                            visualResourceLink: .animated("ANIM_StandingWoman3.usdz"),
+                            orientation: simd_quatf(angle: .pi / 2, axis: [0, 1, 0])),
+                AudioSource(type: .silent,
+                            location: .init(x: 0.0, y: 0.6, z: 7.0),
+                            visualResourceLink: .asset("Woman3.usdz"),
+                            orientation: simd_quatf(angle: .pi, axis: [0, 1, 0])),
             ]
         }
     }

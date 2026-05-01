@@ -10,6 +10,7 @@ import RealityKit
 
 class Presets {
     private static var audioSources: [AudioSource] = [
+        // Home resources.
         AudioSource(
             type: .ambient(nil),
             location: .init(x: 0.0, y: 0.0, z: -1.5),
@@ -22,48 +23,51 @@ class Presets {
             type: .ambient(nil),
             location: .init(x: -3.0, y: 0.5, z: 0.0),
             visualResourceLink: .presetBox),
+        // Train resources.
         AudioSource(
             type: .silent,
-            location: .init(x: 0.8, y: 0.6, z: -2.5),
+            location: .init(x: 0.8, y: 0.4, z: -2.5),
             visualResourceLink: .asset("Train_Loudspeaker.usdz"),
             orientation: simd_quatf(angle: -.pi / 2, axis: [0, 1, 0])),
         AudioSource(
-            type: .conversation("Train_PeopleTalking.mp3"),
-            location: .init(x: 3.0, y: 0.25, z: 0.5),
+            type: .conversation("AudioSample2.mp3"),
+            location: .init(x: 1.5, y: 0.0, z: -0.7),
             visualResourceLink: .animated("ANIM_StandingMan1.usdz"),
-            orientation: simd_quatf(angle: -.pi / 2, axis: [0, 1, 0])),
+            orientation: simd_quatf(angle: .zero, axis: [0, 1, 0])),
         AudioSource(
             type: .silent,
             location: .init(x: 0.8, y: 0.6, z: 1.5),
             visualResourceLink: .asset("Train_Loudspeaker.usdz"),
             orientation: simd_quatf(angle: -.pi / 2, axis: [0, 1, 0])),
+        // Cafe resources.
         AudioSource(
             type: .silent,
-            location: .init(x: -0.5, y: 0.2, z: -2.8),
+            location: .init(x: -0.5, y: -0.3, z: -2.8),
             visualResourceLink: .animated("ANIM_StandingWoman4.usdz")),
         AudioSource(
             type: .silent,
-            location: .init(x: 0.5, y: 0.35, z: -2.8),
+            location: .init(x: 0.5, y: -0.15, z: -2.8),
             visualResourceLink: .animated("ANIM_StandingWoman2.usdz")),
         AudioSource(
             type: .ambient("Cafe_Ambience.mp3"),
-            location: .init(x: 3.0, y: 0.0, z: 3.0),
+            location: .init(x: 3.0, y: 0.0, z: 2.0),
             visualResourceLink: .asset("")),
         AudioSource(
             type: .ambient("Cafe_Music.mp3"),
             location: .init(x: 0.0, y: 5.0, z: 0.0),
             visualResourceLink: .asset("")),
+        // More home resources.
         AudioSource(
             type: .ambient("Train_Departing.mp3"),
-            location: .init(x: 0.0, y: 0.2, z: 0.0),
+            location: .init(x: 0.0, y: 0.4, z: 0.0),
             visualResourceLink: .animated("TrainCarriage_Resized.usdz")),
         AudioSource(
             type: .ambient("Train_Departing.mp3"),
-            location: .init(x: 0.0, y: 0.4, z: 13.0),
+            location: .init(x: 0.0, y: 0.6, z: 13.0),
             visualResourceLink: .animated("TrainCarriage_Resized.usdz")),
         AudioSource(
             type: .ambient("Train_Departing.mp3"),
-            location: .init(x: 0.0, y: 0.5, z: -13.0),
+            location: .init(x: 0.0, y: 0.7, z: -13.0),
             visualResourceLink: .animated("TrainCarriage_Resized.usdz")),
     ]
 
@@ -89,6 +93,15 @@ class Presets {
                         Presets.audioSources[10],
                         Presets.audioSources[11],
                         Presets.audioSources[12],
+                        AudioSource(
+                            type: .conversation("AudioSample1.mp3"),
+                            location: .init(x: 1.5, y: 0.5, z: 0.5),
+                            visualResourceLink: .animated("ANIM_StandingMan1.usdz"),
+                            orientation: simd_quatf(angle: .pi, axis: [0, 1, 0])),
+                        AudioSource(type: .silent,
+                            location: .init(x: 0.0, y: 0.6, z: 7.0),
+                            visualResourceLink: .asset("Woman3.usdz"),
+                            orientation: simd_quatf(angle: .pi, axis: [0, 1, 0])),
                     ],
                     questions: [
                         AudioQuestion(focus: Presets.audioSources[3].id,
