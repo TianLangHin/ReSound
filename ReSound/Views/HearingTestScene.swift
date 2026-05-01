@@ -149,7 +149,7 @@ struct HearingTestScene: SwiftUI.Scene {
             RealityView { content in
                 content.add(Entity())
                 guard let audio = try? AudioFileResource.load(
-                    named: "Cafe_Worker.mp3",
+                    named: "CalibrationAudio.mp3",
                     configuration: AudioFileResource.Configuration(shouldLoop: true)) else {
                     print("Failed to load audio file.")
                     return

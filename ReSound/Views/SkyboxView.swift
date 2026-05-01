@@ -40,6 +40,10 @@ struct SkyboxView: View {
             return
         }
 
+        if let skybox = await makeSkybox(name: "suburban_garden_4k.exr") {
+            container.addChild(skybox)
+        }
+
         container.addChild(homeEntity)
         content.add(container)
     }
