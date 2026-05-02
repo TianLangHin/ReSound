@@ -86,7 +86,6 @@ struct EntryPoint: App {
     @ViewBuilder
     private func loadMainMenu() -> some View {
         VStack {
-            /// This internal VStack not really necessary but the other screens have this structure because of the ZStack with back button so this just makes the spacing consistent
             VStack {
                 Text("ReSound Hearing Test")
                     .font(.largeTitle)
@@ -179,20 +178,23 @@ struct EntryPoint: App {
     @ViewBuilder
     private func chooseHearingTest() -> some View {
         VStack {
-            mainMenuBackBar {
-                viewingState = .main
+            ZStack {
+                VStack {
+                    Text("Select Environment")
+                        .font(.largeTitle)
+                    Text("Choose your immersive testing environment")
+                        .font(.title)
+                        .foregroundStyle(.secondary)
+                }
+                .padding()
             }
-
-            VStack {
-                Text("Select Environment")
-                    .font(.largeTitle)
-
-                Text("Choose your immersive testing environment")
-                    .font(.title)
-                    .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity)
+            .overlay(alignment: .topLeading) {
+                backButton {
+                    viewingState = .main
+                }
             }
-            .padding()
-
+            
             Spacer()
                 .frame(height: 20)
             
@@ -206,7 +208,7 @@ struct EntryPoint: App {
             }
             .padding()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .padding()
         .onChange(of: speechRec.speechContent) { _, newContent in
             print("Speech content: \(newContent)")
@@ -289,27 +291,22 @@ struct EntryPoint: App {
         }
     }
 
+    /// Condensed the back bar and the back button into one method.
     @ViewBuilder
     private func backButton(action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack {
-                Image(systemName: "chevron.left")
-                    .font(.headline)
-                Text("Back")
-                    .font(.headline)
+        HStack {
+            Button(action: action) {
+                HStack {
+                    Image(systemName: "chevron.left")
+                        .font(.headline)
+                    Text("Back")
+                        .font(.headline)
+                }
+                .padding()
             }
-            .foregroundStyle(.primary)
-            .padding()
+            Spacer()
         }
-    }
-
-    @ViewBuilder
-    private func mainMenuBackBar(action: @escaping () -> Void) -> some View {
-        HStack(spacing: 0) {
-            backButton(action: action)
-            Spacer(minLength: 0)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity)
         .padding(.leading, 20)
         .padding(.top, 20)
     }

@@ -251,27 +251,24 @@ struct HearingTestScene: SwiftUI.Scene {
                         .foregroundStyle(.secondary)
                 }
                 .padding()
-                
+            }
+            .frame(maxWidth: .infinity)
+            .overlay(alignment: .topLeading) {
                 HStack {
-                    Button {
+                    exitButton {
                         exitEntirely()
                         if instructionOpen {
                             dismissWindow(id: "instruction-window")
                             instructionOpen = false
                         } else {
-                            print("alr close bro")
+                            print("Instructions window is already closed.")
                         }
-                    } label: {
-                        HStack {
-                            Text("Exit")
-                                .font(.headline)
-                            Image(systemName: "xmark")
-                                .font(.headline)
-                        }
-                        .padding()
                     }
                     Spacer()
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.leading, 20)
+                .padding(.top, 20)
             }
     
             Spacer()
@@ -403,19 +400,53 @@ struct HearingTestScene: SwiftUI.Scene {
                 .font(.title)
                 .foregroundStyle(.secondary)
                 .padding()
-            Button {
+            exitButton {
                 exitEntirely()
-            } label: {
-                Text("Exit back to main menu")
-                    .font(.title)
-                    .foregroundStyle(.secondary)
-                    .padding()
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .padding()
+            .frame(maxWidth: 400)
+            .padding(10)
+//            Button {
+//                exitEntirely()
+//            } label: {
+//                Text("Exit back to main menu")
+//                    .font(.title)
+//                    .foregroundStyle(.secondary)
+//                    .padding()
+//            }
+//            .buttonStyle(.borderedProminent)
+//            .controlSize(.large)
+//            .padding()
         }
         .padding()
+    }
+
+    /// Condensed the back bar and the back button into one method.
+    @ViewBuilder
+    private func exitButton(action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack {
+                Text("Exit")
+                    .font(.headline)
+                Image(systemName: "xmark")
+                    .font(.headline)
+            }
+            .padding()
+        }
+//        HStack {
+//            Button(action: action) {
+//                HStack {
+//                    Text("Exit")
+//                        .font(.headline)
+//                    Image(systemName: "xmark")
+//                        .font(.headline)
+//                }
+//                .padding()
+//            }
+//            Spacer()
+//        }
+//        .frame(maxWidth: .infinity)
+//        .padding(.leading, 20)
+//        .padding(.top, 20)
     }
 
     private func moveFromWaiting() {
