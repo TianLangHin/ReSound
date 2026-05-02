@@ -178,35 +178,41 @@ struct EntryPoint: App {
     
     @ViewBuilder
     private func chooseHearingTest() -> some View {
-        VStack {
+        /// Back bar stays top-leading; title + environment buttons use the same vertical contract as
+        /// `loadMainMenu` (centered), so switching main to environment does not shift content upward.
+        ZStack {
+            VStack {
+                VStack {
+                    Text("Select Environment")
+                        .font(.largeTitle)
+
+                    Text("Choose your immersive testing environment")
+                        .font(.title)
+                        .foregroundStyle(.secondary)
+                }
+                .padding()
+
+                Spacer()
+                    .frame(height: 20)
+
+                /// The user will get to select which hearing test environment
+                /// they wish to take (from the presets we have).
+                VStack {
+                    chooseEnvButton(buttonIndex: 0, title: "Home Room")
+                    chooseEnvButton(buttonIndex: 1, title: "Train Station")
+                    /// This last one needs to change when the third preset is added to the patient environment selection view. Since we don't have it imported yet, having buttonIndex: 2 results in an Index out of range error. Because of this placeholder logic choosing café will always take the user to train station instead. Change this to chooseEnvButton(buttonIndex: 2, title: "Café")
+                    chooseEnvButton(buttonIndex: 1, title: "Café")
+                }
+                .padding()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+        }
+        .overlay(alignment: .topLeading) {
             mainMenuBackBar {
                 viewingState = .main
             }
-
-            VStack {
-                Text("Select Environment")
-                    .font(.largeTitle)
-
-                Text("Choose your immersive testing environment")
-                    .font(.title)
-                    .foregroundStyle(.secondary)
-            }
-            .padding()
-
-            Spacer()
-                .frame(height: 20)
-            
-            /// The user will get to select which hearing test environment
-            /// they wish to take (from the presets we have).
-            VStack {
-                chooseEnvButton(buttonIndex: 0, title: "Home Room")
-                chooseEnvButton(buttonIndex: 1, title: "Train Station")
-                /// This last one needs to change when the third preset is added to the patient environment selection view. Since we don't have it imported yet, having buttonIndex: 2 results in an Index out of range error. Because of this placeholder logic choosing café will always take the user to train station instead. Change this to chooseEnvButton(buttonIndex: 2, title: "Café")
-                chooseEnvButton(buttonIndex: 1, title: "Café")
-            }
-            .padding()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
         .onChange(of: speechRec.speechContent) { _, newContent in
             print("Speech content: \(newContent)")
