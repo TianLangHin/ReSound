@@ -242,35 +242,15 @@ struct HearingTestScene: SwiftUI.Scene {
     @ViewBuilder
     private func startView() -> some View {
         VStack {
-            ZStack {
-                VStack {
-                    Text("Start Test: \(hearingTest.name)")
-                        .font(.largeTitle)
-                    Text("Start the hearing test when you're ready!")
-                        .font(.title)
-                        .foregroundStyle(.secondary)
-                }
-                .padding()
+            VStack {
+                Text("Start Test: \(hearingTest.name)")
+                    .font(.largeTitle)
+                Text("Start the hearing test when you're ready!")
+                    .font(.title)
+                    .foregroundStyle(.secondary)
             }
-            .frame(maxWidth: .infinity)
-            .overlay(alignment: .topLeading) {
-                HStack {
-                    exitButton {
-                        exitEntirely()
-                        if instructionOpen {
-                            dismissWindow(id: "instruction-window")
-                            instructionOpen = false
-                        } else {
-                            print("Instructions window is already closed.")
-                        }
-                    }
-                    Spacer()
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.leading, 20)
-                .padding(.top, 20)
-            }
-    
+            .padding()
+            
             Spacer()
                 .frame(height: 20)
             
@@ -322,7 +302,19 @@ struct HearingTestScene: SwiftUI.Scene {
             }
             .padding(10)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .padding()
+        .overlay(alignment: .topLeading) {
+            exitButton {
+                exitEntirely()
+                if instructionOpen {
+                    dismissWindow(id: "instruction-window")
+                    instructionOpen = false
+                } else {
+                    print("DEBUG: Instructions window is already closed.")
+                }
+            }
+        }
     }
 
     @ViewBuilder
@@ -400,22 +392,19 @@ struct HearingTestScene: SwiftUI.Scene {
                 .font(.title)
                 .foregroundStyle(.secondary)
                 .padding()
-            exitButton {
+            Button {
                 exitEntirely()
+            } label: {
+                HStack {
+                    Text("Exit")
+                        .font(.headline)
+                    Image(systemName: "xmark")
+                        .font(.headline)
+                }
+                .frame(maxWidth: 400)
+                .padding(.vertical, 20)
             }
-            .frame(maxWidth: 400)
             .padding(10)
-//            Button {
-//                exitEntirely()
-//            } label: {
-//                Text("Exit back to main menu")
-//                    .font(.title)
-//                    .foregroundStyle(.secondary)
-//                    .padding()
-//            }
-//            .buttonStyle(.borderedProminent)
-//            .controlSize(.large)
-//            .padding()
         }
         .padding()
     }
@@ -423,30 +412,21 @@ struct HearingTestScene: SwiftUI.Scene {
     /// Condensed the back bar and the back button into one method.
     @ViewBuilder
     private func exitButton(action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack {
-                Text("Exit")
-                    .font(.headline)
-                Image(systemName: "xmark")
-                    .font(.headline)
+        HStack {
+            Button(action: action) {
+                HStack {
+                    Text("Exit")
+                        .font(.headline)
+                    Image(systemName: "xmark")
+                        .font(.headline)
+                }
+                .padding()
             }
-            .padding()
+            Spacer()
         }
-//        HStack {
-//            Button(action: action) {
-//                HStack {
-//                    Text("Exit")
-//                        .font(.headline)
-//                    Image(systemName: "xmark")
-//                        .font(.headline)
-//                }
-//                .padding()
-//            }
-//            Spacer()
-//        }
-//        .frame(maxWidth: .infinity)
-//        .padding(.leading, 20)
-//        .padding(.top, 20)
+        .frame(maxWidth: .infinity)
+        .padding(.leading, 20)
+        .padding(.top, 20)
     }
 
     private func moveFromWaiting() {

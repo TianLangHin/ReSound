@@ -138,7 +138,6 @@ struct EntryPoint: App {
                 .padding(10)
                 
                 Button {
-                    // Go to view history page which is not currently implemented.
                     transition(from: "main-window", to: "history-window")
                 } label: {
                     // Persistent storage which stores a list of patient scores and other related details.
@@ -178,22 +177,14 @@ struct EntryPoint: App {
     @ViewBuilder
     private func chooseHearingTest() -> some View {
         VStack {
-            ZStack {
-                VStack {
-                    Text("Select Environment")
-                        .font(.largeTitle)
-                    Text("Choose your immersive testing environment")
-                        .font(.title)
-                        .foregroundStyle(.secondary)
-                }
-                .padding()
+            VStack {
+                Text("Select Environment")
+                    .font(.largeTitle)
+                Text("Choose your immersive testing environment")
+                    .font(.title)
+                    .foregroundStyle(.secondary)
             }
-            .frame(maxWidth: .infinity)
-            .overlay(alignment: .topLeading) {
-                backButton {
-                    viewingState = .main
-                }
-            }
+            .padding()
             
             Spacer()
                 .frame(height: 20)
@@ -210,6 +201,11 @@ struct EntryPoint: App {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .padding()
+        .overlay(alignment: .topLeading) {
+            backButton {
+                viewingState = .main
+            }
+        }
         .onChange(of: speechRec.speechContent) { _, newContent in
             print("Speech content: \(newContent)")
             voiceComHandler(newContent)
@@ -238,7 +234,6 @@ struct EntryPoint: App {
             ZStack {
                 Text(title)
                     .font(.headline)
-                
                 HStack {
                     Spacer()
                     Image(systemName: "chevron.right")
@@ -306,7 +301,7 @@ struct EntryPoint: App {
             }
             Spacer()
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.leading, 20)
         .padding(.top, 20)
     }

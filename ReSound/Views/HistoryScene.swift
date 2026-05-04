@@ -49,19 +49,13 @@ struct HistoryScene: Scene {
     @ViewBuilder
     private func scoreListView() -> some View {
         VStack {
-            historyBackBar {
-                transition(from: "history-window", to: "main-window")
-            }
-
             VStack {
                 Text("Test History")
                     .font(.largeTitle)
-
                 Text("View past hearing test scores on this device")
                     .font(.title)
                     .foregroundStyle(.secondary)
             }
-            .frame(maxWidth: .infinity)
             .padding()
 
             Spacer()
@@ -70,10 +64,12 @@ struct HistoryScene: Scene {
             VStack {
                 if savedScores.isEmpty {
                     Spacer()
+                        .frame(height: 102)
                     Text("No test attempts on this device yet.")
                         .font(.body)
                         .padding()
                     Spacer()
+                        .frame(height: 102)
                 } else {
                     List {
                         ForEach(savedScores, id: \.id) { score in
@@ -82,10 +78,10 @@ struct HistoryScene: Scene {
                                 historyState = .detail
                             } label: {
                                 HStack {
-                                    Text(score.hearingTestName)
+                                    Text("\(score.hearingTestName) (\(scoreDetails.timeAttempted.formatted(date: .abbreviated, time: .shortened)))")
                                         .font(.headline)
                                         .padding(.vertical, 10)
-
+                                    
                                     Spacer()
 
                                     Image(systemName: "chevron.right")
@@ -107,18 +103,18 @@ struct HistoryScene: Scene {
             }
             .padding()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .padding()
+        .overlay(alignment: .topLeading) {
+            backButton {
+                transition(from: "history-window", to: "main-window")
+            }
+        }
     }
 
     @ViewBuilder
     private func scoreDetailView() -> some View {
         VStack {
-            historyBackBar {
-                savedScores = PersistStorage.testStorage.loadScore()
-                historyState = .begin
-            }
-
             VStack {
                 Text(scoreDetails.hearingTestName)
                     .font(.largeTitle)
@@ -127,7 +123,6 @@ struct HistoryScene: Scene {
                     .font(.title)
                     .foregroundStyle(.secondary)
             }
-            .frame(maxWidth: .infinity)
             .padding()
 
             Spacer()
@@ -159,8 +154,15 @@ struct HistoryScene: Scene {
             }
             .frame(width: 700)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .padding()
+        .overlay(alignment: .topLeading) {
+            backButton {
+                savedScores = PersistStorage.testStorage.loadScore()
+                historyState = .begin
+            }
+
+        }
     }
 
     @MainActor
@@ -172,33 +174,26 @@ struct HistoryScene: Scene {
         }
     }
 
-    // MARK: (similar method to `ClinicianScene`)
-
+    /// Condensed the back bar and the back button into one method.
     @ViewBuilder
     private func backButton(action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack {
-                Image(systemName: "chevron.left")
-                    .font(.headline)
-                Text("Back")
-                    .font(.headline)
+        HStack {
+            Button(action: action) {
+                HStack {
+                    Image(systemName: "chevron.left")
+                        .font(.headline)
+                    Text("Back")
+                        .font(.headline)
+                }
+                .padding()
             }
-            .foregroundStyle(.primary)
-            .padding()
-        }
-    }
-
-    @ViewBuilder
-    private func historyBackBar(action: @escaping () -> Void) -> some View {
-        HStack(spacing: 0) {
-            backButton(action: action)
-            Spacer(minLength: 0)
+            Spacer()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.leading, 20)
         .padding(.top, 20)
     }
-    
+
     private func voiceComHandler(_ speech: String) {
         let voiceInput = speech.lowercased().components(separatedBy: .whitespaces).last ?? ""
         let words = speech.lowercased().components(separatedBy: .whitespaces)
