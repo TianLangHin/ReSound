@@ -86,7 +86,6 @@ struct EntryPoint: App {
     @ViewBuilder
     private func loadMainMenu() -> some View {
         VStack {
-            /// This internal VStack not really necessary but the other screens have this structure because of the ZStack with back button so this just makes the spacing consistent
             VStack {
                 Text("ReSound Hearing Test")
                     .font(.largeTitle)
@@ -139,7 +138,6 @@ struct EntryPoint: App {
                 .padding(10)
                 
                 Button {
-                    // Go to view history page which is not currently implemented.
                     transition(from: "main-window", to: "history-window")
                 } label: {
                     // Persistent storage which stores a list of patient scores and other related details.
@@ -179,20 +177,15 @@ struct EntryPoint: App {
     @ViewBuilder
     private func chooseHearingTest() -> some View {
         VStack {
-            mainMenuBackBar {
-                viewingState = .main
-            }
-
             VStack {
                 Text("Select Environment")
                     .font(.largeTitle)
-
                 Text("Choose your immersive testing environment")
                     .font(.title)
                     .foregroundStyle(.secondary)
             }
             .padding()
-
+            
             Spacer()
                 .frame(height: 20)
             
@@ -206,8 +199,13 @@ struct EntryPoint: App {
             }
             .padding()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .padding()
+        .overlay(alignment: .topLeading) {
+            backButton {
+                viewingState = .main
+            }
+        }
         .onChange(of: speechRec.speechContent) { _, newContent in
             print("Speech content: \(newContent)")
             voiceComHandler(newContent)
@@ -236,7 +234,6 @@ struct EntryPoint: App {
             ZStack {
                 Text(title)
                     .font(.headline)
-                
                 HStack {
                     Spacer()
                     Image(systemName: "chevron.right")
@@ -289,25 +286,20 @@ struct EntryPoint: App {
         }
     }
 
+    /// Condensed the back bar and the back button into one method.
     @ViewBuilder
     private func backButton(action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack {
-                Image(systemName: "chevron.left")
-                    .font(.headline)
-                Text("Back")
-                    .font(.headline)
+        HStack {
+            Button(action: action) {
+                HStack {
+                    Image(systemName: "chevron.left")
+                        .font(.headline)
+                    Text("Back")
+                        .font(.headline)
+                }
+                .padding()
             }
-            .foregroundStyle(.primary)
-            .padding()
-        }
-    }
-
-    @ViewBuilder
-    private func mainMenuBackBar(action: @escaping () -> Void) -> some View {
-        HStack(spacing: 0) {
-            backButton(action: action)
-            Spacer(minLength: 0)
+            Spacer()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.leading, 20)

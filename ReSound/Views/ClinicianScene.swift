@@ -125,10 +125,6 @@ struct ClinicianScene: Scene {
     @ViewBuilder
     private func beginView() -> some View {
         VStack {
-            clinicianBackBar {
-                transition(from: "clinician-window", to: "main-window")
-            }
-            
             /// Put any other title or subtitle text here for clinician view
             VStack {
                 Text("Hearing Test Customisation")
@@ -137,7 +133,6 @@ struct ClinicianScene: Scene {
                     .font(.title)
                     .foregroundStyle(. secondary)
             }
-            .frame(maxWidth: .infinity)
             .padding()
             
             Spacer()
@@ -146,10 +141,12 @@ struct ClinicianScene: Scene {
             VStack {
                 if savedCustoms.isEmpty {
                     Spacer()
+                        .frame(height: 105)
                     Text("No saved tests on this device yet.")
                         .font(.body)
                         .padding()
                     Spacer()
+                        .frame(height: 105)
                 } else {
                     List {
                         ForEach(savedCustoms, id: \.id) { test in
@@ -160,7 +157,7 @@ struct ClinicianScene: Scene {
                                 }
                             } label: {
                                 HStack {
-                                    Text("\(test.name) (ID: \(test.id))")
+                                    Text("\(test.name)")
                                         .font(.headline)
                                         .padding(.vertical, 16)
                                     Spacer()
@@ -205,8 +202,13 @@ struct ClinicianScene: Scene {
         }
         /// Fill the window and pin content to the top; otherwise a short stack can sit lower
         /// than a tall one and the back row appears to “move down” when switching screens.
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .padding()
+        .overlay(alignment: .topLeading) {
+            backButton {
+                transition(from: "clinician-window", to: "main-window")
+            }
+        }
         .onChange(of: speechRec.speechContent) { _, newContent in
             print("Speech content: \(newContent)")
             voiceComHandler(newContent)
@@ -220,10 +222,6 @@ struct ClinicianScene: Scene {
     @ViewBuilder
     private func updateView() -> some View {
         VStack(spacing: editorSectionSpacing) {
-            clinicianBackBar {
-                clinicianState = .begin
-            }
-            
             VStack(alignment: .leading, spacing: 12) {
                 Text("Test Name")
                     .font(.headline)
@@ -355,8 +353,13 @@ struct ClinicianScene: Scene {
         }
         /// Full width so the back row spans the window; full height + top alignment so the
         /// back row matches `beginView` vertically when this screen has less content.
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .padding()
+        .overlay(alignment: .topLeading) {
+            backButton {
+                clinicianState = .begin
+            }
+        }
         .onChange(of: speechRec.speechContent) { _, newContent in
             print("Speech content: \(newContent)")
             voiceComHandler(newContent)
@@ -490,32 +493,26 @@ struct ClinicianScene: Scene {
         return nil
     }
     
+    /// Condensed the back bar and the back button into one method.
     @ViewBuilder
     private func backButton(action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack {
-                Image(systemName: "chevron.left")
-                    .font(.headline)
-                Text("Back")
-                    .font(.headline)
+        HStack {
+            Button(action: action) {
+                HStack {
+                    Image(systemName: "chevron.left")
+                        .font(.headline)
+                    Text("Back")
+                        .font(.headline)
+                }
+                .padding()
             }
-            .foregroundStyle(.primary)
-            .padding()
-        }
-    }
-    
-    /// Shared back bar for `beginView` and `updateView` (same width, padding, alignment).
-    @ViewBuilder
-    private func clinicianBackBar(action: @escaping () -> Void) -> some View {
-        HStack(spacing: 0) {
-            backButton(action: action)
-            Spacer(minLength: 0)
+            Spacer()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.leading, 20)
         .padding(.top, 20)
     }
-    
+
     private func voiceOptions(_ voiceInput: String) {
         if voiceInput.contains("home") {
             customTest.background = .home

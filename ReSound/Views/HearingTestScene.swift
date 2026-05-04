@@ -242,38 +242,15 @@ struct HearingTestScene: SwiftUI.Scene {
     @ViewBuilder
     private func startView() -> some View {
         VStack {
-            ZStack {
-                VStack {
-                    Text("Start Test: \(hearingTest.name)")
-                        .font(.largeTitle)
-                    Text("Start the hearing test when you're ready!")
-                        .font(.title)
-                        .foregroundStyle(.secondary)
-                }
-                .padding()
-                
-                HStack {
-                    Button {
-                        exitEntirely()
-                        if instructionOpen {
-                            dismissWindow(id: "instruction-window")
-                            instructionOpen = false
-                        } else {
-                            print("alr close bro")
-                        }
-                    } label: {
-                        HStack {
-                            Text("Exit")
-                                .font(.headline)
-                            Image(systemName: "xmark")
-                                .font(.headline)
-                        }
-                        .padding()
-                    }
-                    Spacer()
-                }
+            VStack {
+                Text("Start Test: \(hearingTest.name)")
+                    .font(.largeTitle)
+                Text("Start the hearing test when you're ready!")
+                    .font(.title)
+                    .foregroundStyle(.secondary)
             }
-    
+            .padding()
+            
             Spacer()
                 .frame(height: 20)
             
@@ -325,7 +302,19 @@ struct HearingTestScene: SwiftUI.Scene {
             }
             .padding(10)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .padding()
+        .overlay(alignment: .topLeading) {
+            exitButton {
+                exitEntirely()
+                if instructionOpen {
+                    dismissWindow(id: "instruction-window")
+                    instructionOpen = false
+                } else {
+                    print("DEBUG: Instructions window is already closed.")
+                }
+            }
+        }
     }
 
     @ViewBuilder
@@ -406,16 +395,38 @@ struct HearingTestScene: SwiftUI.Scene {
             Button {
                 exitEntirely()
             } label: {
-                Text("Exit back to main menu")
-                    .font(.title)
-                    .foregroundStyle(.secondary)
-                    .padding()
+                HStack {
+                    Text("Exit")
+                        .font(.headline)
+                    Image(systemName: "xmark")
+                        .font(.headline)
+                }
+                .frame(maxWidth: 400)
+                .padding(.vertical, 20)
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .padding()
+            .padding(10)
         }
         .padding()
+    }
+
+    /// Condensed the back bar and the back button into one method.
+    @ViewBuilder
+    private func exitButton(action: @escaping () -> Void) -> some View {
+        HStack {
+            Button(action: action) {
+                HStack {
+                    Text("Exit")
+                        .font(.headline)
+                    Image(systemName: "xmark")
+                        .font(.headline)
+                }
+                .padding()
+            }
+            Spacer()
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.leading, 20)
+        .padding(.top, 20)
     }
 
     private func moveFromWaiting() {
