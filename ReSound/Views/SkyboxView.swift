@@ -17,56 +17,157 @@ struct SkyboxView: View {
 
     var body: some View {
         RealityView { content in
-            if resourceName == "bush_restaurant_4k.exr" {
-                guard let cafeteriaEntity = try? await Entity(named: "new cafe.usdz") else {
-                    return
-                }
-                cafeteriaEntity.scale *= 0.01
-                cafeteriaEntity.position = [0, -0.3, 0]
-                let originalRotation = cafeteriaEntity.transform.rotation
-                let newRotation = simd_quatf(angle: .pi, axis: [0, 1, 0])
-                cafeteriaEntity.transform.rotation = newRotation * originalRotation
-                content.add(cafeteriaEntity)
-
-                let size: Float = 2.2
-                let increments: [Float] = [-size, 0, size]
-                for x in increments {
-                    for z in increments {
-                        content.add(makeLight(position: .init(x: x, y: 1.5, z: z)))
-                    }
-                }
-
-                guard let resource = try? await TextureResource(named: "suburban_garden_4k.exr") else {
-                    return
-                }
-                var m = UnlitMaterial()
-                m.color = .init(texture: .init(resource))
-                let skybox = ModelEntity(mesh: MeshResource.generateSphere(radius: 200), materials: [m])
-                skybox.scale = .init(x: -1, y: 1, z : 1)
-                content.add(skybox)
-                return
+            if resourceName == "Cafe" {
+                await cafeEnvironment(content: content)
+            } else if resourceName == "Train" {
+                await trainEnvironment(content: content)
+            } else if resourceName == "Home" {
+                await homeEnvironment(content: content)
             }
 
-            /// The resource is loaded. If it fails, nothing will show.
-            guard let resource = try? await TextureResource(named: resourceName) else {
-                return
+            if resourceName.hasSuffix(".exr") || resourceName.hasSuffix(".hdr") {
+                if let skybox = await makeSkybox(name: resourceName) {
+                    content.add(skybox)
+                }
             }
-
-            /// We generate the sphere and place the resource as a texture on it.
-            let sphereMesh = MeshResource.generateSphere(radius: 200.0)
-            var material = UnlitMaterial()
-            material.color = .init(texture: .init(resource))
-
-            /// We construct the entity and flip it so the texture is on the inside.
-            let skyboxEntity = ModelEntity(mesh: sphereMesh, materials: [material])
-            skyboxEntity.scale = .init(x: -1, y: 1, z: 1)
-            content.add(skyboxEntity)
         }
     }
 
-    func makeLight(position: SIMD3<Float>) -> Entity {
+    func homeEnvironment(content: RealityViewContent) async {
+        let container = Entity()
+
+        guard let homeEntity = try? await Entity(named: "Home.usdz") else {
+            return
+        }
+        let originalRotation = homeEntity.transform.rotation
+        homeEntity.transform.rotation = simd_quatf(angle: .pi, axis: [0, 1, 0]) * originalRotation
+        container.addChild(homeEntity)
+
+        if let skybox = await makeSkybox(name: "suburban_garden_4k.exr") {
+            container.addChild(skybox)
+        }
+
+        let backboard = ModelEntity(
+            mesh: .generatePlane(width: 5, depth: 5),
+            materials: [UnlitMaterial(color: .black)])
+        backboard.position = [0, 0, -2.6]
+        backboard.orientation = simd_quatf(angle: .pi / 2, axis: [1, 0, 0])
+        container.addChild(backboard)
+
+        container.addChild(homeEntity)
+        content.add(container)
+    }
+
+    func trainEnvironment(content: RealityViewContent) async {
+        let container = Entity()
+
+        guard let stationEntity = try? await Entity(named: "Station_Resized.usdz") else {
+            return
+        }
+        stationEntity.position = [0, 0, -2]
+        container.addChild(stationEntity)
+
+        let trainLights: [Float] = [-30, -20, -10, 0, 10, 20, 30]
+        let positions: [(Float, Float, Float)] = [(4, 4, 0)] + trainLights.map { z in (-5, 3, z) }
+        for (x, y, z) in positions {
+            container.addChild(makeLight(position: .init(x: x, y: y, z: z), intensity: 1000000, attenuation: 500000))
+        }
+        container.position = CustomTest.Theme.train.offset()
+        content.add(container)
+    }
+
+    func cafeEnvironment(content: RealityViewContent) async {
+        let container = Entity()
+
+        guard let cafeteriaEntity = try? await Entity(named: "Cafe_Resized.usdz") else {
+            return
+        }
+        let originalRotation = cafeteriaEntity.transform.rotation
+        cafeteriaEntity.transform.rotation = simd_quatf(angle: .pi, axis: [0, 1, 0]) * originalRotation
+        container.addChild(cafeteriaEntity)
+
+        let xPositions: [Float] = [-1.0, 1.0, 3.0]
+        let zPositions: [Float] = [-2.0, 0.0, 2.0]
+        for x in xPositions {
+            for z in zPositions {
+                if x == xPositions[1] && z == zPositions[1] {
+                    continue
+                }
+                container.addChild(makeLight(position: .init(x: x, y: 2, z: z), intensity: 20000, attenuation: 5000))
+            }
+        }
+
+        if let man1 = await makeAnimated(name: "ANIM_SittingMan1.usdz") {
+            man1.transform.rotation = simd_quatf(angle: .pi, axis: [0, 1, 0]) * man1.transform.rotation
+            man1.scale *= 1.2
+            man1.position = [2.3, 0, 3.0]
+            container.addChild(man1)
+        }
+
+        if let man2 = await makeAnimated(name: "ANIM_SittingMan2.usdz") {
+            man2.scale *= 1.2
+            man2.position = [2.3, 0, 1.55]
+            container.addChild(man2)
+        }
+
+        if let woman1 = await makeAnimated(name: "ANIM_SittingWoman1.usdz") {
+            woman1.transform.rotation = simd_quatf(angle: .pi / 2, axis: [0, 1, 0]) * woman1.transform.rotation
+            woman1.scale *= 1.3
+            woman1.position = [2.8, 0, -1.1]
+            container.addChild(woman1)
+        }
+
+        if let woman2 = await makeAnimated(name: "ANIM_SittingWoman3.usdz") {
+            woman2.transform.rotation = simd_quatf(angle: .pi / 2, axis: [0, 1, 0]) * woman2.transform.rotation
+            woman2.scale *= 1.3
+            woman2.position = [2.75, -0.1, -0.1]
+            container.addChild(woman2)
+        }
+
+        if let skybox = await makeSkybox(name: "suburban_garden_4k.exr") {
+            container.addChild(skybox)
+        }
+
+        container.position = CustomTest.Theme.cafe.offset()
+        content.add(container)
+    }
+
+    func makeAnimated(
+        name: String,
+        anim: String = "default subtree animation",
+        looping: Bool = true
+    ) async -> Entity? {
+        guard let entity = try? await Entity(named: name) else {
+            print("Cannot load animated entity.")
+            return nil
+        }
+        guard let anim = entity
+            .components[AnimationLibraryComponent.self]?
+            .animations[anim] else {
+            print("Cannot load animation.")
+            return nil
+        }
+        let animation = looping ? anim.repeat() : anim
+        entity.playAnimation(animation)
+        return entity
+    }
+
+    func makeSkybox(name: String) async -> ModelEntity? {
+        guard let resource = try? await TextureResource(named: name) else {
+            print("Cannot load skybox.")
+            return nil
+        }
+        let sphereMesh = MeshResource.generateSphere(radius: 100.0)
+        var material = UnlitMaterial()
+        material.color = .init(texture: .init(resource))
+        let skyboxEntity = ModelEntity(mesh: sphereMesh, materials: [material])
+        skyboxEntity.scale = .init(x: -1, y: 1, z: 1)
+        return skyboxEntity
+    }
+
+    func makeLight(position: SIMD3<Float>, intensity: Float, attenuation: Float) -> Entity {
         let lightingEntity = Entity()
-        let lightSource = PointLightComponent(color: .white, intensity: 20000, attenuationRadius: 5000)
+        let lightSource = PointLightComponent(color: .white, intensity: intensity, attenuationRadius: attenuation)
         lightingEntity.components.set(lightSource)
         lightingEntity.position = position
         return lightingEntity

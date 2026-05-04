@@ -13,21 +13,7 @@ class PersistStorage {
     static let testStorage = PersistStorage()
     private let key = "resound.hearingTests"
     private let scoreKey = "resound.scores"
-    
-    func saveTest(_ tests: [HearingTest]) {
-        if let data = try? JSONEncoder().encode(tests) {
-            UserDefaults.standard.set(data, forKey: key)
-        }
-    }
-    
-    func loadTest() -> [HearingTest] {
-        guard let data = UserDefaults.standard.data(forKey: key),
-              let tests = try? JSONDecoder().decode([HearingTest].self, from: data)
-        else { return [] }
-        return tests
-    }
-    
-    
+
     // Have to save custom test for extra variable too (I dont want to add more stuffs in HearingTest.Swift)
     func saveCustom(_ customs: [CustomTest]) {
         if let data = try? JSONEncoder().encode(customs) {

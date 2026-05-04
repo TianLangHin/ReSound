@@ -28,7 +28,6 @@ struct ClinicianScene: Scene {
 
     @State var isHearingTestOpened = false
     
-    @State var savedTests: [HearingTest] = PersistStorage.testStorage.loadTest()
     @State var savedCustoms: [CustomTest] = PersistStorage.testStorage.loadCustom()
 
     @State private var numberDebounceTask: Task<Void, Never>? = nil
@@ -131,7 +130,7 @@ struct ClinicianScene: Scene {
                     .font(.largeTitle)
                 Text("Add or edit your own custom test environment")
                     .font(.title)
-                    .foregroundStyle(. secondary)
+                    .foregroundStyle(.secondary)
             }
             .padding()
             
@@ -168,9 +167,7 @@ struct ClinicianScene: Scene {
                             }
                         }
                         .onDelete { offsets in
-                            savedTests.remove(atOffsets: offsets)
                             savedCustoms.remove(atOffsets: offsets)
-                            PersistStorage.testStorage.saveTest(savedTests)
                             PersistStorage.testStorage.saveCustom(savedCustoms)
                         }
                     }
@@ -184,7 +181,7 @@ struct ClinicianScene: Scene {
             Button {
                 // Set name for the new test saving because no text field
                 customTest = CustomTest()
-                customTest.name = "Custom Test \(savedTests.count + 1)"
+                customTest.name = "Custom Test \(savedCustoms.count + 1)"
                 clinicianState = .add
             } label: {
                 HStack {
@@ -331,15 +328,12 @@ struct ClinicianScene: Scene {
                     let test = customTest.generateTest()
                     switch clinicianState {
                     case .edit(let index):
-                        savedTests[index] = test
                         savedCustoms[index] = customTest
                     case .add:
-                        savedTests.append(test)
                         savedCustoms.append(customTest)
                     case .begin:
                         break
                     }
-                    PersistStorage.testStorage.saveTest(savedTests)
                     PersistStorage.testStorage.saveCustom(savedCustoms)
                     clinicianState = .begin
                 } label: {
@@ -388,7 +382,7 @@ struct ClinicianScene: Scene {
         case .begin:
             if voiceInput.contains("add") {
                 customTest = CustomTest()
-                customTest.name = "Custom Test \(savedTests.count + 1)"
+                customTest.name = "Custom Test \(savedCustoms.count + 1)"
                 clinicianState = .add
             }
             if let numberIndex = words.lastIndex(of: "number"), numberIndex + 1 < words.count {
@@ -436,11 +430,8 @@ struct ClinicianScene: Scene {
             
         case .add:
             if voiceInput.contains("save") {
-                let test = customTest.generateTest()
                 savedCustoms.append(customTest)
-                savedTests.append(test)
                 PersistStorage.testStorage.saveCustom(savedCustoms)
-                PersistStorage.testStorage.saveTest(savedTests)
                 clinicianState = .begin
             } else if voiceInput.contains("back") {
                 clinicianState = .begin
@@ -458,6 +449,12 @@ struct ClinicianScene: Scene {
     }
 
     private func applyMappedSelection(from voiceInput: String) {
+        if voiceInput.contains("practice") {
+            hearingTest = customTest.generateTest()
+            isHearingTestOpened = true
+            transition(from: "clinician-window", to: "practice-window")
+            return
+        }
         if let background = mappedBackground(from: voiceInput) {
             customTest.background = background
             return

@@ -14,6 +14,7 @@
 /// This also includes random question generation depending on the theme.
 ///
 import Foundation
+import RealityKit
 
 struct CustomTest: Codable {
     var id: UUID = UUID()
@@ -39,11 +40,11 @@ struct CustomTest: Codable {
         func resourceLink() -> String {
             switch self {
             case .home:
-                return "small_empty_room_1_4k.hdr"
+                return "Home"
             case .cafe:
-                return "bush_restaurant_4k.exr"
+                return "Cafe"
             case .train:
-                return "dresden_station_night_4k.exr"
+                return "Train"
             }
         }
 
@@ -57,6 +58,17 @@ struct CustomTest: Codable {
                 return "Train_"
             }
         }
+
+        func offset() -> SIMD3<Float> {
+            switch self {
+            case .home:
+                return .init(x: 0, y: 0, z: 0)
+            case .cafe:
+                return .init(x: 0, y: -0.5, z: 0.5)
+            case .train:
+                return .init(x: 0, y: -0.25, z: 0)
+            }
+        }
     }
 
     enum Positioning: Codable {
@@ -67,8 +79,7 @@ struct CustomTest: Codable {
 
     func generateTest() -> HearingTest {
         let targetAudioSources = self.generateTargetAudio(self.background)
-        let (left, right) = self.generateDistractorLocations(self.positioning)
-        let (leftDistractor, rightDistractor) = self.generateDistractorSources(self.background, left, right)
+        let (leftDistractor, rightDistractor) = self.generateDistractorSources(self.positioning, self.background)
         let ambientSources = self.generateAmbientSources(self.background)
         let possibleQuestions = Presets.possibleQuestions.filter({
             $0.audioResourceLink.starts(with: self.background.prefix())
@@ -85,9 +96,13 @@ struct CustomTest: Codable {
                 chosenQuestion: question,
                 volumeLevel: self.targetVolume)
         }
+        var audioSources = (targetAudioSources + [leftDistractor, rightDistractor] + ambientSources)
+        for i in 0..<audioSources.count {
+            audioSources[i].location += self.background.offset()
+        }
         return .init(
             name: self.name,
-            audioSources: targetAudioSources + [leftDistractor, rightDistractor] + ambientSources,
+            audioSources: audioSources,
             questions: chosenQuestions,
             backgroundResourceLink: self.background.resourceLink())
     }
@@ -97,49 +112,71 @@ struct CustomTest: Codable {
         case .home:
             let tv = AudioSource(
                 type: .silent,
-                location: .init(x: 0.0, y: 0.0, z: -1.0),
-                visualResourceLink: .asset("Home_TV.usdz"))
+                location: .init(x: 0.15, y: 0.7, z: -2.1),
+                visualResourceLink: .video("weather-intro"))
             return [tv]
         case .cafe:
             let serverLeft = AudioSource(
                 type: .silent,
-                location: .init(x: -0.5, y: 0.0, z: -2.8),
-                visualResourceLink: .asset("Woman1.usdz"))
+                location: .init(x: -0.5, y: 0.1, z: -2.8),
+                visualResourceLink: .animated("ANIM_StandingWoman4.usdz"))
             let serverRight = AudioSource(
                 type: .silent,
-                location: .init(x: 0.5, y: 0.0, z: -2.8),
-                visualResourceLink: .asset("Woman2.usdz"))
+                location: .init(x: 0.5, y: 0.25, z: -2.8),
+                visualResourceLink: .animated("ANIM_StandingWoman2.usdz"))
             return [serverLeft, serverRight]
         case .train:
             let speakerLeft = AudioSource(
-                type: .conversation("AudioSample1.mp3"),
-                location: .init(x: -0.5, y: 0.0, z: -1.5),
-                visualResourceLink: .asset("Train_Speaker.usdz"))
+                type: .silent,
+                location: .init(x: 0.8, y: 0.6, z: -2.5),
+                visualResourceLink: .asset("Train_Loudspeaker.usdz"),
+                orientation: simd_quatf(angle: -.pi / 2, axis: [0, 1, 0]))
             let speakerRight = AudioSource(
-                type: .conversation("AudioSample1.mp3"),
-                location: .init(x: 0.5, y: 0.0, z: -1.5),
-                visualResourceLink: .asset("Train_Speaker.usdz"))
+                type: .silent,
+                location: .init(x: 0.8, y: 0.6, z: 1.5),
+                visualResourceLink: .asset("Train_Loudspeaker.usdz"),
+                orientation: simd_quatf(angle: -.pi / 2, axis: [0, 1, 0]))
             return [speakerLeft, speakerRight]
         }
     }
 
-    func generateDistractorLocations(_ positioning: Positioning) -> (SIMD3<Float>, SIMD3<Float>) {
-        switch positioning {
-        case .easy:
-            return (.init(x: -2.0, y: 0.0, z: -0.5), .init(x: 2.0, y: 0.0, z: -0.5))
-        case .medium:
-            return (.init(x: -1.5, y: 0.0, z: -1.0), .init(x: 1.5, y: 0.0, z: -1.0))
-        case .hard:
-            return (.init(x: -1.0, y: 0.0, z: -1.5), .init(x: 1.0, y: 0.0, z: -1.5))
+    func generateDistractorLocations(_ positioning: Positioning, _ theme: Theme) -> (SIMD3<Float>, SIMD3<Float>) {
+        switch theme {
+        case .home:
+            switch positioning {
+            case .easy:
+                return (.init(x: -2.0, y: 0.3, z: -0.5), .init(x: 2.0, y: 0.5, z: 0.3))
+            case .medium:
+                return (.init(x: -1.5, y: 0.3, z: -1.0), .init(x: 1.5, y: 0.5, z: -0.3))
+            case .hard:
+                return (.init(x: -1.0, y: 0.3, z: -1.3), .init(x: 1.0, y: 0.5, z: -1.3))
+            }
+        case .cafe:
+            switch positioning {
+            case .easy:
+                return (.init(x: 1.0, y: 0.45, z: 2.5), .init(x: 4.5, y: 0.6, z: 2.5))
+            case .medium:
+                return (.init(x: -0.3, y: 0.45, z: 1.0), .init(x: 3.5, y: 0.6, z: -1.7))
+            case .hard:
+                return (.init(x: 0, y: 0.45, z: 0.7), .init(x: 2.0, y: 0.6, z: -0.5))
+            }
+        case .train:
+            switch positioning {
+            case .easy:
+                return (.init(x: 0.0, y: 0.3, z: -3), .init(x: 3.3, y: 0.3, z: 0.0))
+            case .medium:
+                return (.init(x: 0.0, y: 0.3, z: -2), .init(x: 2.3, y: 0.3, z: 0.0))
+            case .hard:
+                return (.init(x: 0.0, y: 0.3, z: -1.5), .init(x: 1.3, y: 0.3, z: 0.0))
+            }
         }
     }
 
-    func generateDistractorSources(
-        _ theme: Theme,
-        _ leftLocation: SIMD3<Float>,
-        _ rightLocation: SIMD3<Float>) -> (AudioSource, AudioSource) {
+    func generateDistractorSources(_ positioning: Positioning, _ theme: Theme) -> (AudioSource, AudioSource) {
+        let (leftLocation, rightLocation) = generateDistractorLocations(positioning, theme)
 
-        let leftDistractor: AudioSource, rightDistractor: AudioSource
+        var leftDistractor: AudioSource, rightDistractor: AudioSource
+
         switch theme {
         case .home:
             leftDistractor = AudioSource(
@@ -149,25 +186,38 @@ struct CustomTest: Codable {
             rightDistractor = AudioSource(
                 type: .conversation("AudioSample1.mp3"),
                 location: rightLocation,
-                visualResourceLink: .asset("Man1.usdz"))
+                visualResourceLink: .animated("ANIM_StandingMan1.usdz"),
+                orientation: simd_quatf(angle: -.pi / 2, axis: [0, 1, 0]))
         case .cafe:
             leftDistractor = AudioSource(
-                type: .conversation("Cafe_Ambience.mp3"),
+                type: .conversation("AudioSample1.mp3"),
                 location: leftLocation,
-                visualResourceLink: .asset("Man1.usdz"))
+                visualResourceLink: .animated("ANIM_StandingMan1.usdz"))
             rightDistractor = AudioSource(
-                type: .conversation("Cafe_Ambience.mp3"),
+                type: .conversation("WaitressServingTable.mp3"),
                 location: rightLocation,
                 visualResourceLink: .asset("Woman3.usdz"))
+            switch positioning {
+            case .easy:
+                leftDistractor.orientation = simd_quatf(angle: .pi, axis: [0, 1, 0])
+                rightDistractor.orientation = simd_quatf(angle: -.pi / 2, axis: [0, 1, 0])
+            case .medium:
+                leftDistractor.orientation = simd_quatf(angle: .pi, axis: [0, 1, 0])
+            case .hard:
+                leftDistractor.orientation = simd_quatf(angle: .pi / 2, axis: [0, 1, 0])
+                rightDistractor.orientation = simd_quatf(angle: .pi / 2, axis: [0, 1, 0])
+            }
         case .train:
             leftDistractor = AudioSource(
-                type: .ambient("Train_Birds.mp3"),
+                type: .conversation("AudioSample1.mp3"),
                 location: leftLocation,
-                visualResourceLink: .asset("Train_Pigeon.usdz"))
+                visualResourceLink: .animated("ANIM_StandingMan2.usdz"),
+                orientation: simd_quatf(angle: -.pi / 2, axis: [0, 1, 0]))
             rightDistractor = AudioSource(
-                type: .ambient("Train_PeopleTalking.mp3"),
+                type: .conversation("AudioSample2.mp3"),
                 location: rightLocation,
-                visualResourceLink: .asset("Man2.usdz"))
+                visualResourceLink: .animated("ANIM_StandingMan1.usdz"),
+                orientation: simd_quatf(angle: .pi, axis: [0, 1, 0]))
         }
         return (leftDistractor, rightDistractor)
     }
@@ -178,46 +228,62 @@ struct CustomTest: Codable {
             return [
                 // The ambient noise for the home environment has distant people talking and a car passing by outside.
                 AudioSource(type: .ambient("Home_People Talking.mp3"),
-                            location: .init(x: -5.0, y: 0.0, z: -1.0),
-                            visualResourceLink: .asset("")),
+                            location: .init(x: 1.6, y: 0.65, z: 1.2),
+                            visualResourceLink: .animated("ANIM_StandingWoman1.usdz"),
+                            orientation: simd_quatf(angle: -.pi/2, axis: [0, 1, 0])),
                 AudioSource(type: .ambient("Home_CarPassing.mp3"),
-                            location: .init(x: 4.0, y: 0.0, z: 1.0),
+                            location: .init(x: 5.0, y: 0.0, z: 0.0),
                             visualResourceLink: .asset("")),
+                AudioSource(type: .silent,
+                            location: .init(x: 0.4, y: 0.9, z: 1.1),
+                            visualResourceLink: .animated("ANIM_SittingWoman1.usdz"),
+                            orientation: simd_quatf(angle: .pi, axis: [0, 1, 0]))
             ]
         case .cafe:
             return [
-                // The cafe has music coming from various places, as well as a crowd of people.
                 AudioSource(type: .ambient("Cafe_Music.mp3"),
-                            location: .init(x: 0.0, y: 0.0, z: 5.0),
+                            location: .init(x: 0.0, y: 5.0, z: 0.0),
                             visualResourceLink: .asset("")),
-                // Main "talking" ambient source.
-                AudioSource(type: .conversation("Cafe_Ambience.mp3"),
-                            location: .init(x: 1.0, y: 0.0, z: 2.0),
-                            visualResourceLink: .asset("Man1.usdz")),
-                // Auxiliary assets to simulate a crowd.
                 AudioSource(type: .silent,
-                            location: .init(x: 0.5, y: 0.0, z: 2.0),
-                            visualResourceLink: .asset("Man2.usdz")),
-                AudioSource(type: .silent,
-                            location: .init(x: 1.5, y: 0.0, z: 2.0),
-                            visualResourceLink: .asset("Woman1.usdz")),
+                            location: .init(x: 1.0, y: 0.85, z: 0.7),
+                            visualResourceLink: .animated("ANIM_StandingOldMan.usdz"),
+                            orientation: simd_quatf(angle: -.pi / 2, axis: [0, 1, 0])),
+                AudioSource(type: .ambient("Cafe_Ambience.mp3"),
+                            location: .init(x: 3.0, y: 0.0, z: 3.0),
+                            visualResourceLink: .asset(""))
             ]
         case .train:
             return [
                 // Train departing on the left, with a crowd of people on the right in conversation.
                 AudioSource(type: .ambient("Train_Departing.mp3"),
-                            location: .init(x: -3.0, y: 0.0, z: 0.5),
-                            visualResourceLink: .asset("")),
+                            location: .init(x: 0.0, y: 0.6, z: 0.0),
+                            visualResourceLink: .animated("TrainCarriage_Resized.usdz")),
+                AudioSource(type: .ambient("Train_Departing.mp3"),
+                            location: .init(x: 0.0, y: 0.65, z: 13.0),
+                            visualResourceLink: .animated("TrainCarriage_Resized.usdz")),
+                AudioSource(type: .ambient("Train_Departing.mp3"),
+                            location: .init(x: 0.0, y: 0.65, z: -13.0),
+                            visualResourceLink: .animated("TrainCarriage_Resized.usdz")),
+               AudioSource(type: .conversation("Train_PeopleTalking.mp3"),
+                            location: .init(x: 1.8, y: 0.6, z: -0.5),
+                            visualResourceLink: .asset("Woman1.usdz")),
                 AudioSource(type: .conversation("Train_PeopleTalking.mp3"),
-                            location: .init(x: 1.5, y: 0.0, z: -0.5),
+                            location: .init(x: 2.8, y: 0.6, z: -0.5),
                             visualResourceLink: .asset("Woman1.usdz")),
                 AudioSource(type: .silent,
-                            location: .init(x: 1.3, y: 0.0, z: -0.7),
-                            visualResourceLink: .asset("Woman2.usdz")),
+                            location: .init(x: -1.0, y: 0.7, z: -2),
+                            visualResourceLink: .animated("ANIM_StandingWoman2.usdz"),
+                            orientation: simd_quatf(angle: .pi / 2, axis: [0, 1, 0])),
                 AudioSource(type: .silent,
-                            location: .init(x: 1.7, y: 0.0, z: -0.9),
-                            visualResourceLink: .asset("OldMan.usdz")),
+                            location: .init(x: -1.0, y: 0.8, z: -3),
+                            visualResourceLink: .animated("ANIM_StandingWoman3.usdz"),
+                            orientation: simd_quatf(angle: .pi / 2, axis: [0, 1, 0])),
+                AudioSource(type: .silent,
+                            location: .init(x: 0.0, y: 0.85, z: 7.0),
+                            visualResourceLink: .asset("Woman3.usdz"),
+                            orientation: simd_quatf(angle: .pi, axis: [0, 1, 0])),
             ]
         }
     }
 }
+

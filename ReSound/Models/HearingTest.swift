@@ -7,11 +7,12 @@
 //
 
 import Foundation
+import RealityKit
 
 /// Every `HearingTest` instance represents a series of questions asked on
 /// an environment consisting of a fixed set of audio sources
 /// laid around the user's surroundings.
-struct HearingTest: Hashable, Codable {
+struct HearingTest: Hashable {
     // Each one can be identified by a user-defined name.
     var name: String
     // These `AudioSource` instances are not to be shared with another `HearingTest` instance.
@@ -25,7 +26,7 @@ struct HearingTest: Hashable, Codable {
 }
 
 /// The model representing a visual element that emits an audio clip within a hearing test environment.
-struct AudioSource: Equatable, Hashable, Codable {
+struct AudioSource: Equatable, Hashable {
     // This `id` attribute allows other structures to easily reference a particular audio source.
     // Have to make this mutable for Codable (idk if there is another way)
     var id = UUID()
@@ -36,10 +37,13 @@ struct AudioSource: Equatable, Hashable, Codable {
     var location: SIMD3<Float>
     // Ideally, this will be an enum of choices between various preset assets.
     var visualResourceLink: VisualResourceType
+    var orientation: simd_quatf = simd_quatf()
 
     enum VisualResourceType: Equatable, Hashable, Codable {
         case presetBox
         case asset(String)
+        case animated(String)
+        case video(String)
     }
 
     enum AudioSourceType: Equatable, Hashable, Codable {

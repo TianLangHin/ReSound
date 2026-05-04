@@ -6,6 +6,7 @@
 //  Copyright © 2026 Apple. All rights reserved.
 //
 
+import AVFoundation
 import SwiftUI
 import RealityKit
 
@@ -46,10 +47,25 @@ struct AudioSourceView: View {
                         if assetName == "Train_Speaker.usdz" {
                             entityAsset.scale *= 0.75
                         }
+                        entityAsset.orientation = audioSource.orientation * entityAsset.orientation
                         entity.addChild(entityAsset)
                     }
                 }
                 // Make it empty otherwise.
+            case let .animated(assetName):
+                if let entityAsset = await makeAnimated(name: assetName) {
+                    entityAsset.orientation = audioSource.orientation * entityAsset.orientation
+                    entity.addChild(entityAsset)
+                }
+            case let .video(assetName):
+                if let url = Bundle.main.url(forResource: assetName, withExtension: "mp4") {
+                    let player = AVPlayer(url: url)
+                    let material = VideoMaterial(avPlayer: player)
+                    let videoPlane = ModelEntity(mesh: .generatePlane(width: 2.0, height: 1.2), materials: [material])
+                    videoPlane.position = [0, 1.05, 0]
+                    entity.addChild(videoPlane)
+                    player.play()
+                }
             }
 
             // Next, we determine whether we need to add the extra visual indicator or not.
@@ -57,7 +73,7 @@ struct AudioSourceView: View {
             let isFocused = currentQuestion.focus == audioSource.id
 
             // Attach the child `indicatorEntity` to be slightly above the object to be focused.
-            let height: Float = audioSource.visualResourceLink == .asset("Train_Speaker.usdz") ? 2.5 : 1.9
+            let height: Float = audioSource.visualResourceLink == .asset("Train_Loudspeaker.usdz") ? 1.4 : 1.9
             self.indicatorEntity.position = [0, height, 0]
             if isFocused {
                 entity.addChild(self.indicatorEntity)
@@ -79,7 +95,7 @@ struct AudioSourceView: View {
             if isPlayingAudio {
 
                 // Find the audio resource to load.
-                let possibleAudio: String? = if newQuestion.focus == audioSource.id {
+                let possibleAudio: String? = if isFocused {
                     newQuestion.chosenQuestion.audioResourceLink
                 } else {
                     switch audioSource.type {
@@ -104,22 +120,40 @@ struct AudioSourceView: View {
                     print("Failed to load audio file.")
                     return
                 }
-                // Set the spatial audio settings of the entity, attach it to the entity, and play the audio.
-                content.entities[0].spatialAudio = SpatialAudioComponent(directivity: .beam(focus: 0.2))
-                // Adjusts the relative volume if this entity is the target audio,
-                // and naturally lowers everything else since it is ambient sound.
-                content.entities[0].spatialAudio?.gain = isFocused ? newQuestion.volumeLevel : -5.0
-                let audioController = content.entities[0].playAudio(audio)
+                if content.entities[0].spatialAudio == nil {
+                    // Set the spatial audio settings of the entity, attach it to the entity, and play the audio.
+                    content.entities[0].spatialAudio = SpatialAudioComponent(directivity: .beam(focus: 0.2))
+                    if isFocused {
+                        print("Audio is playing.")
+                    }
+                    let audioController = content.entities[0].playAudio(audio)
 
-                // Set the clip to stop playing after the question's duration times out.
-                Task { @MainActor in
-                    try? await Task.sleep(for: newQuestion.chosenQuestion.duration)
-                    audioController.stop()
-                    // This feeds the status of stopping audio back to the outer scenes.
-                    isPlayingAudio = false
+                    // Set the clip to stop playing after the question's duration times out.
+                    Task { @MainActor in
+                        try? await Task.sleep(for: newQuestion.chosenQuestion.duration)
+                        audioController.stop()
+                        isPlayingAudio = false
+                    }
                 }
+            } else {
+                content.entities[0].spatialAudio = nil
             }
         }
     }
 
+    func makeAnimated(name: String, anim: String = "default subtree animation", looping: Bool = true) async -> Entity? {
+        guard let entity = try? await Entity(named: name) else {
+            print("Cannot load animated entity.")
+            return nil
+        }
+        guard let anim = entity
+            .components[AnimationLibraryComponent.self]?
+            .animations[anim] else {
+            print("Cannot load animation.")
+            return nil
+        }
+        let animation = looping ? anim.repeat() : anim
+        entity.playAnimation(animation)
+        return entity
+    }
 }

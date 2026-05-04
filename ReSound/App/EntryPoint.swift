@@ -195,7 +195,7 @@ struct EntryPoint: App {
                 chooseEnvButton(buttonIndex: 0, title: "Home Room")
                 chooseEnvButton(buttonIndex: 1, title: "Train Station")
                 /// This last one needs to change when the third preset is added to the patient environment selection view. Since we don't have it imported yet, having buttonIndex: 2 results in an Index out of range error. Because of this placeholder logic choosing café will always take the user to train station instead. Change this to chooseEnvButton(buttonIndex: 2, title: "Café")
-                chooseEnvButton(buttonIndex: 1, title: "Café")
+                chooseEnvButton(buttonIndex: 2, title: "Café")
             }
             .padding()
         }
