@@ -12,17 +12,17 @@ class Presets {
     private static var audioSources: [AudioSource] = [
         // Home resources.
         AudioSource(
-            type: .ambient(nil),
-            location: .init(x: 0.0, y: 0.0, z: -1.5),
-            visualResourceLink: .asset("BusinessMan.usdz")),
-        AudioSource(
-            type: .ambient(nil),
-            location: .init(x: 3.0, y: 0.5, z: 0.0),
-            visualResourceLink: .presetBox),
-        AudioSource(
-            type: .ambient(nil),
-            location: .init(x: -3.0, y: 0.5, z: 0.0),
-            visualResourceLink: .presetBox),
+            type: .silent,
+            location: .init(x: 0.15, y: 0.7, z: -2.1),
+            visualResourceLink: .video("weather-intro")),
+        AudioSource(type: .ambient("Home_People Talking.mp3"),
+            location: .init(x: 1.6, y: 0.40, z: 1.2),
+            visualResourceLink: .animated("ANIM_StandingWoman1.usdz"),
+            orientation: simd_quatf(angle: -.pi/2, axis: [0, 1, 0])),
+        AudioSource(type: .silent,
+            location: .init(x: 0.4, y: 0.65, z: 1.1),
+            visualResourceLink: .animated("ANIM_SittingWoman1.usdz"),
+            orientation: simd_quatf(angle: .pi, axis: [0, 1, 0])),
         // Train resources.
         AudioSource(
             type: .silent,
@@ -72,19 +72,28 @@ class Presets {
     ]
 
     static var hearingTests: [HearingTest] = [
-        HearingTest(name: "Preset 1",
+        HearingTest(name: "Home",
                     audioSources: [
                         Presets.audioSources[0],
                         Presets.audioSources[1],
                         Presets.audioSources[2],
+                        AudioSource(
+                            type: .ambient("Home_CatSound.mp3"),
+                            location: .init(x: -2.0, y: 0.6, z: -0.5),
+                            visualResourceLink: .asset("Home_Cat.usdz")),
+                        AudioSource(type: .ambient("Home_CarPassing.mp3"),
+                            location: .init(x: 5.0, y: 0.0, z: 0.0),
+                            visualResourceLink: .asset("")),
                     ],
                     questions: [
                         AudioQuestion(focus: Presets.audioSources[0].id,
-                                      chosenQuestion: Presets.possibleQuestions[0]),
-                        AudioQuestion(focus: Presets.audioSources[1].id,
-                                      chosenQuestion: Presets.possibleQuestions[1]),
+                                      chosenQuestion: Presets.possibleQuestions[5]),
+                        AudioQuestion(focus: Presets.audioSources[0].id,
+                                      chosenQuestion: Presets.possibleQuestions[6]),
+                        AudioQuestion(focus: Presets.audioSources[0].id,
+                                      chosenQuestion: Presets.possibleQuestions[7]),
                     ],
-                    backgroundResourceLink: "blue_photo_studio_4k.hdr"),
+                    backgroundResourceLink: "Home"),
         HearingTest(name: "Train Station",
                     audioSources: [
                         Presets.audioSources[3],

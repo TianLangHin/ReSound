@@ -36,7 +36,7 @@ struct SkyboxView: View {
     func homeEnvironment(content: RealityViewContent) async {
         let container = Entity()
 
-        guard let homeEntity = try? await Entity(named: "untexturedHome.usdz") else {
+        guard let homeEntity = try? await Entity(named: "Home.usdz") else {
             return
         }
         let originalRotation = homeEntity.transform.rotation
@@ -46,6 +46,13 @@ struct SkyboxView: View {
         if let skybox = await makeSkybox(name: "suburban_garden_4k.exr") {
             container.addChild(skybox)
         }
+
+        let backboard = ModelEntity(
+            mesh: .generatePlane(width: 5, depth: 5),
+            materials: [UnlitMaterial(color: .black)])
+        backboard.position = [0, 0, -2.6]
+        backboard.orientation = simd_quatf(angle: .pi / 2, axis: [1, 0, 0])
+        container.addChild(backboard)
 
         container.addChild(homeEntity)
         content.add(container)

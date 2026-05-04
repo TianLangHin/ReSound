@@ -62,7 +62,7 @@ struct AudioSourceView: View {
                     let player = AVPlayer(url: url)
                     let material = VideoMaterial(avPlayer: player)
                     let videoPlane = ModelEntity(mesh: .generatePlane(width: 2.0, height: 1.2), materials: [material])
-                    videoPlane.position = [0.15, 1.75, -2.1]
+                    videoPlane.position = [0, 1.05, 0]
                     entity.addChild(videoPlane)
                     player.play()
                 }
@@ -73,7 +73,7 @@ struct AudioSourceView: View {
             let isFocused = currentQuestion.focus == audioSource.id
 
             // Attach the child `indicatorEntity` to be slightly above the object to be focused.
-            let height: Float = audioSource.visualResourceLink == .asset("Train_Speaker.usdz") ? 2.5 : 1.9
+            let height: Float = audioSource.visualResourceLink == .asset("Train_Loudspeaker.usdz") ? 1.4 : 1.9
             self.indicatorEntity.position = [0, height, 0]
             if isFocused {
                 entity.addChild(self.indicatorEntity)
@@ -95,7 +95,7 @@ struct AudioSourceView: View {
             if isPlayingAudio {
 
                 // Find the audio resource to load.
-                let possibleAudio: String? = if newQuestion.focus == audioSource.id {
+                let possibleAudio: String? = if isFocused {
                     newQuestion.chosenQuestion.audioResourceLink
                 } else {
                     switch audioSource.type {
@@ -120,17 +120,23 @@ struct AudioSourceView: View {
                     print("Failed to load audio file.")
                     return
                 }
-                // Set the spatial audio settings of the entity, attach it to the entity, and play the audio.
-                content.entities[0].spatialAudio = SpatialAudioComponent(directivity: .beam(focus: 0.2))
-                let audioController = content.entities[0].playAudio(audio)
+                if content.entities[0].spatialAudio == nil {
+                    // Set the spatial audio settings of the entity, attach it to the entity, and play the audio.
+                    content.entities[0].spatialAudio = SpatialAudioComponent(directivity: .beam(focus: 0.2))
+                    if isFocused {
+                        print("Audio is playing.")
+                    }
+                    let audioController = content.entities[0].playAudio(audio)
 
-                // Set the clip to stop playing after the question's duration times out.
-                Task { @MainActor in
-                    try? await Task.sleep(for: newQuestion.chosenQuestion.duration)
-                    audioController.stop()
-                    // This feeds the status of stopping audio back to the outer scenes.
-                    isPlayingAudio = false
+                    // Set the clip to stop playing after the question's duration times out.
+                    Task { @MainActor in
+                        try? await Task.sleep(for: newQuestion.chosenQuestion.duration)
+                        audioController.stop()
+                        isPlayingAudio = false
+                    }
                 }
+            } else {
+                content.entities[0].spatialAudio = nil
             }
         }
     }

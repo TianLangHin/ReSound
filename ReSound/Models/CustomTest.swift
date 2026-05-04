@@ -112,7 +112,7 @@ struct CustomTest: Codable {
         case .home:
             let tv = AudioSource(
                 type: .silent,
-                location: .init(x: 0.0, y: 0.0, z: 0.0),
+                location: .init(x: 0.15, y: 0.7, z: -2.1),
                 visualResourceLink: .video("weather-intro"))
             return [tv]
         case .cafe:
@@ -228,12 +228,16 @@ struct CustomTest: Codable {
             return [
                 // The ambient noise for the home environment has distant people talking and a car passing by outside.
                 AudioSource(type: .ambient("Home_People Talking.mp3"),
-                            location: .init(x: 2.5, y: 0.6, z: 2.0),
+                            location: .init(x: 1.6, y: 0.65, z: 1.2),
                             visualResourceLink: .animated("ANIM_StandingWoman1.usdz"),
                             orientation: simd_quatf(angle: -.pi/2, axis: [0, 1, 0])),
                 AudioSource(type: .ambient("Home_CarPassing.mp3"),
                             location: .init(x: 5.0, y: 0.0, z: 0.0),
                             visualResourceLink: .asset("")),
+                AudioSource(type: .silent,
+                            location: .init(x: 0.4, y: 0.9, z: 1.1),
+                            visualResourceLink: .animated("ANIM_SittingWoman1.usdz"),
+                            orientation: simd_quatf(angle: .pi, axis: [0, 1, 0]))
             ]
         case .cafe:
             return [
@@ -275,10 +279,11 @@ struct CustomTest: Codable {
                             visualResourceLink: .animated("ANIM_StandingWoman3.usdz"),
                             orientation: simd_quatf(angle: .pi / 2, axis: [0, 1, 0])),
                 AudioSource(type: .silent,
-                            location: .init(x: 0.0, y: 0.6, z: 7.0),
+                            location: .init(x: 0.0, y: 0.85, z: 7.0),
                             visualResourceLink: .asset("Woman3.usdz"),
                             orientation: simd_quatf(angle: .pi, axis: [0, 1, 0])),
             ]
         }
     }
 }
+
