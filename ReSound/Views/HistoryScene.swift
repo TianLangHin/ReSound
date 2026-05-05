@@ -79,7 +79,7 @@ struct HistoryScene: Scene {
                                 historyState = .detail
                             } label: {
                                 HStack {
-                                    Text("\(score.hearingTestName) (\(scoreDetails.timeAttempted.formatted(date: .abbreviated, time: .shortened)))")
+                                    Text("\(score.hearingTestName) (\(score.timeAttempted.formatted(date: .abbreviated, time: .shortened)))")
                                         .font(.title)
                                         .foregroundStyle(.secondary)
                                         .padding(.vertical, 10)
@@ -128,7 +128,7 @@ struct HistoryScene: Scene {
             .padding()
 
             Spacer()
-                .frame(height: 30)
+                .frame(height: 20)
 
             let (correct, total) = scoreDetails.overallScore()
             Text("Score: \(correct) / \(total)")
@@ -154,7 +154,9 @@ struct HistoryScene: Scene {
                     .padding(.vertical, 8)
                 }
             }
+            .frame(height: 300)
             .frame(width: 700)
+            .padding(.horizontal)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .padding()
