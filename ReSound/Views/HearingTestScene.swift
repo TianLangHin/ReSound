@@ -302,9 +302,14 @@ struct HearingTestScene: SwiftUI.Scene {
             }
             .padding(10)
             
+            Spacer()
+                .frame(height: 20)
+            
             Text("Warning: Starting the experience will open an AVP immersive environment. It is recommended you stand still or sit down throughout the simulation.")
                 .font(.body)
                 .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .padding()
