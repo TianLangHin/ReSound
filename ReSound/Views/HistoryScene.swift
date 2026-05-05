@@ -79,16 +79,10 @@ struct HistoryScene: Scene {
                                 historyState = .detail
                             } label: {
                                 HStack {
-<<<<<<< Updated upstream
-                                    Text("\(score.hearingTestName) (\(score.timeAttempted.formatted(date: .abbreviated, time: .shortened)))")
-                                        .font(.title)
-                                        .foregroundStyle(.secondary)
-=======
                                     Text("\(score.hearingTestName) (\(scoreDetails.timeAttempted.formatted(date: .abbreviated, time: .shortened)))")
                                         .font(.headline)
->>>>>>> Stashed changes
                                         .padding(.vertical, 10)
-                                    
+
                                     Spacer()
 
                                     Image(systemName: "chevron.right")

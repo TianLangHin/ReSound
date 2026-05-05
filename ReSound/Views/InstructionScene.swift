@@ -39,10 +39,10 @@ struct InstructionScene: Scene {
                 }
                 .multilineTextAlignment(.center)
                 .padding()
-                
+            }
+            .overlay(alignment: .bottom) {
                 Text("This window will automatically close when you start the simulation.")
-                    .font(.body)
-                    .foregroundStyle(.secondary)
+                    .font(.headline)
                     .padding()
             }
             .padding()

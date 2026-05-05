@@ -301,18 +301,8 @@ struct HearingTestScene: SwiftUI.Scene {
                 .padding(.vertical, 20)
             }
             .padding(10)
-            
-            Spacer()
-                .frame(height: 20)
-            
-            Text("Warning: Starting the experience will open an AVP immersive environment. It is recommended you stand still or sit down throughout the simulation.")
-                .font(.body)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-        .padding()
         .overlay(alignment: .topLeading) {
             exitButton {
                 exitEntirely()
@@ -324,6 +314,18 @@ struct HearingTestScene: SwiftUI.Scene {
                 }
             }
         }
+        .overlay(alignment: .bottom) {
+            HStack {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.largeTitle)
+                    .foregroundStyle(.yellow)
+                Text("This will open a fully immersive environment. Please stand still or sit down throughout the simulation.")
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+            }
+            .padding()
+        }
+        .padding()
     }
 
     @ViewBuilder
