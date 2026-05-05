@@ -13,14 +13,14 @@ class Presets {
         // Home resources.
         AudioSource(
             type: .silent,
-            location: .init(x: 0.15, y: 0.7, z: -2.1),
+            location: .init(x: 0.15, y: 0.40, z: -2.1),
             visualResourceLink: .video("weather-intro")),
         AudioSource(type: .ambient("Home_People Talking.mp3"),
-            location: .init(x: 1.6, y: 0.40, z: 1.2),
+            location: .init(x: 1.6, y: 0.10, z: 1.2),
             visualResourceLink: .animated("ANIM_StandingWoman1.usdz"),
             orientation: simd_quatf(angle: -.pi/2, axis: [0, 1, 0])),
         AudioSource(type: .silent,
-            location: .init(x: 0.4, y: 0.65, z: 1.1),
+            location: .init(x: 0.4, y: 0.25, z: 1.1),
             visualResourceLink: .animated("ANIM_SittingWoman1.usdz"),
             orientation: simd_quatf(angle: .pi, axis: [0, 1, 0])),
         // Train resources.
@@ -79,7 +79,7 @@ class Presets {
                         Presets.audioSources[2],
                         AudioSource(
                             type: .ambient("Home_CatSound.mp3"),
-                            location: .init(x: -2.0, y: 0.6, z: -0.5),
+                            location: .init(x: -2.0, y: 0.3, z: -0.5),
                             visualResourceLink: .asset("Home_Cat.usdz")),
                         AudioSource(type: .ambient("Home_CarPassing.mp3"),
                             location: .init(x: 5.0, y: 0.0, z: 0.0),

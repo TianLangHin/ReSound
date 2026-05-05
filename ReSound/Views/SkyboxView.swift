@@ -48,13 +48,14 @@ struct SkyboxView: View {
         }
 
         let backboard = ModelEntity(
-            mesh: .generatePlane(width: 5, depth: 5),
+            mesh: .generatePlane(width: 10, depth: 8),
             materials: [UnlitMaterial(color: .black)])
         backboard.position = [0, 0, -2.6]
         backboard.orientation = simd_quatf(angle: .pi / 2, axis: [1, 0, 0])
         container.addChild(backboard)
 
         container.addChild(homeEntity)
+        container.position = CustomTest.Theme.home.offset()
         content.add(container)
     }
 

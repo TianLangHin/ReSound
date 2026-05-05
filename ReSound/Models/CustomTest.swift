@@ -62,7 +62,7 @@ struct CustomTest: Codable {
         func offset() -> SIMD3<Float> {
             switch self {
             case .home:
-                return .init(x: 0, y: 0, z: 0)
+                return .init(x: 0, y: -0.3, z: 0)
             case .cafe:
                 return .init(x: 0, y: -0.5, z: 0.5)
             case .train:
