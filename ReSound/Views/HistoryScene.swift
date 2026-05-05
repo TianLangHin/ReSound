@@ -50,9 +50,9 @@ struct HistoryScene: Scene {
     private func scoreListView() -> some View {
         VStack {
             VStack {
-                Text("Test History")
+                Text("History Log")
                     .font(.largeTitle)
-                Text("View past hearing test scores on this device")
+                Text("View past scores on this device")
                     .font(.title)
                     .foregroundStyle(.secondary)
             }
@@ -64,13 +64,13 @@ struct HistoryScene: Scene {
             VStack {
                 if savedScores.isEmpty {
                     Spacer()
-                        .frame(height: 102)
-                    Text("No test attempts on this device yet.")
-                        .font(.title)
+                        .frame(height: 105)
+                    Text("No attempts on this device yet.")
+                        .font(.headline)
                         .foregroundStyle(.secondary)
                         .padding()
                     Spacer()
-                        .frame(height: 102)
+                        .frame(height: 105)
                 } else {
                     List {
                         ForEach(savedScores, id: \.id) { score in
@@ -79,16 +79,20 @@ struct HistoryScene: Scene {
                                 historyState = .detail
                             } label: {
                                 HStack {
+<<<<<<< Updated upstream
                                     Text("\(score.hearingTestName) (\(score.timeAttempted.formatted(date: .abbreviated, time: .shortened)))")
                                         .font(.title)
                                         .foregroundStyle(.secondary)
+=======
+                                    Text("\(score.hearingTestName) (\(scoreDetails.timeAttempted.formatted(date: .abbreviated, time: .shortened)))")
+                                        .font(.headline)
+>>>>>>> Stashed changes
                                         .padding(.vertical, 10)
                                     
                                     Spacer()
 
                                     Image(systemName: "chevron.right")
                                         .font(.headline)
-                                        .foregroundStyle(.secondary)
                                 }
                                 .padding()
                             }
@@ -132,7 +136,7 @@ struct HistoryScene: Scene {
 
             let (correct, total) = scoreDetails.overallScore()
             Text("Score: \(correct) / \(total)")
-                .font(.title)
+                .font(.headline)
                 .foregroundStyle(.secondary)
 
             List {
@@ -140,14 +144,15 @@ struct HistoryScene: Scene {
                     HStack {
                         Image(systemName: answer.isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
                             .foregroundStyle(answer.isCorrect ? .green : .red)
-                            .font(.title)
+                            .font(.headline)
                             .foregroundStyle(.secondary)
+                            .padding()
                         VStack(alignment: .leading) {
                             Text(answer.questionText)
-                                .font(.title)
+                                .font(.headline)
                                 .foregroundStyle(.secondary)
                             Text("Selected: \(answer.selectedAnswer)")
-                                .font(.title)
+                                .font(.headline)
                                 .foregroundStyle(.secondary)
                         }
                     }
