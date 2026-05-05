@@ -126,9 +126,9 @@ struct ClinicianScene: Scene {
         VStack {
             /// Put any other title or subtitle text here for clinician view
             VStack {
-                Text("Hearing Test Customisation")
+                Text("Hearing Experience Customisation")
                     .font(.largeTitle)
-                Text("Add or edit your own custom test environment")
+                Text("Add or edit your own custom immersive environment")
                     .font(.title)
                     .foregroundStyle(.secondary)
             }
@@ -141,7 +141,7 @@ struct ClinicianScene: Scene {
                 if savedCustoms.isEmpty {
                     Spacer()
                         .frame(height: 105)
-                    Text("No saved tests on this device yet.")
+                    Text("No customised presets on this device yet.")
                         .font(.body)
                         .padding()
                     Spacer()
@@ -181,7 +181,7 @@ struct ClinicianScene: Scene {
             Button {
                 // Set name for the new test saving because no text field
                 customTest = CustomTest()
-                customTest.name = "Custom Test \(savedCustoms.count + 1)"
+                customTest.name = "Custom Simulation \(savedCustoms.count + 1)"
                 clinicianState = .add
             } label: {
                 HStack {
@@ -220,11 +220,11 @@ struct ClinicianScene: Scene {
     private func updateView() -> some View {
         VStack(spacing: editorSectionSpacing) {
             VStack(alignment: .leading, spacing: 12) {
-                Text("Test Name")
+                Text("Experience Name")
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .center)
                 
-                TextField("Enter test name", text: $customTest.name)
+                TextField("Enter experience name", text: $customTest.name)
                     .textFieldStyle(.roundedBorder)
                     .font(.headline)
                     .frame(maxWidth: .infinity)

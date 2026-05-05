@@ -243,9 +243,9 @@ struct HearingTestScene: SwiftUI.Scene {
     private func startView() -> some View {
         VStack {
             VStack {
-                Text("Start Test: \(hearingTest.name)")
+                Text("Start Experience: \(hearingTest.name)")
                     .font(.largeTitle)
-                Text("Start the hearing test when you're ready!")
+                Text("Start the hearing experience when you're ready!")
                     .font(.title)
                     .foregroundStyle(.secondary)
             }
@@ -265,7 +265,7 @@ struct HearingTestScene: SwiftUI.Scene {
                 }
             } label: {
                 ZStack {
-                    Text("Start")
+                    Text("Start VR Simulation")
                         .font(.headline)
                     
                     HStack {
@@ -301,6 +301,10 @@ struct HearingTestScene: SwiftUI.Scene {
                 .padding(.vertical, 20)
             }
             .padding(10)
+            
+            Text("Warning: Starting the experience will open an AVP immersive environment. It is recommended you stand still or sit down throughout the simulation.")
+                .font(.body)
+                .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .padding()

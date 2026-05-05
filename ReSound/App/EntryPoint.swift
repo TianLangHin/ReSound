@@ -87,9 +87,9 @@ struct EntryPoint: App {
     private func loadMainMenu() -> some View {
         VStack {
             VStack {
-                Text("ReSound Hearing Test")
+                Text("ReSound Hearing Experience")
                     .font(.largeTitle)
-                Text("Test your hearing using spatial audio with the Apple Vision Pro")
+                Text("Challenge your hearing using spatial audio with the Apple Vision Pro")
                     .font(.title)
                     .foregroundStyle(.secondary)
             }
@@ -104,7 +104,7 @@ struct EntryPoint: App {
                 } label: {
                     // Go to environment selection screen.
                     ZStack {
-                        Text("Start Hearing Test")
+                        Text("Start Experience")
                             .font(.headline)
                         
                         HStack {
@@ -180,7 +180,7 @@ struct EntryPoint: App {
             VStack {
                 Text("Select Environment")
                     .font(.largeTitle)
-                Text("Choose your immersive testing environment")
+                Text("Choose your immersive environment")
                     .font(.title)
                     .foregroundStyle(.secondary)
             }
@@ -194,7 +194,6 @@ struct EntryPoint: App {
             VStack {
                 chooseEnvButton(buttonIndex: 0, title: "Home Room")
                 chooseEnvButton(buttonIndex: 1, title: "Train Station")
-                /// This last one needs to change when the third preset is added to the patient environment selection view. Since we don't have it imported yet, having buttonIndex: 2 results in an Index out of range error. Because of this placeholder logic choosing café will always take the user to train station instead. Change this to chooseEnvButton(buttonIndex: 2, title: "Café")
                 chooseEnvButton(buttonIndex: 2, title: "Café")
             }
             .padding()
@@ -267,8 +266,7 @@ struct EntryPoint: App {
             case "train", "station":
                 chooseEnv(index: 1)
             case "cafe", "café":
-                /// Change when add café environment. Needs to be 2
-                chooseEnv(index: 1)
+                chooseEnv(index: 2)
             case "back":
                 viewingState = .main
             default:
