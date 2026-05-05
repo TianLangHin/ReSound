@@ -325,7 +325,6 @@ struct ClinicianScene: Scene {
                 
                 // Save Button
                 Button {
-                    let test = customTest.generateTest()
                     switch clinicianState {
                     case .edit(let index):
                         savedCustoms[index] = customTest
