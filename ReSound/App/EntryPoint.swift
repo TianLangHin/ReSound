@@ -250,9 +250,9 @@ struct EntryPoint: App {
         switch viewingState {
         case .main:
             switch voiceInput {
-            case "patient", "test", "hearing":
+            case "experience", "start":
                 viewingState = .chooseTest
-            case "clinician", "customise", "view", "customize", "environment":
+            case "customise", "view", "customize", "environment":
                 transition(from: "main-window", to: "clinician-window")
             case "history", "log":
                 transition(from: "main-window", to: "history-window")
