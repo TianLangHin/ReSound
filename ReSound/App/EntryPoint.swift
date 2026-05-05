@@ -37,6 +37,8 @@ struct EntryPoint: App {
     /// i.e., when the hearing test pops up.
     @State var isHearingTestOpened = false
 
+    @State var transitioning = false
+
     var body: some SwiftUI.Scene {
         WindowGroup(id: "main-window") {
             /// The content of the main menu is displayed if the hearing test is not happening yet.
@@ -246,31 +248,38 @@ struct EntryPoint: App {
     }
 
     private func voiceComHandler(_ speech: String) {
-        let voiceInput = speech.lowercased().components(separatedBy: .whitespaces).last ?? ""
+        let components = speech.lowercased().components(separatedBy: .whitespaces)
+        let previous = components.dropLast().last ?? ""
+        let voiceInput = components.last ?? ""
+
+        let mainPrompts = [
+            ["start", "experience"],
+            ["customise", "customize", "environment"],
+            ["history", "log"],
+        ]
+        let choosePrompts = [
+            ["home", "room"],
+            ["train", "station"],
+            ["cafe", "café"],
+        ]
         switch viewingState {
         case .main:
-            switch voiceInput {
-            case "experience", "start":
+            if mainPrompts[0].contains(voiceInput) && !mainPrompts[0].contains(previous) {
                 viewingState = .chooseTest
-            case "customise", "view", "customize", "environment":
+            } else if mainPrompts[1].contains(voiceInput) && !mainPrompts[1].contains(previous) {
                 transition(from: "main-window", to: "clinician-window")
-            case "history", "log":
+            } else if mainPrompts[2].contains(voiceInput) && !mainPrompts[2].contains(previous) {
                 transition(from: "main-window", to: "history-window")
-            default:
-                break
             }
         case .chooseTest:
-            switch voiceInput {
-            case "home", "room":
-                chooseEnv(index: 0)
-            case "train", "station":
-                chooseEnv(index: 1)
-            case "cafe", "café":
-                chooseEnv(index: 2)
-            case "back":
+            for i in 0...2 {
+                if choosePrompts[i].contains(voiceInput) && !choosePrompts[i].contains(previous) {
+                    chooseEnv(index: i)
+                    break
+                }
+            }
+            if voiceInput == "back" {
                 viewingState = .main
-            default:
-                break
             }
         }
     }
