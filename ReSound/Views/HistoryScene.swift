@@ -66,7 +66,8 @@ struct HistoryScene: Scene {
                     Spacer()
                         .frame(height: 102)
                     Text("No test attempts on this device yet.")
-                        .font(.body)
+                        .font(.title)
+                        .foregroundStyle(.secondary)
                         .padding()
                     Spacer()
                         .frame(height: 102)
@@ -79,7 +80,8 @@ struct HistoryScene: Scene {
                             } label: {
                                 HStack {
                                     Text("\(score.hearingTestName) (\(scoreDetails.timeAttempted.formatted(date: .abbreviated, time: .shortened)))")
-                                        .font(.headline)
+                                        .font(.title)
+                                        .foregroundStyle(.secondary)
                                         .padding(.vertical, 10)
                                     
                                     Spacer()
