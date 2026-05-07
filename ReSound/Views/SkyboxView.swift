@@ -15,20 +15,27 @@ import RealityKit
 struct SkyboxView: View {
     let resourceName: String
 
+    @Binding var heightOffset: Float
+
     var body: some View {
         RealityView { content in
             if resourceName == "Cafe" {
                 await cafeEnvironment(content: content)
+                content.entities[0].position = CustomTest.Theme.cafe.offset() + [0, heightOffset, 0]
             } else if resourceName == "Train" {
                 await trainEnvironment(content: content)
+                content.entities[0].position = CustomTest.Theme.train.offset() + [0, heightOffset, 0]
             } else if resourceName == "Home" {
                 await homeEnvironment(content: content)
+                content.entities[0].position = CustomTest.Theme.home.offset() + [0, heightOffset, 0]
             }
-
-            if resourceName.hasSuffix(".exr") || resourceName.hasSuffix(".hdr") {
-                if let skybox = await makeSkybox(name: resourceName) {
-                    content.add(skybox)
-                }
+        } update: { content in
+            if resourceName == "Cafe" {
+                content.entities[0].position = CustomTest.Theme.cafe.offset() + [0, heightOffset, 0]
+            } else if resourceName == "Train" {
+                content.entities[0].position = CustomTest.Theme.train.offset() + [0, heightOffset, 0]
+            } else if resourceName == "Home" {
+                content.entities[0].position = CustomTest.Theme.home.offset() + [0, heightOffset, 0]
             }
         }
     }
