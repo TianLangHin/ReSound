@@ -9,6 +9,7 @@
 import SwiftUI
 import RealityKit
 
+/// Helper Scene containing a window that allows the user to adjust the height of the environment.
 struct HeightAdjustmentScene: SwiftUI.Scene {
     @Binding var heightOffset: Float
 

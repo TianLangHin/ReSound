@@ -163,7 +163,6 @@ struct EntryPoint: App {
         /// Full width so `VStack` children stay centered.
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .padding()
-        /// Testing for speech recog
         .task {
             let _ = await speechRec.authoriseRequest()
             try? speechRec.startRec()
@@ -174,7 +173,6 @@ struct EntryPoint: App {
             print("state: \(viewingState)")
         }
     }
-        
     
     @ViewBuilder
     private func chooseHearingTest() -> some View {

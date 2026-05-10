@@ -12,6 +12,7 @@ import RealityKit
 /// Since our background assets are full images loaded as HDRI assets,
 /// the immersive space background is created by making a big sphere
 /// and putting the background image as the texture on the inside.
+/// This now also includes the 3D background assets that make the models realistic to walk within.
 struct SkyboxView: View {
     let resourceName: String
 
@@ -54,6 +55,7 @@ struct SkyboxView: View {
             container.addChild(skybox)
         }
 
+        // This vertical plane seals up the small gaps in the textures on the front side of the house USDZ.
         let backboard = ModelEntity(
             mesh: .generatePlane(width: 10, depth: 8),
             materials: [UnlitMaterial(color: .black)])
@@ -75,6 +77,8 @@ struct SkyboxView: View {
         stationEntity.position = [0, 0, -2]
         container.addChild(stationEntity)
 
+        // Since the original lighting elements in the Train Station FBX do not transfer to the USDZ,
+        // additional lighting sources are added in above the train tracks to illuminate the environment.
         let trainLights: [Float] = [-30, -20, -10, 0, 10, 20, 30]
         let positions: [(Float, Float, Float)] = [(4, 4, 0)] + trainLights.map { z in (-5, 3, z) }
         for (x, y, z) in positions {
@@ -94,6 +98,8 @@ struct SkyboxView: View {
         cafeteriaEntity.transform.rotation = simd_quatf(angle: .pi, axis: [0, 1, 0]) * originalRotation
         container.addChild(cafeteriaEntity)
 
+        // The raw Cafe USDZ file itself does not have lighting baked into it,
+        // hence point light sources are added in.
         let xPositions: [Float] = [-1.0, 1.0, 3.0]
         let zPositions: [Float] = [-2.0, 0.0, 2.0]
         for x in xPositions {
@@ -104,6 +110,9 @@ struct SkyboxView: View {
                 container.addChild(makeLight(position: .init(x: x, y: 2, z: z), intensity: 20000, attenuation: 5000))
             }
         }
+
+        // Additional assets which do not act as audio sources but as immersive elements instead
+        // are added in, and these are the entities representing sitting people.
 
         if let man1 = await makeAnimated(name: "ANIM_SittingMan1.usdz") {
             man1.transform.rotation = simd_quatf(angle: .pi, axis: [0, 1, 0]) * man1.transform.rotation
@@ -140,19 +149,18 @@ struct SkyboxView: View {
         content.add(container)
     }
 
+    /// Helper function to load an animated USDZ and repeatedly play its animation.
     func makeAnimated(
         name: String,
         anim: String = "default subtree animation",
         looping: Bool = true
     ) async -> Entity? {
         guard let entity = try? await Entity(named: name) else {
-            print("Cannot load animated entity.")
             return nil
         }
         guard let anim = entity
             .components[AnimationLibraryComponent.self]?
             .animations[anim] else {
-            print("Cannot load animation.")
             return nil
         }
         let animation = looping ? anim.repeat() : anim
@@ -160,9 +168,9 @@ struct SkyboxView: View {
         return entity
     }
 
+    /// Helper function to load a HDRI or EXR file as a large skybox around the environment.
     func makeSkybox(name: String) async -> ModelEntity? {
         guard let resource = try? await TextureResource(named: name) else {
-            print("Cannot load skybox.")
             return nil
         }
         let sphereMesh = MeshResource.generateSphere(radius: 100.0)
@@ -173,6 +181,7 @@ struct SkyboxView: View {
         return skyboxEntity
     }
 
+    /// Helper function to create a point light source in the environment.
     func makeLight(position: SIMD3<Float>, intensity: Float, attenuation: Float) -> Entity {
         let lightingEntity = Entity()
         let lightSource = PointLightComponent(color: .white, intensity: intensity, attenuationRadius: attenuation)

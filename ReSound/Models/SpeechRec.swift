@@ -13,13 +13,11 @@ class SpeechRec {
     var isRecording: Bool = false
     var speechContent: String = ""
 
-    /// Speech recognition pipeline (I saw this on google - testing)
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
     private var audioEngine = AVAudioEngine()
     private let recogniser = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
 
-    /// Ask for authorisation
     func authoriseRequest() async -> Bool {
         await withCheckedContinuation { continuation in
             SFSpeechRecognizer.requestAuthorization { status in
@@ -30,13 +28,11 @@ class SpeechRec {
         }
     }
 
-    /// Recognise function:
     func startRec() throws {
         guard !isRecording else {
             return
         }
 
-        /// For actual implementation (Can't test on sim)
         let audioSession = AVAudioSession.sharedInstance()
         try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
         try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
@@ -65,7 +61,6 @@ class SpeechRec {
         isRecording = true
     }
 
-    /// Stop recognise:
     func stopRec() {
         guard isRecording else {
             return
