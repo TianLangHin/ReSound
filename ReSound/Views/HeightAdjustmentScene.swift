@@ -27,30 +27,38 @@ struct HeightAdjustmentScene: SwiftUI.Scene {
                         heightOffset += increment
                     }
                 } label: {
-                    HStack {
-                        Image(systemName: "chevron.up")
-                            .font(.headline)
+                    ZStack {
                         Text("Move environment up")
                             .font(.headline)
+                        HStack {
+                            Image(systemName: "chevron.up")
+                                .font(.headline)
+                            Spacer()
+                        }
                     }
+                    .frame(width: 400)
                     .padding()
                 }
-                .frame(width: 400)
+                .disabled(heightOffset >= maximum)
                 .buttonRepeatBehavior(.enabled)
                 Button {
                     if heightOffset > minimum {
                         heightOffset -= increment
                     }
                 } label: {
-                    HStack {
-                        Image(systemName: "chevron.down")
-                            .font(.headline)
+                    ZStack {
                         Text("Move environment down")
                             .font(.headline)
+                        HStack {
+                            Image(systemName: "chevron.down")
+                                .font(.headline)
+                            Spacer()
+                        }
                     }
+                    .frame(width: 400)
                     .padding()
                 }
-                .frame(width: 400)
+                .disabled(heightOffset <= minimum)
                 .buttonRepeatBehavior(.enabled)
             }
             .padding()
