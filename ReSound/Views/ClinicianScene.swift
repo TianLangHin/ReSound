@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-//Note: after practice the spedech rec is closed, will have to reactivate again
+
 enum ClinicianState {
     case begin
     case edit(Int)
@@ -209,10 +209,6 @@ struct ClinicianScene: Scene {
         .onChange(of: speechRec.speechContent) { _, newContent in
             print("Speech content: \(newContent)")
             voiceComHandler(newContent)
-            Task {
-                try? await Task.sleep(for: .milliseconds(800))
-                print("state: \(clinicianState)")
-            }
         }
     }
 
@@ -356,10 +352,6 @@ struct ClinicianScene: Scene {
         .onChange(of: speechRec.speechContent) { _, newContent in
             print("Speech content: \(newContent)")
             voiceComHandler(newContent)
-            Task {
-                try? await Task.sleep(for: .milliseconds(800))
-                print("state: \(clinicianState)")
-            }
         }
     }
 
@@ -421,8 +413,7 @@ struct ClinicianScene: Scene {
             }
             if let questionIndex = words.lastIndex(where: { $0 == "question" || $0 == "questions" }), questionIndex > 0 {
                 let precedingWords = words[questionIndex - 1]
-               if let number = parseSpokenNumber([precedingWords]),
-                   number >= 1 && number <= 5 {
+                if let number = parseSpokenNumber([precedingWords]), number >= 1 && number <= 5 {
                     customTest.numberOfQuestions = number
                 }
             }
@@ -439,8 +430,7 @@ struct ClinicianScene: Scene {
             }
             if let questionIndex = words.lastIndex(where: { $0 == "question" || $0 == "questions" }), questionIndex > 0 {
                 let precedingWords = words[questionIndex - 1].lowercased()
-               if let number = parseSpokenNumber([precedingWords]),
-                   number >= 1 && number <= 5 {
+                if let number = parseSpokenNumber([precedingWords]), number >= 1 && number <= 5 {
                     customTest.numberOfQuestions = number
                 }
             }

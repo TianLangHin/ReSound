@@ -25,6 +25,8 @@ struct AudioSourceView: View {
     // The visual indicator if required.
     @State var indicatorEntity: Entity
 
+    @Binding var heightOffset: Float
+
     let defaultModel = ModelEntity(
         mesh: MeshResource.generateBox(size: [0.3, 0.3, 0.4]),
         materials: [UnlitMaterial(color: .systemBlue)])
@@ -33,7 +35,7 @@ struct AudioSourceView: View {
         RealityView { content in
             // First, the entity is loaded at the predefined distance from the user.
             content.add(entity)
-            entity.transform = Transform(translation: audioSource.location)
+            entity.transform = Transform(translation: audioSource.location + [0, heightOffset, 0])
 
             // We construct the visual representation here.
             switch audioSource.visualResourceLink {
@@ -80,6 +82,7 @@ struct AudioSourceView: View {
             }
         } update: { content in
             /// All updates occur here.
+            content.entities[0].transform = Transform(translation: audioSource.location + [0, heightOffset, 0])
 
             /// Step 1: Determine whether we need to display the visual indicator or not.
             let newQuestion = hearingTest.questions[questionNumber]
@@ -116,16 +119,12 @@ struct AudioSourceView: View {
                 guard let audio = try? AudioFileResource.load(
                     named: audioLink,
                     configuration: AudioFileResource.Configuration(shouldLoop: true)) else {
-                    // Handle the error if the audio file fails to load. Stub for now.
-                    print("Failed to load audio file.")
                     return
                 }
                 if content.entities[0].spatialAudio == nil {
                     // Set the spatial audio settings of the entity, attach it to the entity, and play the audio.
                     content.entities[0].spatialAudio = SpatialAudioComponent(directivity: .beam(focus: 0.2))
-                    if isFocused {
-                        print("Audio is playing.")
-                    }
+                    
                     let audioController = content.entities[0].playAudio(audio)
 
                     // Set the clip to stop playing after the question's duration times out.
@@ -143,13 +142,11 @@ struct AudioSourceView: View {
 
     func makeAnimated(name: String, anim: String = "default subtree animation", looping: Bool = true) async -> Entity? {
         guard let entity = try? await Entity(named: name) else {
-            print("Cannot load animated entity.")
             return nil
         }
         guard let anim = entity
             .components[AnimationLibraryComponent.self]?
             .animations[anim] else {
-            print("Cannot load animation.")
             return nil
         }
         let animation = looping ? anim.repeat() : anim

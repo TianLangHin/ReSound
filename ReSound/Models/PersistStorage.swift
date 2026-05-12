@@ -14,7 +14,6 @@ class PersistStorage {
     private let key = "resound.hearingTests"
     private let scoreKey = "resound.scores"
 
-    // Have to save custom test for extra variable too (I dont want to add more stuffs in HearingTest.Swift)
     func saveCustom(_ customs: [CustomTest]) {
         if let data = try? JSONEncoder().encode(customs) {
             UserDefaults.standard.set(data, forKey: "resound.customTests")

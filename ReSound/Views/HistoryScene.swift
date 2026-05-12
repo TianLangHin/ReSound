@@ -79,7 +79,7 @@ struct HistoryScene: Scene {
                                 historyState = .detail
                             } label: {
                                 HStack {
-                                    Text("\(score.hearingTestName) (\(scoreDetails.timeAttempted.formatted(date: .abbreviated, time: .shortened)))")
+                                    Text("\(score.hearingTestName) (\(score.timeAttempted.formatted(date: .abbreviated, time: .shortened)))")
                                         .font(.headline)
                                         .padding(.vertical, 10)
 
@@ -222,8 +222,7 @@ struct HistoryScene: Scene {
                               case .begin = historyState else { return }
                         
                         let latestRemaining = Array(latestWords[(latestNumberIndex + 1)...])
-                        if let number = parseSpokenNumber(latestRemaining),
-                           number >= 1 && number <= savedScores.count {
+                        if let number = parseSpokenNumber(latestRemaining), number >= 1 && number <= savedScores.count {
                             let index = number - 1
                             scoreDetails = savedScores[index]
                             historyState = .detail

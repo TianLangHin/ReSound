@@ -53,6 +53,8 @@ struct HearingTestScene: SwiftUI.Scene {
     @State var scoreBreakdown: ScoreBreakdown = .empty()
     @State var audioController: AudioPlaybackController? = nil
 
+    @State var heightOffset: Float = 0.0
+
     var body: some SwiftUI.Scene {
         /// The ID of this window group is referenced in the outer parent view.
         WindowGroup(id: hearingTestWindowId) {
@@ -85,11 +87,8 @@ struct HearingTestScene: SwiftUI.Scene {
             .onAppear {
                 /// Toggling the Boolean binding for tracking in the parent view.
                 isOpened = true
-                Task { @MainActor in
-                    try? await Task.sleep(for: .milliseconds(500))
-                    openWindow(id: "instruction-window")
-                    instructionOpen = true
-                }
+                openWindow(id: "instruction-window")
+                instructionOpen = true
                 if parentWindowId == "clinician-window" {
                     isFromClinician = true
                 }
@@ -112,16 +111,12 @@ struct HearingTestScene: SwiftUI.Scene {
                             startQuestion(firstCall: true)
                             if instructionOpen {
                                 dismissWindow(id: "instruction-window")
-                            } else {
-                                print("alr close bro")
                             }
                         case "exit", "back", "quit":
                             Task { @MainActor in
                                 try? speechRec.startRec()
                                 if instructionOpen {
                                     dismissWindow(id: "instruction-window")
-                                } else {
-                                    print("alr close bro")
                                 }
                                 try? await Task.sleep(for: .milliseconds(100))
                                 exitEntirely()
@@ -144,14 +139,16 @@ struct HearingTestScene: SwiftUI.Scene {
                 }
             }
             .onChange(of: questionState) {
-                print("Question state: \(questionState)")
+                if instructionOpen {
+                    dismissWindow(id: "instruction-window")
+                    instructionOpen = false
+                }
             }
             RealityView { content in
                 content.add(Entity())
                 guard let audio = try? AudioFileResource.load(
                     named: "CalibrationAudio.mp3",
                     configuration: AudioFileResource.Configuration(shouldLoop: true)) else {
-                    print("Failed to load audio file.")
                     return
                 }
                 audioController = content.entities[0].prepareAudio(audio)
@@ -161,18 +158,20 @@ struct HearingTestScene: SwiftUI.Scene {
             .fixedSize()
         }
         .windowStyle(.plain)
+        HeightAdjustmentScene(heightOffset: $heightOffset)
         /// The immersive space is where the hearing test happens via spatial audio.
         ImmersiveSpace(id: hearingTestWindowId + "-immersive") {
             let indicatorEntity = makeIndicatorEntity()
             /// Surrounding the user will be a skybox as a sphere to project the EXR/HDR image.
-            SkyboxView(resourceName: hearingTest.backgroundResourceLink)
+            SkyboxView(resourceName: hearingTest.backgroundResourceLink, heightOffset: $heightOffset)
             /// Each of the audio sources as designated by the `HearingTest` instance will be placed in the space.
             ForEach(hearingTest.audioSources, id: \.self) { audioSource in
                 AudioSourceView(audioSource: audioSource,
                                 hearingTest: hearingTest,
                                 questionNumber: $questionNumber,
                                 isPlayingAudio: $isPlayingAudio,
-                                indicatorEntity: indicatorEntity)
+                                indicatorEntity: indicatorEntity,
+                                heightOffset: $heightOffset)
             }
         }
         .immersionStyle(selection: .constant(.full), in: .full)
@@ -180,14 +179,13 @@ struct HearingTestScene: SwiftUI.Scene {
 
     /// Function to return to the main menu (exiting the patient view).
     private func exitEntirely() {
-        if parentWindowId == "main-window" {
-            // TODO: Stub for storing the score breakdown into persistent storage.
-            print(scoreBreakdown)
-        }
         // Here, the window is dismissed and the state is reset
         // so another test can be administered after this.
         closeSpace()
         reset()
+        if !isFromClinician {
+            dismissWindow(id: "height-adjustment")
+        }
         /// An asynchronous task on the main queue is used to load the other window,
         /// wait for 100 milliseconds to ensure the system can recognise it is open,
         /// and then close the previous window (which is only successful if another window is open).
@@ -225,10 +223,6 @@ struct HearingTestScene: SwiftUI.Scene {
     /// A separate function is needed to construct the visual entity
     /// as it is disallowed inline in the immersive space.
     private func makeIndicatorEntity() -> Entity {
-//        return ModelEntity( //need to rotate by 180 degrees. And size it correctly
-//            mesh: MeshResource.generateCone(height: 0.2, radius: 0.1),
-//            materials: [UnlitMaterial(color: .systemYellow)])
-        
         let indicatorEntity = ModelEntity(
             mesh: .generateCone(height: 0.2, radius: 0.1),
             materials: [UnlitMaterial(color: .systemYellow)]
@@ -260,8 +254,6 @@ struct HearingTestScene: SwiftUI.Scene {
                 if instructionOpen {
                     dismissWindow(id: "instruction-window")
                     instructionOpen = false
-                } else {
-                    print("alr close bro")
                 }
             } label: {
                 ZStack {
@@ -309,8 +301,6 @@ struct HearingTestScene: SwiftUI.Scene {
                 if instructionOpen {
                     dismissWindow(id: "instruction-window")
                     instructionOpen = false
-                } else {
-                    print("DEBUG: Instructions window is already closed.")
                 }
             }
         }
@@ -456,6 +446,8 @@ struct HearingTestScene: SwiftUI.Scene {
         questionState = .playing
         if !firstCall {
             speechRec.stopRec()
+        } else if !isFromClinician {
+            openWindow(id: "height-adjustment")
         }
         Task { @MainActor in
             try? await Task.sleep(for: questionDuration)
@@ -480,7 +472,6 @@ struct HearingTestScene: SwiftUI.Scene {
             if questionNumber == lastQuestionNumber {
                 registerAnswer(choice: answer)
             }
-            print("parentWindowId is: \(parentWindowId)")
             // Save the score right after the test is done
             if parentWindowId == "main-window" {
                 scoreBreakdown.timeAttempted = Date()
