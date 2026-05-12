@@ -13,6 +13,7 @@
 		24F2EB5C2F80DCFC001F7183 /* ClinicianScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F2EB5B2F80DCF9001F7183 /* ClinicianScene.swift */; };
 		935BDB102F9CD7CD004DAD32 /* InstructionScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 935BDB0F2F9CD7C7004DAD32 /* InstructionScene.swift */; };
 		935F61102F95F0530037ABFF /* HistoryScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 935F610F2F95F04F0037ABFF /* HistoryScene.swift */; };
+		93FABA562FB2EC2800979A0B /* HeightAdjustmentScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FABA552FB2EC2800979A0B /* HeightAdjustmentScene.swift */; };
 		DF02DEAC2BEC1DDD008047B2 /* EntryPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF02DEAB2BEC1DDD008047B2 /* EntryPoint.swift */; };
 		DF02DEB22BEC1DE2008047B2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DF02DEB12BEC1DE2008047B2 /* Assets.xcassets */; };
 		DF02DEB52BEC1DE2008047B2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DF02DEB42BEC1DE2008047B2 /* Preview Assets.xcassets */; };
@@ -27,6 +28,7 @@
 		68F42DE3A7DF4126C4C25FBE /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 		935BDB0F2F9CD7C7004DAD32 /* InstructionScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionScene.swift; sourceTree = "<group>"; };
 		935F610F2F95F04F0037ABFF /* HistoryScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryScene.swift; sourceTree = "<group>"; };
+		93FABA552FB2EC2800979A0B /* HeightAdjustmentScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeightAdjustmentScene.swift; sourceTree = "<group>"; };
 		A1B988F6D3A2520F964FC288 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		DF02DEA42BEC1DDD008047B2 /* ReSound.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReSound.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF02DEAB2BEC1DDD008047B2 /* EntryPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryPoint.swift; sourceTree = "<group>"; };
@@ -106,6 +108,7 @@
 				935F610F2F95F04F0037ABFF /* HistoryScene.swift */,
 				249912862F696B4000ECA9DE /* AudioSourceView.swift */,
 				24F2EB5B2F80DCF9001F7183 /* ClinicianScene.swift */,
+				93FABA552FB2EC2800979A0B /* HeightAdjustmentScene.swift */,
 				24A3EB4D2F6FF504001B8716 /* HearingTestScene.swift */,
 				24A3EB4F2F700214001B8716 /* SkyboxView.swift */,
 			);
@@ -214,6 +217,7 @@
 				935BDB102F9CD7CD004DAD32 /* InstructionScene.swift in Sources */,
 				935F61102F95F0530037ABFF /* HistoryScene.swift in Sources */,
 				DF02DEAC2BEC1DDD008047B2 /* EntryPoint.swift in Sources */,
+				93FABA562FB2EC2800979A0B /* HeightAdjustmentScene.swift in Sources */,
 				24F2EB5C2F80DCFC001F7183 /* ClinicianScene.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
