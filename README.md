@@ -91,3 +91,115 @@ The `Models` folder is the only one which was not initially in the initial visio
   * `InstructionScene.swift` implements the side panel that appears to provide instructions to the user before starting the *spatial hearing experience*.
   * `HeightAdjustmentScene.swift` implements the auxiliary panel that allows users to adjust the height of the environment relative to their viewpoint,
     in case the `RealityView` instances are spawned too high up or too low relative to the user's eye level.
+
+## Credits
+
+The visual and audio assets used in this project outside of the aforementioned files in the **Frameworks and Tools Used** section
+were sourced from other sites including [Sketchfab](https://sketchfab.com/) and [Pixabay](https://pixabay.com/).
+All assets downloaded from Sketchfab are covered by the Creative Commons (CC) License 4.0,
+while the assets downloaded from Pixabay are covered by their [Content License](https://pixabay.com/service/license-summary/).
+While not all of the following assets were directly used in the final iteration of our project,
+the assets that have been accessed and downloaded at some point during the development of this project are listed in the following sub-sections.
+
+### 3D Model Assets
+
+* "ANIMATED OLDER MAN WITH BEARD WEARING SHORT" (https://skfb.ly/onqC6)
+  by 360SMS is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Buisness man (With talking animation)" (https://skfb.ly/oAvKU)
+  by art.piskov is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Dennis Posed 004 - Male Standing Business Model" (https://skfb.ly/6SArT)
+  by Renderpeople is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Free 018 Kana Sitting" (https://skfb.ly/o6pXV)
+  by ddd is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Govinda Walking 3d model fts" (https://skfb.ly/oSHPI)
+  by Sunny khude 3d model is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Housewife Model" (https://skfb.ly/6oGVR)
+  by hong227 is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Indian Office Woman" (https://skfb.ly/oLUUo)
+  by Nodeaxis Interactive is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "JEONG SEUN_240316" (https://skfb.ly/oSpLo)
+  by COTTA is licensed under Creative Commons Attribution-NonCommercial (http://creativecommons.org/licenses/by-nc/4.0/).
+* "JEONG SEUN 34" (https://skfb.ly/oT9Ar)
+  by COTTA is licensed under Creative Commons Attribution-NonCommercial (http://creativecommons.org/licenses/by-nc/4.0/).
+* "Joe Having A Meeting" (https://skfb.ly/oPBDY)
+  by myzatulsarah is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Jon Sitting (2)" (https://skfb.ly/oPAB9)
+  by myzatulsarah is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Juhi chawala maushi walking 3d models fts" (https://skfb.ly/prAUu)
+  by Sunny khude 3d model is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Kay" (https://skfb.ly/oSwxC)
+  by Gen AI Guy is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Man Sitting" (https://skfb.ly/6zoQq)
+  by apexpro is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* “Man Sitting Idle” (https://skfb.ly/oQqqJ)
+  by DNAelite is licensed under Free Standard (https://sketchfab.com/licenses).
+* "Mr Man Walking" (https://skfb.ly/6SsDF)
+  by Instinto Ideal Studio is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Oiiaioooooiai Cat" (https://skfb.ly/prRXD)
+  by Zhuier is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "OldMan Ernest" (https://skfb.ly/oHPpy)
+  by grs is licensed under Creative Commons Attribution-ShareAlike (http://creativecommons.org/licenses/by-sa/4.0/).
+* "Scanned animated walking man" (https://skfb.ly/osJUu)
+  by 1-3D.com is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Sitting Talking (1)" (https://skfb.ly/oSCC9)
+  by atierayunus is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Sophia Animated 003 - Animated 3D Woman" (https://skfb.ly/6SO7O)
+  by Renderpeople is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Start Walking (1)" (https://skfb.ly/pECIA)
+  by Leakkha11 is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* “Subway Station Modern 1” (https://www.turbosquid.com/3d-models/subway-station-modern-1-726486)
+  by MS_RAY is licensed under Standard License (https://www.turbosquid.com/licensing)
+* "Talking Lily" (https://skfb.ly/pC8Ky)
+  by rexerincltd.scockburn is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Talking On A Cell Phone" (https://skfb.ly/oTSAX)
+  by azreenphoebe99 is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Talking - Puan Mastura" (https://skfb.ly/oUSwT)
+  by p143467 is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Talking (9)" (https://skfb.ly/pESRn)
+  by Leakkha11 is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Woman" (https://skfb.ly/pB79N)
+  by Grauwolf is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Walk-japanese-man" (https://skfb.ly/opsvu)
+  by ddd is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+* "Women Sitting Animated" (https://skfb.ly/oQqpR)
+  by DNAelite is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+### Audio Assets
+* AllSounds24. (2018, April 19). Cup put down on table sound effect.
+  [Video]. YouTube. https://www.youtube.com/watch?v=-m1jX83mMT8
+* Bureau of Meteorology. (2026, January 6). National Weather Forecast 6 January 2026: Heatwaves spread across much of Australia.
+  [Video].YouTube. https://www.youtube.com/watch?v=hFuxNx6GGS0
+* "Car drive by" (https://pixabay.com/sound-effects/film-special-effects-car-drive-by-268509/)
+  by FreeSoundsxx is under Pixabay Content License (https://pixabay.com/service/license-summary/)
+* "Dog Barking in Distant" (https://pixabay.com/sound-effects/nature-dog-barking-in-distant-502561/)
+  by dbsound is under Pixabay Content License (https://pixabay.com/service/license-summary/)
+* "Footstep on wood foley" (https://pixabay.com/sound-effects/household-footstep-on-wood-foley-6398/)
+  by martian (Freesound) is under Pixabay Content License (https://pixabay.com/service/license-summary/)
+* "Jazzy Tender Loop" (https://pixabay.com/sound-effects/musical-jazzy-tender-loop-312714/)
+  by SergeQuadrado is under Pixabay Content License (https://pixabay.com/service/license-summary/)
+* Learn English with Bob the Canadian. (2024, September 24). Learn English Phone Phrases.
+  [Video]. YouTube. https://www.youtube.com/watch?v=u40ZKHC98k0
+* Nicks videos. (2016, July 25). Two People Talking.
+  [Video]. YouTube. https://www.youtube.com/watch?v=6oYFKwCZpfk
+* Pizza Hunter Sound. (2022, December 5). Eating Dinner Ambience Sound Effect.
+  [Video]. YouTube. https://www.youtube.com/watch?v=aN3qlNl3G48
+* "Plates Set Down" (https://pixabay.com/sound-effects/household-plates-set-down-69502/)
+  by davjanus (Freesound) is under Pixabay Content License (https://pixabay.com/service/license-summary/)
+* RazendeGijs. (2021, December 31). Cat meow sound effect.
+  [Video]. YouTube. https://www.youtube.com/watch?v=IeUfgC-RHZ0
+* "restaurant ambience" (https://pixabay.com/sound-effects/people-restaurant-ambience-24720/)
+  by sarahmariealice (Freesound) is under Pixabay Content License (https://pixabay.com/service/license-summary/)
+* Sound Effect Database. (2024, June 12). Drink Stir With Ice Sound Effect.
+  [Video]. YouTube. https://www.youtube.com/watch?v=a1RBGnT1PbU
+* Sydney_Trains1. (2023, April 9). T8 Central train board | Central to Macarthur | Macarthur via airport stations |.
+  [Video] YouTube. https://www.youtube.com/watch?v=yphnUGTnIlo
+* "Talking people" (https://pixabay.com/sound-effects/people-talking-people-6368/)
+  by szalonegacie (Freesound) is under Pixabay Content License (https://pixabay.com/service/license-summary/)
+* "Tea kettle whistling" (https://pixabay.com/sound-effects/household-tea-kettle-whistling-69415/)
+  by reconsider59 (Freesound) is under Pixabay Content License (https://pixabay.com/service/license-summary/)
+* The Social Skills Teacher. (2016, March 10). Joining Group Conversations - Unexpected.
+  [Video]. YouTube. https://www.youtube.com/watch?v=UuY8L_NiNbY
+* "Train Station 3" (https://pixabay.com/sound-effects/city-train-station-3-53789/)
+  by Fission9 (Freesound) is under Pixabay Content License (https://pixabay.com/service/license-summary/)
+* TSydneyRail Spotters. (2023, January 1). Sydney Trains DVA: "Please mind the gap".
+  [Video]. YouTube. https://www.youtube.com/watch?v=jF4QIpX4_cc&list=PL23y0236wGOHm4jUB8neD2xe353bC-8xh&index=4
