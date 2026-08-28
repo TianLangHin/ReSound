@@ -518,13 +518,13 @@ struct HearingTestScene: SwiftUI.Scene {
 
     /// Resets state so that the space can be reused for another hearing test.
     private func reset() {
-        questionState = .before
         questionNumber = 0
         isPlayingAudio = false
         score = 0
         isDisplayingImmersive = false
         speechRec.stopRec()
         scoreBreakdown = .empty()
+        questionState = .before
     }
 }
 

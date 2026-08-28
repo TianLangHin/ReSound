@@ -56,16 +56,6 @@ struct EntryPoint: App {
                 }
             }
         }
-        .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .active {
-                dismissWindow(id: "main-window")
-                viewingState = .main
-                isHearingTestOpened = false
-                Task { @MainActor in
-                    try? speechRec.startRec()
-                }
-            }
-        }
         .defaultWindowPlacement { content, context in
             if let otherWindow = context.windows.first(where: { $0.id == "instruction-window" }) {
                 return WindowPlacement(.leading(otherWindow))
@@ -84,93 +74,137 @@ struct EntryPoint: App {
         ClinicianScene(speechRec: speechRec, instructionOpen: $instructionOpen)
         HistoryScene(speechRec: speechRec)
     }
-    
+
+    @State var speechStart: Bool? = nil
+
     @ViewBuilder
     private func loadMainMenu() -> some View {
-        VStack {
+        ZStack {
             VStack {
-                Text("ReSound Hearing Experience")
-                    .font(.largeTitle)
-                Text("Challenge your hearing using spatial audio with the Apple Vision Pro")
-                    .font(.title)
-                    .foregroundStyle(.secondary)
+                VStack {
+                    Text("ReSound Hearing Experience")
+                        .font(.largeTitle)
+                        .padding()
+                    Text("Challenge your hearing using spatial audio with the Apple Vision Pro")
+                        .font(.title)
+                        .foregroundStyle(.secondary)
+                }
+                .padding()
+                
+                Spacer()
+                    .frame(height: 20)
+                
+                VStack {
+                    Button {
+                        viewingState = .chooseTest
+                    } label: {
+                        // Go to environment selection screen.
+                        ZStack {
+                            Text("Start Experience")
+                                .font(.headline)
+                            
+                            HStack {
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.headline)
+                            }
+                        }
+                        .frame(maxWidth: 400)
+                        .padding(.vertical, 20)
+                    }
+                    .padding(10)
+                    
+                    Button {
+                        transition(from: "main-window", to: "clinician-window")
+                    } label: {
+                        // Go to the clinician view to create customised hearing tests.
+                        ZStack {
+                            Text("Customise Environment")
+                                .font(.headline)
+                            
+                            HStack {
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.headline)
+                            }
+                        }
+                        .frame(maxWidth: 400)
+                        .padding(.vertical, 20)
+                    }
+                    .padding(10)
+                    
+                    Button {
+                        transition(from: "main-window", to: "history-window")
+                    } label: {
+                        // Persistent storage which stores a list of patient scores and other related details.
+                        ZStack {
+                            Text("History Log")
+                                .font(.headline)
+                            
+                            HStack {
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.headline)
+                            }
+                        }
+                        .frame(maxWidth: 400)
+                        .padding(.vertical, 20)
+                    }
+                    .padding(10)
+                }
+                .padding()
             }
+            /// Full width so `VStack` children stay centered.
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             .padding()
-            
-            Spacer()
-                .frame(height: 20)
-            
+            .task {
+                let _ = await speechRec.authoriseRequest()
+                try? speechRec.startRec()
+            }
+            .onChange(of: speechRec.speechContent) { _, newContent in
+                print("Speech content: \(newContent)")
+                voiceComHandler(newContent)
+                print("state: \(viewingState)")
+            }
             VStack {
-                Button {
-                    viewingState = .chooseTest
-                } label: {
-                    // Go to environment selection screen.
-                    ZStack {
-                        Text("Start Experience")
-                            .font(.headline)
-                        
-                        HStack {
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.headline)
+                Spacer()
+                HStack {
+                    Spacer()
+                    Button {
+                        Task {
+                            speechRec.stopRec()
+                            var approved = await speechRec.authoriseRequest()
+                            try? speechRec.startRec()
+                            try? await Task.sleep(for: .seconds(2))
+                            speechStart = nil
+
+                            speechRec.stopRec()
+                            approved = await speechRec.authoriseRequest()
+                            try? speechRec.startRec()
+                            speechStart = approved
+                            print("Speech Reconnection Attempt: \(approved).")
+                            try? await Task.sleep(for: .seconds(2))
+                            speechStart = nil
+                        }
+                    } label: {
+                        Image(systemName: "microphone.fill")
+                            .font(.extraLargeTitle2)
+                            .padding()
+                        if let speechStart {
+                            if speechStart {
+                                Image(systemName: "checkmark.circle")
+                                    .foregroundStyle(.green)
+                            } else {
+                                Image(systemName: "x.circle")
+                                    .foregroundStyle(.red)
+                            }
                         }
                     }
-                    .frame(maxWidth: 400)
-                    .padding(.vertical, 20)
+                    .padding(20)
                 }
-                .padding(10)
-                
-                Button {
-                    transition(from: "main-window", to: "clinician-window")
-                } label: {
-                    // Go to the clinician view to create customised hearing tests.
-                    ZStack {
-                        Text("Customise Environment")
-                            .font(.headline)
-                        
-                        HStack {
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.headline)
-                        }
-                    }
-                    .frame(maxWidth: 400)
-                    .padding(.vertical, 20)
-                }
-                .padding(10)
-                
-                Button {
-                    transition(from: "main-window", to: "history-window")
-                } label: {
-                    // Persistent storage which stores a list of patient scores and other related details.
-                    ZStack {
-                        Text("History Log")
-                            .font(.headline)
-                        
-                        HStack {
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.headline)
-                        }
-                    }
-                    .frame(maxWidth: 400)
-                    .padding(.vertical, 20)
-                }
-                .padding(10)
+                .padding(20)
             }
-            .padding()
-        }
-        /// Full width so `VStack` children stay centered.
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-        .padding()
-        .task {
-            let _ = await speechRec.authoriseRequest()
-            try? speechRec.startRec()
-        }
-        .onChange(of: speechRec.speechContent) { _, newContent in
-            print("Speech content: \(newContent)")
-            voiceComHandler(newContent)
-            print("state: \(viewingState)")
+            .padding(20)
         }
     }
     
