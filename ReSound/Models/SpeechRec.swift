@@ -30,6 +30,7 @@ class SpeechRec {
 
     func startRec() throws {
         guard !isRecording else {
+            print("Guard prevented.")
             return
         }
 
